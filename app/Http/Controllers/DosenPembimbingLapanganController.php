@@ -2,13 +2,18 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\DosenPembimbingLapangan;
 use Illuminate\Http\Request;
 
 class DosenPembimbingLapanganController extends Controller
 {
     public function index()
     {
-        // Logika untuk menampilkan daftar produk
+        // $DosenPembimbingLapangan = DosenPembimbingLapangan::all();
+        $dosenPembimbingLapangan = DosenPembimbingLapangan::with('role')->get();
+
+
+        return response()->json($dosenPembimbingLapangan);    
     }
 
     public function create()
