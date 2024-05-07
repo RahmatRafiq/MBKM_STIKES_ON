@@ -22,7 +22,7 @@ class RolesSeeder extends Seeder
             ['name' => 'Mitra'],
         ];
 
-        // Masukkan roles ke dalam database
+        // Masukkan roles ke dalam database dengan menggunakan model Roles
         foreach ($roles as $role) {
             Roles::create($role);
         }

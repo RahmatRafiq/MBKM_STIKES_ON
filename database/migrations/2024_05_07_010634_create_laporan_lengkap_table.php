@@ -11,7 +11,7 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('laporan_legkap', function (Blueprint $table) {
+        Schema::create('laporan_lengkap', function (Blueprint $table) {
             $table->id();
             $table->integer('peserta_id');
             $table->tinyInteger('is_validate')->default(0);
@@ -25,6 +25,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('laporan_legkap');
+        Schema::dropIfExists('laporan_lengkap');
     }
 };

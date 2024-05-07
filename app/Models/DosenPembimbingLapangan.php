@@ -17,7 +17,7 @@ class DosenPembimbingLapangan extends Model
         'image'
     ];
 
-    public function role()
+    public function roles()
     {
         return $this->belongsTo(Roles::class, 'roles_id', 'id');
     }
