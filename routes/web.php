@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\DosenPembimbingLapanganController;
+use App\Http\Controllers\MitraProfileController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -10,3 +11,4 @@ Route::get('/', function () {
 
 
 Route::get('/dosen-pembimbing-lapangan', [DosenPembimbingLapanganController::class, 'index']);
+Route::get('/mitra-profile', [MitraProfileController::class, 'index']);
