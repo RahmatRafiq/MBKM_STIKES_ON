@@ -2,11 +2,11 @@
 
 namespace Database\Seeders;
 
-use App\Models\Roles;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
+use Spatie\Permission\Models\Role;
 
-class RolesSeeder extends Seeder
+class RoleSeeder extends Seeder
 {
     /**
      * Run the database seeds.
@@ -24,7 +24,7 @@ class RolesSeeder extends Seeder
 
         // Masukkan roles ke dalam database dengan menggunakan model Roles
         foreach ($roles as $role) {
-            Roles::create($role);
+            Role::create($role);
         }
     }
 }
