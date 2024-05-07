@@ -8,4 +8,15 @@ use Illuminate\Database\Eloquent\Model;
 class DosenPembimbingLapangan extends Model
 {
     use HasFactory;
+
+    protected $table = 'dosen_pembimbing_lapangan';
+    protected $fillable = [
+        'users_id',
+        'roles_id',
+        'name',
+        'image'
+    ];
 }
+
+
+
