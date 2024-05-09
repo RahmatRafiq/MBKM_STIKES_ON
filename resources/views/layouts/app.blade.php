@@ -9,120 +9,70 @@
     <title>{{ config('app.name', 'Laravel') }}</title>
 
     <!-- Fonts -->
-    <link rel="preconnect" href="https://fonts.bunny.net">
-    <link href="https://fonts.bunny.net/css?family=figtree:400,500,600&display=swap" rel="stylesheet" />
+    <link rel="stylesheet"
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Sharp:opsz,wght,FILL,GRAD@48,400,0,0" />
     <link rel="stylesheet" href="{{ asset('assets/css/style.css') }}">
     <!-- Scripts -->
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
-
-<body class="font-sans antialiased">
-    <!-- =============== Navigation ================ -->
+<body>
     <div class="container">
-        <div class="navigation">
-            <ul>
-                <li>
-                    <a href="#">
-                        <span class="icon">
-                            <ion-icon name="logo-apple"></ion-icon>
-                        </span>
-                        <span class="title">Brand Name</span>
-                    </a>
-                </li>
-
-                <li>
-                    <a href="#">
-                        <span class="icon">
-                            <ion-icon name="home-outline"></ion-icon>
-                        </span>
-                        <span class="title">Dashboard</span>
-                    </a>
-                </li>
-
-                <li>
-                    <a href="#">
-                        <span class="icon">
-                            <ion-icon name="people-outline"></ion-icon>
-                        </span>
-                        <span class="title">Customers</span>
-                    </a>
-                </li>
-
-                <li>
-                    <a href="#">
-                        <span class="icon">
-                            <ion-icon name="chatbubble-outline"></ion-icon>
-                        </span>
-                        <span class="title">Messages</span>
-                    </a>
-                </li>
-
-                <li>
-                    <a href="#">
-                        <span class="icon">
-                            <ion-icon name="help-outline"></ion-icon>
-                        </span>
-                        <span class="title">Help</span>
-                    </a>
-                </li>
-
-                <li>
-                    <a href="#">
-                        <span class="icon">
-                            <ion-icon name="settings-outline"></ion-icon>
-                        </span>
-                        <span class="title">Settings</span>
-                    </a>
-                </li>
-
-                <li>
-                    <a href="#">
-                        <span class="icon">
-                            <ion-icon name="lock-closed-outline"></ion-icon>
-                        </span>
-                        <span class="title">Password</span>
-                    </a>
-                </li>
-
-                <li>
-                    <a href="#">
-                        <span class="icon">
-                            <ion-icon name="log-out-outline"></ion-icon>
-                        </span>
-                        <span class="title">Sign Out</span>
-                    </a>
-                </li>
-            </ul>
-        </div>
-
-        <!-- ========================= Main ==================== -->
-        <div class="main">
-            <div class="topbar">
-                <div class="toggle">
-                    <ion-icon name="menu-outline"></ion-icon>
+        <aside>
+            <div class="top">
+                <div class="logo">
+                    <h2>C <span class="danger">BABAR</span> </h2>
                 </div>
-
-                <div class="search">
-                    <label>
-                        <input type="text" placeholder="Search here">
-                        <ion-icon name="search-outline"></ion-icon>
-                    </label>
-                </div>
-
-                <div class="user">
-                    <img src="assets/imgs/customer01.jpg" alt="">
+                <div class="close" id="close_btn">
+                    <span class="material-symbols-sharp">
+                        close
+                    </span>
                 </div>
             </div>
+            <!-- end top -->
+            <div class="sidebar">
 
-            {{ $slot }}
-        </div>
+                <a href="#">
+                    <span class="material-symbols-sharp">grid_view </span>
+                    <h3>Dashbord</h3>
+                </a>
+                <a href="#" class="active">
+                    <span class="material-symbols-sharp">person_outline </span>
+                    <h3>custumers</h3>
+                </a>
+                <a href="#">
+                    <span class="material-symbols-sharp">insights </span>
+                    <h3>Analytics</h3>
+                </a>
+                <a href="#">
+                    <span class="material-symbols-sharp">mail_outline </span>
+                    <h3>Messages</h3>
+                    <span class="msg_count">14</span>
+                </a>
+                <a href="#">
+                    <span class="material-symbols-sharp">receipt_long </span>
+                    <h3>Products</h3>
+                </a>
+                <a href="#">
+                    <span class="material-symbols-sharp">report_gmailerrorred </span>
+                    <h3>Reports</h3>
+                </a>
+                <a href="#">
+                    <span class="material-symbols-sharp">settings </span>
+                    <h3>settings</h3>
+                </a>
+                <a href="#">
+                    <span class="material-symbols-sharp">add </span>
+                    <h3>Add Product</h3>
+                </a>
+                <a href="#">
+                    <span class="material-symbols-sharp">logout </span>
+                    <h3>logout</h3>
+                </a>
+            </div>
+        </aside>
+        {{ $slot }}
     </div>
-      <!-- =========== Scripts =========  -->
-      <script src="{{asset('assets/js/main.js')}}"></script>
-
-      <!-- ====== ionicons ======= -->
-      <script type="module" src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.esm.js"></script>
-      <script nomodule src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.js"></script>
+    <script src="{{asset('assets/js/script.js')}}"></script>
 </body>
 
 </html>
