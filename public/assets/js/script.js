@@ -19,3 +19,17 @@ themeToggler.addEventListener('click',()=>{
      themeToggler.querySelector('span:nth-child(1').classList.toggle('active')
      themeToggler.querySelector('span:nth-child(2').classList.toggle('active')
 })
+
+document.addEventListener('DOMContentLoaded', function() {
+    const parentMenuItems = document.querySelectorAll('.sidebar > a');
+
+    parentMenuItems.forEach(parentMenuItem => {
+        parentMenuItem.addEventListener('click', function(event) {
+            event.preventDefault();
+            const submenu = parentMenuItem.nextElementSibling;
+            if (submenu && submenu.classList.contains('submenu')) {
+                submenu.classList.toggle('active');
+            }
+        });
+    });
+});
