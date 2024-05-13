@@ -17,8 +17,13 @@
                     </div>
                     <div class="mb-3">
                         <label class="form-label">Guard Name</label>
-                        <input type="text" class="form-control" id="guard_name" name="guard_name"
-                            value="{{ old('guard_name') }}">
+                        <select class="form-select" id="guard_name" name="guard_name">
+                            <option value="">Select Guard Name</option>
+                            @foreach (App\Helpers\Guards::list() as $guard_name)
+                                <option value="{{ $guard_name }}" {{ old('name') == $guard_name ? 'selected' : '' }}>{{ $guard_name }}</option>
+                            @endforeach
+                        </select>
+                    </div>
                     </div>
                 </div>
             </div>
