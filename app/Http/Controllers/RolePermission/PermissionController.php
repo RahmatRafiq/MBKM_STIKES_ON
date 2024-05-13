@@ -2,9 +2,10 @@
 
 namespace App\Http\Controllers\RolePermission;
 
+use App\Helpers\DataTable;
 use App\Http\Controllers\Controller;
+use App\Models\Permission;
 use Illuminate\Http\Request;
-use Spatie\Permission\Models\Permission;
 
 class PermissionController extends Controller
 {
@@ -13,17 +14,21 @@ class PermissionController extends Controller
      */
     public function index()
     {
-        $permissions = Permission::all();
-        
-    // $output = [
-    //     "draw" => $request->draw,
-    //     "recordsTotal" => $count,
-    //     "recordsFiltered" => $count,
-    //     "data" => $data
-    //   ];
-  
-        return view('applications.mbkm.admin.role-permission.permission.index', compact('permissions'));
+        return view('applications.mbkm.admin.role-permission.permission.index');
     }
+
+    public function json(Request $request)
+    {
+        return response(DataTable::paginate(Permission::class, $request, [
+                'id',
+                'name',
+                'guard_name',
+                'created_at',
+                'updated_at',
+        ]));
+    }
+
+    // create reusable function to serve Datatable ajax according json function above
 
     /**
      * Show the form for creating a new resource.
@@ -45,7 +50,7 @@ class PermissionController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(Permission $permission)
+    public function show(Request $request)
     {
         //
     }
@@ -53,7 +58,7 @@ class PermissionController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(Permission $permission)
+    public function edit(Request $request)
     {
         //
     }
@@ -61,7 +66,7 @@ class PermissionController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, Permission $permission)
+    public function update(Request $request)
     {
         //
     }
@@ -69,7 +74,7 @@ class PermissionController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Permission $permission)
+    public function destroy(Request $request)
     {
         //
     }
