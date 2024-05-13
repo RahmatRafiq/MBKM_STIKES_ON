@@ -21,7 +21,7 @@ Route::middleware('auth')->group(function () {
     Route::get('mbkm/admin/role-permissions/permission', [\App\Http\Controllers\RolePermission\PermissionController::class, 'index'])->name('permission.index');
     Route::post('mbkm/admin/role-permissions/permission/json', [\App\Http\Controllers\RolePermission\PermissionController::class, 'json'])->name('permission.json');
     Route::get('mbkm/admin/role-permissions/permission/create', [\App\Http\Controllers\RolePermission\PermissionController::class, 'create'])->name('permission.create');
-    Route::delete('mbkm/admin/role-permissions/permission/{permission}', [\App\Http\Controllers\RolePermission\PermissionController::class, 'destroy'])->name('permission.destroy');
+    // Route::delete('mbkm/admin/role-permissions/permission/{permission}', [\App\Http\Controllers\RolePermission\PermissionController::class, 'destroy'])->name('permission.destroy');
 
     Route::resource('mbkm/admin/role-permissions/role', \App\Http\Controllers\RolePermission\RoleController::class);
     Route::get('mbkm/admin/role-permissions/role', [\App\Http\Controllers\RolePermission\RoleController::class, 'index'])->name('role.index');

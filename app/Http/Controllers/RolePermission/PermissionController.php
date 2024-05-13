@@ -69,7 +69,7 @@ class PermissionController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(Request $request , $id)
+    public function edit(Request $request, $id)
     {
 
 
@@ -84,24 +84,24 @@ class PermissionController extends Controller
     public function update(Request $request, $id)
     {
         $validatedData = $request->validate([
-            'name' => 'required|string|max:255|unique:permissions,name,'.$id,
+            'name' => 'required|string|max:255|unique:permissions,name,' . $id,
             'guard_name' => 'required|string|max:255',
         ]);
-    
+
         $permission = Permission::findOrFail($id);
         $permission->name = $validatedData['name'];
         $permission->guard_name = $validatedData['guard_name'];
         $permission->save();
-    
+
         return redirect()->route('permission.index')->with('success', 'Permission updated successfully.');
     }
-    
-   
-    public function destroy(Request $request, $id)
+
+
+    public function destroy($id)
     {
         $permission = Permission::findOrFail($id);
         $permission->delete();
-    
+
         return redirect()->route('permission.index')->with('success', 'Permission deleted successfully.');
     }
 }
