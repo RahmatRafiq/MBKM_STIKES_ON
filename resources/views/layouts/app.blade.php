@@ -25,7 +25,7 @@
   {{-- <link rel="stylesheet" href="{{ asset('assets/vendor/overlay-scroll/OverlayScrollbars.min.css') }}" /> --}}
 
   <!-- Toastify CSS -->
-  {{-- <link rel="stylesheet" href="{{ asset('assets/vendor/toastify/toastify.css') }}" /> --}}
+  <link rel="stylesheet" href="{{ asset('assets/vendor/toastify/toastify.css') }}" />
   <!-- Scripts -->
   @vite(['resources/css/app.css', 'resources/js/app.js'])
   {{-- <link rel="stylesheet" href="{{ asset('assets/bootstrap/css/bootstrap.min.css') }}"> --}}
@@ -56,9 +56,9 @@
    ************ JavaScript Files *************
   ************* -->
       <!-- Required jQuery first, then Bootstrap Bundle JS -->
-      <script src="{{asset('assets/js/jquery.min.js')}}"></script>
-      <script src="{{asset('assets/js/bootstrap.bundle.min.js')}}"></script>
-      <script src="{{asset('assets/js/moment.min.js')}}"></script>
+      <script src="{{ asset('assets/js/jquery.min.js') }}"></script>
+      <script src="{{ asset('assets/js/bootstrap.bundle.min.js') }}"></script>
+      <script src="{{ asset('assets/js/moment.min.js') }}"></script>
 
       <!-- *************
    ************ Vendor Js Files *************
@@ -69,7 +69,7 @@
       <script src="{{asset('assets/vendor/overlay-scroll/custom-scrollbar.js')}}"></script> --}}
 
       <!-- Toastify JS -->
-      {{-- <script src="{{asset('assets/vendor/toastify/toastify.js')}}"></script> --}}
+      <script src="{{ asset('assets/vendor/toastify/toastify.js') }}"></script>
       {{-- <script src="{{asset('assets/vendor/toastify/custom.js')}}"></script> --}}
 
       <!-- Apex Charts -->
@@ -81,8 +81,8 @@
       <script src="{{asset('assets/vendor/apex/custom/dash1/income.js')}}"></script> --}}
 
       <!-- Custom JS files -->
-      <script src="{{asset('assets/js/custom.js')}}"></script>
-      <script src="{{asset('assets/js/todays-date.js')}}"></script>
+      <script src="{{ asset('assets/js/custom.js') }}"></script>
+      <script src="{{ asset('assets/js/todays-date.js') }}"></script>
 
       <script>
         const sm = window.matchMedia('(min-width: 576px)');
@@ -90,6 +90,22 @@
         const lg = window.matchMedia('(min-width: 992px)');
         const xl = window.matchMedia('(min-width: 1200px)');
         const xxl = window.matchMedia('(min-width: 1400px)');
+      </script>
+
+      <script>
+        @if ($errors->any())
+          @foreach ($errors->all() as $error)
+            Toastify({
+              text: "{{ $error }}",
+              duration: 5000,
+              close: true,
+              gravity: "top",
+              position: "right",
+              backgroundColor: "#f5365c",
+              stopOnFocus: true,
+            }).showToast();
+          @endforeach
+        @endif
       </script>
       @stack('javascript')
       @yield('javascript')
