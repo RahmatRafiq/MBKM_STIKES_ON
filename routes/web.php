@@ -18,7 +18,13 @@ Route::middleware('auth')->group(function () {
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 
     Route::resource('mbkm/admin/role-permissions/permission', \App\Http\Controllers\RolePermission\PermissionController::class);
+    Route::get('mbkm/admin/role-permissions/permission/create', [\App\Http\Controllers\RolePermission\PermissionController::class, 'create'])->name('permission.create');
     Route::post('mbkm/admin/role-permissions/permission/json', [\App\Http\Controllers\RolePermission\PermissionController::class, 'json'])->name('permission.json');
+    Route::put('mbkm/admin/role-permissions/permission/{permission}', [\App\Http\Controllers\RolePermission\PermissionController::class, 'update'])->name('permission.update');
+    Route::delete('mbkm/admin/role-permissions/permission/{permission}', [\App\Http\Controllers\RolePermission\PermissionController::class, 'destroy'])->name('permission.destroy');
+
+    Route::resource('mbkm/admin/role-permissions/role', \App\Http\Controllers\RolePermission\RoleController::class);
+    Route::post('mbkm/admin/role-permissions/role/json', [\App\Http\Controllers\RolePermission\RoleController::class, 'json'])->name('role.json');
 });
 
 require __DIR__ . '/auth.php';

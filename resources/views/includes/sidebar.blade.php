@@ -1,10 +1,10 @@
 @php
   $items = [
-      // [
-      //     'label' => 'Dashbord',
-      //     'url' => route('permission.index'),
-      //     'icon_class' => 'bi bi-box',
-      // ],
+      [
+          'label' => 'Dashbord',
+          'url' => route('permission.index'),
+          'icon_class' => 'bi bi-box',
+      ],
       [
           'label' => 'Manajemen Pengguna',
           'url' => route('permission.index'),
@@ -15,71 +15,71 @@
           'url' => route('permission.index'),
           'icon_class' => 'bi bi-box',
       ],
-      [
-          'label' => '(staff)Kampus Mengajar',
-          'url' => route('permission.index'),
-          'icon_class' => 'bi bi-box',
-      ],
-      [
-          'label' => '(staff)Pertukaran Mahasiswa',
-          'url' => route('permission.index'),
-          'icon_class' => 'bi bi-box',
-      ],
-      [
-          'label' => '(staff)Dosen Pembimbing Lapangan',
-          'url' => route('permission.index'),
-          'icon_class' => 'bi bi-box',
-      ],
-      [
-          'label' => '(staff)Mitra',
-          'url' => route('permission.index'),
-          'icon_class' => 'bi bi-box',
-      ],
-      [
-          'label' => '(staff)Penempatan',
-          'url' => route('permission.index'),
-          'icon_class' => 'bi bi-box',
-      ],
-      [
-          'label' => 'settings',
-          'url' => route('permission.index'),
-          'icon_class' => 'bi bi-box',
-      ],
-      [
-          'label' => '(peserta)Pendaftaran',
-          'url' => route('permission.index'),
-          'icon_class' => 'bi bi-box',
-      ],
-      [
-          'label' => '(peserta)Isi Laporan',
-          'url' => route('permission.index'),
-          'icon_class' => 'bi bi-box',
-      ],
-      [
-          'label' => '(peserta)Pertukaran Mahasiswa',
-          'url' => route('permission.index'),
-          'icon_class' => 'bi bi-box',
-      ],
-      [
-          'label' => '(peserta)Dosen Pembimbing Lapangan',
-          'url' => route('permission.index'),
-          'icon_class' => 'bi bi-box',
-      ],
-      [
-          'label' => '(peserta)Mitra',
-          'url' => route('permission.index'),
-          'icon_class' => 'bi bi-box',
-      ],
-      [
-          'label' => 'Add Product',
-          'url' => route('permission.index'),
-          'icon_class' => 'bi bi-box',
-      ],
-      [
-          'label' => 'logout',
-          'url' => route('permission.index'),
-          'icon_class' => 'bi bi-box',
-      ],
+      //[
+      //    'label' => '(staff)Kampus Mengajar',
+      //    'url' => route('permission.index'),
+      //    'icon_class' => 'bi bi-box',
+      //],
+      //[
+      //    'label' => '(staff)Pertukaran Mahasiswa',
+      //    'url' => route('permission.index'),
+      //    'icon_class' => 'bi bi-box',
+      //],
+      //[
+      //    'label' => '(staff)Dosen Pembimbing Lapangan',
+      //    'url' => route('permission.index'),
+      //    'icon_class' => 'bi bi-box',
+      //],
+      //[
+      //    'label' => '(staff)Mitra',
+      //    'url' => route('permission.index'),
+      //    'icon_class' => 'bi bi-box',
+      //],
+      //[
+      //    'label' => '(staff)Penempatan',
+      //    'url' => route('permission.index'),
+      //    'icon_class' => 'bi bi-box',
+      //],
+      //[
+      //    'label' => 'settings',
+      //    'url' => route('permission.index'),
+      //    'icon_class' => 'bi bi-box',
+      //],
+      //[
+      //    'label' => '(peserta)Pendaftaran',
+      //    'url' => route('permission.index'),
+      //    'icon_class' => 'bi bi-box',
+      //],
+      //[
+      //    'label' => '(peserta)Isi Laporan',
+      //    'url' => route('permission.index'),
+      //    'icon_class' => 'bi bi-box',
+      //],
+      //[
+      //    'label' => '(peserta)Pertukaran Mahasiswa',
+      //    'url' => route('permission.index'),
+      //    'icon_class' => 'bi bi-box',
+      //],
+      //[
+      //    'label' => '(peserta)Dosen Pembimbing Lapangan',
+      //    'url' => route('permission.index'),
+      //    'icon_class' => 'bi bi-box',
+      //],
+      //[
+      //    'label' => '(peserta)Mitra',
+      //    'url' => route('permission.index'),
+      //    'icon_class' => 'bi bi-box',
+      //],
+      //[
+      //    'label' => 'Add Product',
+      //    'url' => route('permission.index'),
+      //    'icon_class' => 'bi bi-box',
+      //],
+      //[
+      //    'label' => 'logout',
+      //    'url' => route('permission.index'),
+      //    'icon_class' => 'bi bi-box',
+      //],
   ];
 @endphp
 
@@ -110,16 +110,19 @@
           </a>
         </li>
       @endforeach
-      {{-- <li class="treeview">
+      <li class="treeview">
           <a href="#!">
             <i class="bi bi-stickies"></i>
-            <span class="menu-text">Components</span>
+            <span class="menu-text">Manajemen Pengguna</span>
           </a>
           <ul class="treeview-menu">
             <li>
-              <a href="accordions.html">Accordions</a>
+              <a href="{{ route('permission.index') }}">Permissions</a>
             </li>
             <li>
+              <a href="{{ route('role.index') }}">role</a>
+            </li>
+            <!-- <li>
               <a href="alerts.html">Alerts</a>
             </li>
             <li>
@@ -142,9 +145,9 @@
             </li>
             <li>
               <a href="tooltips.html">Tooltips</a>
-            </li>
+            </li> -->
           </ul>
-        </li> --}}
+        </li> 
 
     </ul>
   </div>

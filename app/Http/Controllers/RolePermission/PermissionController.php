@@ -20,11 +20,11 @@ class PermissionController extends Controller
     public function json(Request $request)
     {
         return response(DataTable::paginate(Permission::class, $request, [
-                'id',
-                'name',
-                'guard_name',
-                'created_at',
-                'updated_at',
+            'id',
+            'name',
+            'guard_name',
+            'created_at',
+            'updated_at',
         ]));
     }
 
@@ -44,8 +44,19 @@ class PermissionController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $validatedData = $request->validate([
+            'name' => 'required|string|max:255|unique:permissions',
+            'guard_name' => 'required|string|max:255',
+        ]);
+
+        $permission = new Permission();
+        $permission->name = $validatedData['name'];
+        $permission->guard_name = $validatedData['guard_name'];
+        $permission->save();
+
+        return redirect()->route('permission.index')->with('success', 'Permission created successfully.');
     }
+
 
     /**
      * Display the specified resource.
@@ -58,24 +69,45 @@ class PermissionController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(Request $request)
+    public function edit(Request $request , $id)
     {
-        //
+
+
+        $permission = Permission::findOrFail($id);
+        return view('applications.mbkm.admin.role-permission.permission.edit', compact('permission'));
+
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request)
+    public function update(Request $request, $id)
     {
-        //
+        $validatedData = $request->validate([
+            'name' => 'required|string|max:255|unique:permissions,name,'.$id,
+            'guard_name' => 'required|string|max:255',
+        ]);
+    
+        $permission = Permission::findOrFail($id);
+        $permission->name = $validatedData['name'];
+        $permission->guard_name = $validatedData['guard_name'];
+        $permission->save();
+    
+        return redirect()->route('permission.index')->with('success', 'Permission updated successfully.');
     }
-
+    
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Request $request)
-    {
-        //
-    }
+   /**
+ * Remove the specified resource from storage.
+ */
+public function destroy(Request $request, $id)
+{
+    $permission = Permission::findOrFail($id);
+    $permission->delete();
+
+    return redirect()->route('permission.index')->with('success', 'Permission deleted successfully.');
+}
+
 }
