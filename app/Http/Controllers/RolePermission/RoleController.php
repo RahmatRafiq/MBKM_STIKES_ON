@@ -24,4 +24,9 @@ class RoleController extends Controller
             'updated_at',
         ]));
     }
+    public function destroy(Role $role)
+    {
+        $role->delete();
+        return response()->json(['message' => 'Role deleted successfully.']);
+    }
 }

@@ -3,12 +3,10 @@
 @section('content')
 
 <body>
-  <div class="app-container"></div>
-  <div class="app-body">
     <div class="card mb-3">
       <div class="card-body">
         <div class="card-header d-flex justify-content-between align-items-center">
-          <h5 class="card-title">Recent Permissions</h5>
+          <h5 class="card-title">Permissions Data</h5>
           <div class="mb-3">
             <a href="{{ route('permission.create') }}" class="btn btn-success">Create New Permission</a>
           </div>
@@ -32,7 +30,6 @@
         <a href="#" class="show-all-link">Show All</a>
       </div>
     </div>
-  </div>
 </body>
 @endsection
 

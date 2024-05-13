@@ -96,18 +96,12 @@ class PermissionController extends Controller
         return redirect()->route('permission.index')->with('success', 'Permission updated successfully.');
     }
     
-    /**
-     * Remove the specified resource from storage.
-     */
-   /**
- * Remove the specified resource from storage.
- */
-public function destroy(Request $request, $id)
-{
-    $permission = Permission::findOrFail($id);
-    $permission->delete();
-
-    return redirect()->route('permission.index')->with('success', 'Permission deleted successfully.');
-}
-
+   
+    public function destroy(Request $request, $id)
+    {
+        $permission = Permission::findOrFail($id);
+        $permission->delete();
+    
+        return redirect()->route('permission.index')->with('success', 'Permission deleted successfully.');
+    }
 }
