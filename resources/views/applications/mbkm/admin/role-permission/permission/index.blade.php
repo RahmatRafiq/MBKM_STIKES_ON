@@ -3,12 +3,15 @@
 @section('content')
 
 <body>
+  <div class="app-container"></div>
   <div class="app-body">
     <div class="card mb-3">
       <div class="card-body">
-        <h1>Recent Permissions</h1>
-        <div class="mb-3">
-          <a href="{{ route('permission.create') }}" class="btn btn-success">Create New Permission</a>
+        <div class="card-header d-flex justify-content-between align-items-center">
+          <h5 class="card-title">Recent Permissions</h5>
+          <div class="mb-3">
+            <a href="{{ route('permission.create') }}" class="btn btn-success">Create New Permission</a>
+          </div>
         </div>
         <div class="table-responsive">
           <table class="styled-table" id="permissions">
@@ -83,9 +86,9 @@
       return `
     <a href="{{ route('permission.edit', ':id') }}" class="btn btn-primary">Ubah</a>
     <form action="{{ route('permission.destroy', ':id') }}" method="POST" class="d-inline">
-      @csrf
-      @method('delete')
-      <button type="submit" class="btn btn-danger" onclick="return confirm('Apakah anda yakin ingin menghapus data ini?')">Hapus</button>
+    @csrf
+    @method('delete')
+    <button type="submit" class="btn btn-danger" onclick="return confirm('Apakah anda yakin ingin menghapus data ini?')">Hapus</button>
     </form>
     `.replace(/:id/g, row.id);
     }
