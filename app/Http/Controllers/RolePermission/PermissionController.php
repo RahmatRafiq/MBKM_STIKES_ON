@@ -59,11 +59,8 @@ class PermissionController extends Controller
     
     public function edit(Request $request, $id)
     {
-
-
         $permission = Permission::findOrFail($id);
         return view('applications.mbkm.admin.role-permission.permission.edit', compact('permission'));
-
     }
 
     public function update(Request $request, $id)

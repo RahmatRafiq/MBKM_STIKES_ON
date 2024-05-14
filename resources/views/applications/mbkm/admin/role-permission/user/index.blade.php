@@ -6,7 +6,7 @@
     <div class="card-header d-flex justify-content-between align-items-center">
       <h5 class="card-title">Permissions Data</h5>
       <div class="mb-3">
-        <a href="{{ route('permission.create') }}" class="btn btn-success">tambah Data Permission</a>
+        <a href="{{ route('permission.create') }}" class="btn btn-success">Create New Permission</a>
       </div>
     </div>
     <div class="table-responsive">

@@ -6,6 +6,7 @@ use App\Helpers\DataTable;
 use App\Helpers\Guards;
 use App\Http\Controllers\Controller;
 use App\Models\Role;
+use App\Models\Permission;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
 
@@ -21,7 +22,7 @@ class RoleController extends Controller
     {
         return response(DataTable::paginate(Role::class, $request, [
             'id',
-            'name',
+            'role',
             'guard_name',
             'created_at',
             'updated_at',
@@ -30,26 +31,59 @@ class RoleController extends Controller
 
     public function create()
     {
-        return view('applications.mbkm.admin.role-permission.permission.create');
+        return view('applications.mbkm.admin.role-permission.role.create');
     }
 
     public function store(Request $request)
     {
-         $validatedData = $request->validate([
-            'name' => 'required|string|max:255|unique:permissions',
+        $validatedData = $request->validate([
+            'name' => 'required|string|max:255|unique:roles',
             'guard_name' => ['required', 'string', 'max:255', Rule::in(Guards::list())],
         ]);
 
-        $permission = new Role();
-        $permission->name = $validatedData['name'];
-        $permission->guard_name = $validatedData['guard_name'];
-        $permission->save();
+        $role = new Role();
+        $role->name = $validatedData['name'];
+        $role->guard_name = $validatedData['guard_name'];
+        $role->save();
+        return redirect()->route('role.index')->with('success', 'Role created successfully.');
+    }
 
-        return redirect()->route('permission.index')->with('success', 'Permission created successfully.');}
+    public function show(Role $role)
+    {
+        //
+    }
+    public function edit(Role $role)
+    {
+        dd($role);
+        $role = Role::findOrFail($role);
+        return view('applications.mbkm.admin.role-permission.role.edit', compact('role'));
+    }
+
+    public function update(Request $request, Role $role)
+    {
+        $validatedData = $request->validate([
+            'role' => 'required|string|max:255|unique:roles,role,' . $role->id,
+            'guard_name' => ['required', 'string', 'max:255', Rule::in(Guards::list())],
+        ]);
+
+        $role->name = $validatedData['role'];
+        $role->guard_name = $validatedData['guard_name'];
+        $role->save();
+
+        return redirect()->route('role.index')->with('success', 'Role updated successfully.');
+    }
 
     public function destroy(Role $role)
     {
         $role->delete();
         return response()->json(['message' => 'Role deleted successfully.']);
     }
+
+    public function addPermissionToRole(Role $roleId)
+    {
+        $permissions = Permission::get();
+        $roleId = Role::findOrFail($roleId);
+        return view('applications.mbkm.admin.role-permission.role.add-permission', compact('roleId', 'permissions'));
+    }
+
 }

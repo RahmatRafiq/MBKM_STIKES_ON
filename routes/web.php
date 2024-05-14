@@ -21,9 +21,11 @@ Route::middleware('auth')->group(function () {
     Route::get('mbkm/admin/role-permissions/permission', [\App\Http\Controllers\RolePermission\PermissionController::class, 'index'])->name('permission.index');
     Route::post('mbkm/admin/role-permissions/permission/json', [\App\Http\Controllers\RolePermission\PermissionController::class, 'json'])->name('permission.json');
 
+
+
     Route::resource('mbkm/admin/role-permissions/role', \App\Http\Controllers\RolePermission\RoleController::class);
-    Route::get('mbkm/admin/role-permissions/role', [\App\Http\Controllers\RolePermission\RoleController::class, 'index'])->name('role.index');
     Route::post('mbkm/admin/role-permissions/role/json', [\App\Http\Controllers\RolePermission\RoleController::class, 'json'])->name('role.json');
+    Route::get('mbkm/admin/role-permissions/p/{roleId}/add-Permission', [\App\Http\Controllers\RolePermission\RoleController::class, 'addPermissionToRole'])->name('role.addPermission');
 
 });
 
