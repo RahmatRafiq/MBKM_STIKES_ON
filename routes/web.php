@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\RolePermission\PermissionController;
+use App\Http\Controllers\RolePermission\RoleController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -18,15 +19,24 @@ Route::middleware('auth')->group(function () {
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 
     Route::resource('mbkm/admin/role-permissions/permission', \App\Http\Controllers\RolePermission\PermissionController::class);
-    Route::get('mbkm/admin/role-permissions/permission', [\App\Http\Controllers\RolePermission\PermissionController::class, 'index'])->name('permission.index');
+    // Route::get('mbkm/admin/role-permissions/permission', [\App\Http\Controllers\RolePermission\PermissionController::class, 'index'])->name('permission.index');
     Route::post('mbkm/admin/role-permissions/permission/json', [\App\Http\Controllers\RolePermission\PermissionController::class, 'json'])->name('permission.json');
 
 
 
     Route::resource('mbkm/admin/role-permissions/role', \App\Http\Controllers\RolePermission\RoleController::class);
     Route::post('mbkm/admin/role-permissions/role/json', [\App\Http\Controllers\RolePermission\RoleController::class, 'json'])->name('role.json');
-    Route::get('mbkm/admin/role-permissions/p/{roleId}/add-Permission', [\App\Http\Controllers\RolePermission\RoleController::class, 'addPermissionToRole'])->name('role.addPermission');
+    Route::get('mbkm/admin/role-permissions/{roleId}/add-Permission', [\App\Http\Controllers\RolePermission\RoleController::class, 'addPermissionToRole'])->name('role.addPermission');
 
+        // Route::get('mbkm/admin/role-permissions/', [RoleController::class, 'index'])->name('role.index');
+        // Route::get('mbkm/admin/role-permissions/json', [RoleController::class, 'json'])->name('json');
+        // Route::get('mbkm/admin/role-permissions/create', [RoleController::class, 'create'])->name('role.create');
+        // Route::post('mbkm/admin/role-permissions/', [RoleController::class, 'store'])->name('role.store');
+        // Route::get('mbkm/admin/role-permissions/{role}/edit', [RoleController::class, 'edit'])->name('role.edit');
+        // Route::put('mbkm/admin/role-permissions/{role}', [RoleController::class, 'update'])->name('role.update');
+        // Route::delete('mbkm/admin/role-permissions/{role}', [RoleController::class, 'destroy'])->name('role.destroy');
+        // Route::get('mbkm/admin/role-permissions/{roleId}/add-permission', [RoleController::class, 'addPermissionToRole'])->name('role.addPermissionToRole');
+    
 });
 
 require __DIR__ . '/auth.php';

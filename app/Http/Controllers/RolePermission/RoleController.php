@@ -54,7 +54,6 @@ class RoleController extends Controller
     }
     public function edit(Role $role)
     {
-        dd($role);
         $role = Role::findOrFail($role);
         return view('applications.mbkm.admin.role-permission.role.edit', compact('role'));
     }
