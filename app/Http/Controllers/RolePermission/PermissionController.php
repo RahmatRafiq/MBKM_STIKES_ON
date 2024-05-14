@@ -32,17 +32,11 @@ class PermissionController extends Controller
 
     // create reusable function to serve Datatable ajax according json function above
 
-    /**
-     * Show the form for creating a new resource.
-     */
     public function create()
     {
         return view('applications.mbkm.admin.role-permission.permission.create');
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
     public function store(Request $request)
     {
         $validatedData = $request->validate([
@@ -58,18 +52,11 @@ class PermissionController extends Controller
         return redirect()->route('permission.index')->with('success', 'Permission created successfully.');
     }
 
-
-    /**
-     * Display the specified resource.
-     */
     public function show(Request $request)
     {
         //
     }
-
-    /**
-     * Show the form for editing the specified resource.
-     */
+    
     public function edit(Request $request, $id)
     {
 
@@ -79,9 +66,6 @@ class PermissionController extends Controller
 
     }
 
-    /**
-     * Update the specified resource in storage.
-     */
     public function update(Request $request, $id)
     {
         $validatedData = $request->validate([
@@ -96,7 +80,6 @@ class PermissionController extends Controller
 
         return redirect()->route('permission.index')->with('success', 'Permission updated successfully.');
     }
-
 
     public function destroy($id)
     {
