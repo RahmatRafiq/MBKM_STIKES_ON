@@ -54,19 +54,20 @@ class RoleController extends Controller
     }
     public function edit(Role $role)
     {
-        //  dd($role); 
-        $role = Role::findOrFail($role);
-        return view('applications.mbkm.admin.role-permission.role.edit', compact('role'));
+        $permissions = Permission::all();
+        return view('applications.mbkm.admin.role-permission.role.edit', compact('role', 'permissions'));
     }
 
     public function update(Request $request, Role $role)
     {
         $validatedData = $request->validate([
-            'role' => 'required|string|max:255|unique:roles,role,' . $role->id,
+            'name' => 'required|string|max:255|unique:roles,name,' . $role->id,
             'guard_name' => ['required', 'string', 'max:255', Rule::in(Guards::list())],
+            'permissions' => 'required|array',
         ]);
 
-        $role->name = $validatedData['role'];
+        $role->syncPermissions($validatedData['permissions']);
+        $role->name = $validatedData['name'];
         $role->guard_name = $validatedData['guard_name'];
         $role->save();
 
@@ -79,11 +80,10 @@ class RoleController extends Controller
         return response()->json(['message' => 'Role deleted successfully.']);
     }
 
-    public function addPermissionToRole(Role $roleId)
-    {
-        $permissions = Permission::get();
-        $roleId = Role::findOrFail($roleId);
-        return view('applications.mbkm.admin.role-permission.role.add-permission', compact('roleId', 'permissions'));
-    }
+    // public function addPermissionToRole(Role $role)
+    // {
+    //     $permissions = Permission::all();
+    //     return view('applications.mbkm.admin.role-permission.role.add-permission', compact('role', 'permissions'));
+    // }
 
 }
