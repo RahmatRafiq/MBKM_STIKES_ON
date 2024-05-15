@@ -22,12 +22,16 @@
                         <input type="password" class="form-control" id="password" name="password" required>
                     </div>
                     <div class="mb-3">
+                        <label for="password_confirmation" class="form-label">Confirm Password</label>
+                        <input type="password" class="form-control" id="password_confirmation" name="password_confirmation" required>
+                    </div>
+                    <div class="mb-3">
                         <label for="role" class="form-label">Role</label>
                         <select class="form-select" id="role" name="role_id" required>
                             <option value="">Select Role</option>
-                            {{-- @foreach($roles as $role)
+                            @foreach($roles as $role)
                                 <option value="{{ $role->id }}">{{ $role->name }}</option>
-                            @endforeach --}}
+                            @endforeach
                         </select>
                     </div>
                     <button type="submit" class="btn btn-primary">Add User</button>

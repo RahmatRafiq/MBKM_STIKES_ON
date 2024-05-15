@@ -9,4 +9,8 @@ class Role extends \Spatie\Permission\Models\Role
         'updated_at' => 'datetime:Y-m-d H:i:s',
     ];
 
+    public function user()
+    {
+        return $this->hasMany(User::class);
+    }
 }

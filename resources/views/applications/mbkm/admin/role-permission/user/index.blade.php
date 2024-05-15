@@ -116,8 +116,8 @@
                     <thead>
                         <tr>
                             <th>ID</th>
-                            <th>Role ID</th>
                             <th>Name</th>
+                            <th>Role</th>
                             <th>Email</th>
                             <th>Created At</th>
                             <th>Updated At</th>
@@ -128,8 +128,8 @@
                         @foreach ($users as $user)
                             <tr>
                                 <td>{{ $user->id }}</td>
-                                <td>{{ $user->role_id }}</td>
                                 <td>{{ $user->name }}</td>
+                                <td>{{ $user->role->name }}</td>
                                 <td>{{ $user->email }}</td>
                                 <td>{{ $user->created_at }}</td>
                                 <td>{{ $user->updated_at }}</td>

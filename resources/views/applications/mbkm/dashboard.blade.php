@@ -317,7 +317,6 @@
         </div>
     </div>
     <!-- Row end -->
-
 </div>
 <!-- App body ends -->
 @endsection

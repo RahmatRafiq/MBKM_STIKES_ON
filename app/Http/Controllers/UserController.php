@@ -2,6 +2,7 @@
 namespace App\Http\Controllers;
 
 use App\Helpers\DataTable;
+use App\Models\Role;
 use App\Models\User;
 use Illuminate\Http\Request;
 
@@ -14,9 +15,8 @@ class UserController extends Controller
     {
         $users = User::all();
         return view('applications.mbkm.admin.role-permission.user.index', compact('users'));
-
     }
-   
+
     public function json(Request $request)
     {
         $data = DataTable::paginate(User::class, $request, [
@@ -36,20 +36,26 @@ class UserController extends Controller
      */
     public function create()
     {
-        return view('applications.mbkm.admin.role-permission.user.create');
+        $roles = Role::all();
+        return view('applications.mbkm.admin.role-permission.user.create',compact('roles'));
     }
+
     public function store(Request $request)
     {
-        $request->validate([
-            'name' => 'required',
-            'email' => 'required',
-            'password' => 'required',
+        $validatedData = $request->validate([
+            'name' => 'required|string|max:255',
+            'email' => 'required|string|email|max:255|unique:users',
+            'password' => 'required|string|min:8|confirmed',
+            'role_id' => 'required|exists:roles,id',
         ]);
 
-        User::create($request->all());
+        User::create([
+            'name' => $validatedData['name'],
+            'email' => $validatedData['email'],
+            'password' => bcrypt($validatedData['password']),
+            'role_id' => $validatedData['role_id'],
+        ]);
 
-        return redirect()->route('user.index')
-            ->with('success', 'User created successfully.');
+        return redirect()->route('user.index')->with('success', 'User created successfully.');
     }
-
 }
