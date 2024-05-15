@@ -90,30 +90,36 @@ class UserController extends Controller
     //     return redirect()->route('user.index')->with('success', 'User updated successfully.');
     // }
     public function edit($id)
-{
-    $user = User::findOrFail($id);
-    $roles = Role::all();
-    return view('applications.mbkm.admin.role-permission.user.edit', compact('user', 'roles'));
-}
-
-public function update(Request $request, $id)
-{
-    $validatedData = $request->validate([
-        'name' => 'required|string|max:255',
-        'email' => 'required|string|email|max:255|unique:users,email,' . $id,
-        'password' => 'nullable|string|min:8|confirmed',
-        'role_id' => 'required|exists:roles,id',
-    ]);
-
-    $user = User::findOrFail($id);
-    $user->name = $validatedData['name'];
-    $user->email = $validatedData['email'];
-    if ($request->filled('password')) {
-        $user->password = bcrypt($validatedData['password']);
+    {
+        $user = User::findOrFail($id);
+        $roles = Role::all();
+        return view('applications.mbkm.admin.role-permission.user.edit', compact('user', 'roles'));
     }
-    $user->role_id = $validatedData['role_id'];
-    $user->save();
 
-    return redirect()->route('user.index')->with('success', 'User updated successfully.');
-}
+    public function update(Request $request, $id)
+    {
+        $validatedData = $request->validate([
+            'name' => 'required|string|max:255',
+            'email' => 'required|string|email|max:255|unique:users,email,' . $id,
+            'password' => 'nullable|string|min:8|confirmed',
+            'role_id' => 'required|exists:roles,id',
+        ]);
+
+        $user = User::findOrFail($id);
+        $user->name = $validatedData['name'];
+        $user->email = $validatedData['email'];
+        if ($request->filled('password')) {
+            $user->password = bcrypt($validatedData['password']);
+        }
+        $user->role_id = $validatedData['role_id'];
+        $user->save();
+
+        return redirect()->route('user.index')->with('success', 'User updated successfully.');
+    }
+    
+    public function destroy(User $user)
+    {
+        $user->delete();
+        return redirect()->route('user.index')->with('success', 'User deleted successfully.');
+    }
 }
