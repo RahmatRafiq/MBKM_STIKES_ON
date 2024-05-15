@@ -30,14 +30,10 @@ class UserController extends Controller
 
         return response()->json($data);
     }
-
-    /**
-     * Show the form for creating a new resource.
-     */
     public function create()
     {
         $roles = Role::all();
-        return view('applications.mbkm.admin.role-permission.user.create',compact('roles'));
+        return view('applications.mbkm.admin.role-permission.user.create', compact('roles'));
     }
 
     public function store(Request $request)
@@ -58,4 +54,66 @@ class UserController extends Controller
 
         return redirect()->route('user.index')->with('success', 'User created successfully.');
     }
+
+    public function show(User $user)
+    {
+        // return view('applications.mbkm.admin.role-permission.user.show', compact('user'));
+    }
+
+    // public function edit(User $user)
+    // {
+    //     $roles = Role::all();
+    //     return view('applications.mbkm.admin.role-permission.user.edit', compact('user', 'roles'));
+    // }
+
+    // public function update(Request $request, User $user)
+    // {
+    //     $validatedData = $request->validate([
+    //         'name' => 'required|string|max:255',
+    //         'email' => 'required|string|email|max:255|unique:users,email,' . $user->id,
+    //         'password' => 'nullable|string|min:8|confirmed',
+    //         'role_id' => 'required|exists:roles,id',
+    //     ]);
+
+    //     $user->update([
+    //         'name' => $validatedData['name'],
+    //         'email' => $validatedData['email'],
+    //         'role_id' => $validatedData['role_id'],
+    //     ]);
+
+    //     if ($request->filled('password')) {
+    //         $user->update([
+    //             'password' => bcrypt($validatedData['password']),
+    //         ]);
+    //     }
+
+    //     return redirect()->route('user.index')->with('success', 'User updated successfully.');
+    // }
+    public function edit($id)
+{
+    $user = User::findOrFail($id);
+    $roles = Role::all();
+    return view('applications.mbkm.admin.role-permission.user.edit', compact('user', 'roles'));
+}
+
+public function update(Request $request, $id)
+{
+    $validatedData = $request->validate([
+        'name' => 'required|string|max:255',
+        'email' => 'required|string|email|max:255|unique:users,email,' . $id,
+        'password' => 'nullable|string|min:8|confirmed',
+        'role_id' => 'required|exists:roles,id',
+    ]);
+
+    $user = User::findOrFail($id);
+    $user->name = $validatedData['name'];
+    $user->email = $validatedData['email'];
+    if ($request->filled('password')) {
+        $user->password = bcrypt($validatedData['password']);
+    }
+    $user->role_id = $validatedData['role_id'];
+    $user->save();
+
+    return redirect()->route('user.index')->with('success', 'User updated successfully.');
+}
 }
