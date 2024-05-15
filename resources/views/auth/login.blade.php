@@ -1,47 +1,83 @@
-<x-guest-layout>
-    <!-- Session Status -->
-    <x-auth-session-status class="mb-4" :status="session('status')" />
+<!DOCTYPE html>
+<html lang="en">
 
-    <form method="POST" action="{{ route('login') }}">
-        @csrf
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Admin Dashboard Templates - Unify Admin Template</title>
 
-        <!-- Email Address -->
-        <div>
-            <x-input-label for="email" :value="__('Email')" />
-            <x-text-input id="email" class="block mt-1 w-full" type="email" name="email" :value="old('email')" required autofocus autocomplete="username" />
-            <x-input-error :messages="$errors->get('email')" class="mt-2" />
+    <!-- Meta -->
+    <meta name="description" content="Marketplace for Bootstrap Admin Dashboards" />
+    <meta name="author" content="Bootstrap Gallery" />
+    <link rel="canonical" href="https://www.bootstrap.gallery/">
+    <meta property="og:url" content="https://www.bootstrap.gallery">
+    <meta property="og:title" content="Admin Templates - Dashboard Templates | Bootstrap Gallery">
+    <meta property="og:description" content="Marketplace for Bootstrap Admin Dashboards">
+    <meta property="og:type" content="Website">
+    <meta property="og:site_name" content="Bootstrap Gallery">
+    <link rel="shortcut icon" href="assets/images/favicon.svg" />
+
+    <!-- *************
+			************ CSS Files *************
+		************* -->
+    <link rel="stylesheet" href="assets/fonts/bootstrap/bootstrap-icons.css" />
+    <link rel="stylesheet" href="assets/css/main.min.css" />
+</head>
+
+<body class="bg-white">
+    <!-- Container start -->
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-xl-4 col-lg-5 col-sm-6 col-12">
+                <form method="POST" action="{{ route('login') }}" class="my-5">
+                    @csrf <!-- CSRF token -->
+                    <div class="border rounded-2 p-4 mt-5">
+                        <div class="login-form">
+                            <a href="index.html" class="mb-4 d-flex">
+                                <img src="assets/images/logo.svg" class="img-fluid login-logo" alt="Earth Admin Dashboard" />
+                            </a>
+                            <h5 class="fw-light mb-5">Sign in to access dashboard.</h5>
+                            <div class="mb-3">
+                                <label class="form-label">Your Email</label>
+                                <input type="email" class="form-control" name="email" placeholder="Enter your email" />
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Your Password</label>
+                                <input type="password" class="form-control" name="password" placeholder="Enter password" />
+                            </div>
+                            <div class="d-flex align-items-center justify-content-between">
+                                <div class="form-check m-0">
+                                    <input class="form-check-input" type="checkbox" value="" id="rememberPassword" name="remember">
+                                    <label class="form-check-label" for="rememberPassword">Remember</label>
+                                </div>
+                                <a href="{{ route('password.request') }}" class="text-blue text-decoration-underline">Lost password?</a>
+                            </div>
+                            <div class="d-grid py-3 mt-4">
+                                <button type="submit" class="btn btn-lg btn-primary">
+                                    Login
+                                </button>
+                            </div>
+                            <div class="text-center py-3">or Login with</div>
+                            <div class="d-flex gap-2 justify-content-center">
+                                <button type="submit" class="btn btn-outline-danger">
+                                    <i class="bi bi-google me-2"></i>Gmail
+                                </button>
+                                <button type="submit" class="btn btn-outline-info">
+                                    <i class="bi bi-facebook me-2"></i>Facebook
+                                </button>
+                            </div>
+                            <div class="text-center pt-4">
+                                <span>Not registered?</span>
+                                <a href="{{ route('register') }}" class="text-blue text-decoration-underline ms-2">
+                                    SignUp</a>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
         </div>
+    </div>
+    <!-- Container end -->
+</body>
 
-        <!-- Password -->
-        <div class="mt-4">
-            <x-input-label for="password" :value="__('Password')" />
-
-            <x-text-input id="password" class="block mt-1 w-full"
-                            type="password"
-                            name="password"
-                            required autocomplete="current-password" />
-
-            <x-input-error :messages="$errors->get('password')" class="mt-2" />
-        </div>
-
-        <!-- Remember Me -->
-        <div class="block mt-4">
-            <label for="remember_me" class="inline-flex items-center">
-                <input id="remember_me" type="checkbox" class="rounded dark:bg-gray-900 border-gray-300 dark:border-gray-700 text-indigo-600 shadow-sm focus:ring-indigo-500 dark:focus:ring-indigo-600 dark:focus:ring-offset-gray-800" name="remember">
-                <span class="ms-2 text-sm text-gray-600 dark:text-gray-400">{{ __('Remember me') }}</span>
-            </label>
-        </div>
-
-        <div class="flex items-center justify-end mt-4">
-            @if (Route::has('password.request'))
-                <a class="underline text-sm text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 dark:focus:ring-offset-gray-800" href="{{ route('password.request') }}">
-                    {{ __('Forgot your password?') }}
-                </a>
-            @endif
-
-            <x-primary-button class="ms-3">
-                {{ __('Log in') }}
-            </x-primary-button>
-        </div>
-    </form>
-</x-guest-layout>
+</html>

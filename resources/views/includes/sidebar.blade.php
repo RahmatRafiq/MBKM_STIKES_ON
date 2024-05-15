@@ -1,98 +1,21 @@
 @php
-    $items = [
-        [
-            'label' => 'Dashbord',
-            'url' => route('permission.index'),
-            'icon_class' => 'bi bi-box',
-        ],
-        [
-            'label' => 'Manajemen Pengguna',
-            'url' => route('permission.index'),
-            'icon_class' => 'bi bi-box',
-        ],
-        [
-            'label' => '(staff)Magang Bersertifikat',
-            'url' => route('permission.index'),
-            'icon_class' => 'bi bi-box',
-        ],
-        //[
-        //    'label' => '(staff)Kampus Mengajar',
-        //    'url' => route('permission.index'),
-        //    'icon_class' => 'bi bi-box',
-        //],
-        //[
-        //    'label' => '(staff)Pertukaran Mahasiswa',
-        //    'url' => route('permission.index'),
-        //    'icon_class' => 'bi bi-box',
-        //],
-        //[
-        //    'label' => '(staff)Dosen Pembimbing Lapangan',
-        //    'url' => route('permission.index'),
-        //    'icon_class' => 'bi bi-box',
-        //],
-        //[
-        //    'label' => '(staff)Mitra',
-        //    'url' => route('permission.index'),
-        //    'icon_class' => 'bi bi-box',
-        //],
-        //[
-        //    'label' => '(staff)Penempatan',
-        //    'url' => route('permission.index'),
-        //    'icon_class' => 'bi bi-box',
-        //],
-        //[
-        //    'label' => 'settings',
-        //    'url' => route('permission.index'),
-        //    'icon_class' => 'bi bi-box',
-        //],
-        //[
-        //    'label' => '(peserta)Pendaftaran',
-        //    'url' => route('permission.index'),
-        //    'icon_class' => 'bi bi-box',
-        //],
-        //[
-        //    'label' => '(peserta)Isi Laporan',
-        //    'url' => route('permission.index'),
-        //    'icon_class' => 'bi bi-box',
-        //],
-        //[
-        //    'label' => '(peserta)Pertukaran Mahasiswa',
-        //    'url' => route('permission.index'),
-        //    'icon_class' => 'bi bi-box',
-        //],
-        //[
-        //    'label' => '(peserta)Dosen Pembimbing Lapangan',
-        //    'url' => route('permission.index'),
-        //    'icon_class' => 'bi bi-box',
-        //],
-        //[
-        //    'label' => '(peserta)Mitra',
-        //    'url' => route('permission.index'),
-        //    'icon_class' => 'bi bi-box',
-        //],
-        //[
-        //    'label' => 'Add Product',
-        //    'url' => route('permission.index'),
-        //    'icon_class' => 'bi bi-box',
-        //],
-        //[
-        //    'label' => 'logout',
-        //    'url' => route('permission.index'),
-        //    'icon_class' => 'bi bi-box',
-        //],
-    ];
+$items = [
+[
+'label' => 'Dashbord',
+'url' => route('permission.index'),
+'icon_class' => 'bi bi-box',
+],
+[
+'label' => 'Manajemen Pengguna',
+'url' => route('permission.index'),
+'icon_class' => 'bi bi-box',
+],
+
+];
 @endphp
 
 <!-- Sidebar wrapper start -->
 <nav id="sidebar" class="sidebar-wrapper">
-
-    <!-- Sidebar profile starts -->
-    {{-- <div class="shop-profile">
-    <p class="mb-1 fw-bold text-primary">Walmart</p>
-    <p class="m-0">Los Angeles, California</p>
-  </div> --}}
-    <!-- Sidebar profile ends -->
-
     <!-- Sidebar menu starts -->
     <div class="sidebarMenuScroll">
         <ul class="sidebar-menu">
@@ -103,12 +26,12 @@
                 </a>
             </li>
             @foreach ($items as $item)
-                <li>
-                    <a href="{{ $item['url'] }}">
-                        <i class="{{ $item['icon_class'] }}"></i>
-                        <span class="menu-text">{{ $item['label'] }}</span>
-                    </a>
-                </li>
+            <li>
+                <a href="{{ $item['url'] }}">
+                    <i class="{{ $item['icon_class'] }}"></i>
+                    <span class="menu-text">{{ $item['label'] }}</span>
+                </a>
+            </li>
             @endforeach
             <li class="treeview">
                 <a href="#!">
@@ -120,39 +43,34 @@
                         <a href="{{ route('permission.index') }}">Permissions</a>
                     </li>
                     <li>
-                        <a href="{{ route('role.index') }}">role</a>
+                        <a href="{{ route('role.index') }}">Role</a>
                     </li>
                     <li>
                         <a href="{{ route('user.index') }}">Users</a>
                     </li>
-
-                    <!--  <li>
-              <a href="buttons.html">Buttons</a>
-            </li>
-            <li>
-              <a href="badges.html">Badges</a>
-            </li>
-            <li>
-              <a href="carousel.html">Carousel</a>
-            </li>
-            <li>
-              <a href="list-items.html">List Items</a>
-            </li>
-            <li>
-              <a href="progress.html">Progress Bars</a>
-            </li>
-            <li>
-              <a href="popovers.html">Popovers</a>
-            </li>
-            <li>
-              <a href="tooltips.html">Tooltips</a>
-            </li> -->
                 </ul>
             </li>
-
+            <li>
+                <a href="{{route('profile.edit')}}">
+                    <i class="bi bi-box"></i>
+                    <span class="menu-text">Profil</span>
+                </a>
+            </li>
+            
         </ul>
     </div>
-    <!-- Sidebar menu ends -->
-
+    <div class="sidebarMenuScroll">
+        <ul class="sidebar-menu">
+            <li>
+                <a href="{{ route('logout') }}" onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
+                    <i class="bi bi-box-arrow-right"></i>
+                    <span class="menu-text">Logout</span>
+                </a>
+            </li>
+        </ul>
+    </div>
+    <form id="logout-form" action="{{ route('logout') }}" method="POST" class="d-none">
+        @csrf
+    </form>
 </nav>
 <!-- Sidebar wrapper end -->
