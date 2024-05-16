@@ -56,21 +56,24 @@ $items = [
                     <span class="menu-text">Profil</span>
                 </a>
             </li>
-            
-        </ul>
-    </div>
-    <div class="sidebarMenuScroll">
-        <ul class="sidebar-menu">
-            <li>
-                <a href="{{ route('logout') }}" onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
-                    <i class="bi bi-box-arrow-right"></i>
-                    <span class="menu-text">Logout</span>
+            <li class="treeview">
+                <a href="#!">
+                    <i class="bi bi-stickies"></i>
+                    <span class="menu-text">MBKM(staff)</span>
                 </a>
+                <ul class="treeview-menu">
+                    <li>
+                        <a href="{{ route('permission.index') }}">kampus Mengajar</a>
+                    </li>
+                    <li>
+                        <a href="{{ route('role.index') }}">Magang Bersertifikat</a>
+                    </li>
+                    <li>
+                        <a href="{{ route('user.index') }}">Pertukaran mahasiswa</a>
+                    </li>
+                </ul>
             </li>
         </ul>
     </div>
-    <form id="logout-form" action="{{ route('logout') }}" method="POST" class="d-none">
-        @csrf
-    </form>
 </nav>
 <!-- Sidebar wrapper end -->
