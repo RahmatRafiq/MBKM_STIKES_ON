@@ -11,15 +11,11 @@ class RoleSeeder extends Seeder
     public function run(): void
     {
         $roles = [
-            'Dosen' => self::dosen(),
-
-            'Super Admin' => self::superAdmin(),
-          
-            'Staff' => self::staff(),
-         
-            'Peserta' => self::peserta(),
-
-            'Mitra' => self::mitra(),
+            'dosen' => self::dosen(),
+            'super admin' => self::superAdmin(),
+            'staff' => self::staff(),
+            'peserta' => self::peserta(),
+            'mitra' => self::mitra(),
         ];
         foreach ($roles as $role => $permissions) {
             $role = Role::create(['name' => $role, 'guard_name' => 'web']);
