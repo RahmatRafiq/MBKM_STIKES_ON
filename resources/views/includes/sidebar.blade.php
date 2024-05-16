@@ -56,7 +56,13 @@ $items = [
                     <span class="menu-text">Profil</span>
                 </a>
             </li>
-            <li class="treeview">
+            <li>
+                <a href="{{ route('mitra.index') }}">
+                    <i class="bi bi-box"></i>
+                    <span class="menu-text">Mitra (Staff)</span>
+                </a>
+            </li>
+            {{-- <li class="treeview">
                 <a href="#!">
                     <i class="bi bi-stickies"></i>
                     <span class="menu-text">MBKM(staff)</span>
@@ -72,7 +78,7 @@ $items = [
                         <a href="{{ route('user.index') }}">Pertukaran mahasiswa</a>
                     </li>
                 </ul>
-            </li>
+            </li> --}}
         </ul>
     </div>
 </nav>

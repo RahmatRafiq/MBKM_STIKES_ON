@@ -25,6 +25,8 @@ Route::middleware('auth')->group(function () {
 
     Route::resource('mbkm/admin/role-permissions/user', UserController::class);
     Route::post('mbkm/admin/role-permissions/user/json', [UserController::class, 'json'])->name('user.json');
-    
+
+    Route::resource('mbkm/staff/mitra', \App\Http\Controllers\MitraProfileController::class);
+    Route::post('mbkm/staff/mitra/json', [\App\Http\Controllers\MitraProfileController::class, 'json'])->name('mitra.json');
 });
 require __DIR__ . '/auth.php';
