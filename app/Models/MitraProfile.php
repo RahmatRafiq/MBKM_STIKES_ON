@@ -16,8 +16,11 @@ class MitraProfile extends Model
         'phone',
         'email',
         'website',
-        'image',
+        'images',
         'type',
         'description',
+    ];
+    protected $casts = [
+        'images' => 'array',
     ];
 }

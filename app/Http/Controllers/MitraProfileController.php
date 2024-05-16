@@ -5,14 +5,15 @@ namespace App\Http\Controllers;
 use App\Helpers\DataTable;
 use App\Models\MitraProfile;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 
 class MitraProfileController extends Controller
 {
+    // Index method
     public function index()
     {
         $mitraProfile = MitraProfile::all();
-
-        return view("applications.mbkm.staff.mitra.index", compact("mitraProfile"));
+        return view('applications.mbkm.staff.mitra.index', compact('mitraProfile'));
     }
 
     public function json(Request $request)
@@ -29,33 +30,35 @@ class MitraProfileController extends Controller
             'description',
         ]));
     }
+
+    // Create method
     public function create()
     {
         return view('applications.mbkm.staff.mitra.create');
     }
 
+    // Store method
     public function store(Request $request)
     {
         $request->validate([
-            'name' => 'required',
-            'address' => 'required',
-            'phone' => 'required',
-            'email' => 'required|email',
-            'type' => 'required',
-            'description' => 'required',
-            'image' => 'image|nullable|max:2048', // Gambar harus berupa file gambar dengan maksimal ukuran 2MB
+            'name' => 'required|string|max:255',
+            'address' => 'required|string|max:255',
+            'phone' => 'required|string|max:15',
+            'email' => 'required|email|max:255',
+            'website' => 'nullable|url|max:255',
+            'type' => 'required|string|max:255',
+            'description' => 'required|string',
+            'images.*' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
         ]);
 
-        // Jika ada file gambar yang diunggah, simpan ke penyimpanan dan dapatkan nama file
-        $imagePath = null;
-        if ($request->hasFile('image')) {
-            $image = $request->file('image');
-            $imageName = time() . '.' . $image->getClientOriginalExtension();
-            $image->storeAs('public/images', $imageName); // Simpan gambar di penyimpanan
-            $imagePath = 'storage/images/' . $imageName; // Path untuk menyimpan ke database
+        $images = [];
+        if ($request->hasFile('images')) {
+            foreach ($request->file('images') as $image) {
+                $path = $image->store('images', 'public');
+                $images[] = $path;
+            }
         }
 
-        // Simpan data mitra beserta nama file gambar ke dalam database
         MitraProfile::create([
             'name' => $request->name,
             'address' => $request->address,
@@ -64,39 +67,41 @@ class MitraProfileController extends Controller
             'website' => $request->website,
             'type' => $request->type,
             'description' => $request->description,
-            'image' => $imagePath, // Simpan path gambar ke database
+            'images' => json_encode($images),
         ]);
 
-        return redirect()->route('mitra.index')->with('success', 'Mitra berhasil ditambahkan.');
+        return redirect()->route('mitra.index')->with('success', 'Mitra created successfully.');
     }
 
+    // Edit method
     public function edit($id)
     {
         $mitraProfile = MitraProfile::findOrFail($id);
         return view('applications.mbkm.staff.mitra.edit', compact('mitraProfile'));
     }
 
+    // Update method
     public function update(Request $request, $id)
     {
-        $mitraProfile = MitraProfile::findOrFail($id);
-
         $request->validate([
-            'name' => 'required',
-            'address' => 'required',
-            'phone' => 'required',
-            'email' => 'required|email',
-            'type' => 'required',
-            'description' => 'required',
-            'image' => 'image|nullable|max:2048',
+            'name' => 'required|string|max:255',
+            'address' => 'required|string|max:255',
+            'phone' => 'required|string|max:15',
+            'email' => 'required|email|max:255',
+            'website' => 'nullable|url|max:255',
+            'type' => 'required|string|max:255',
+            'description' => 'required|string',
+            'images.*' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
         ]);
 
-        $imagePath = $mitraProfile->image;
+        $mitraProfile = MitraProfile::findOrFail($id);
 
-        if ($request->hasFile('image')) {
-            $image = $request->file('image');
-            $imageName = time() . '.' . $image->getClientOriginalExtension();
-            $image->storeAs('public/images', $imageName);
-            $imagePath = 'storage/images/' . $imageName;
+        $images = json_decode($mitraProfile->images, true) ?? [];
+        if ($request->hasFile('images')) {
+            foreach ($request->file('images') as $image) {
+                $path = $image->store('images', 'public');
+                $images[] = $path;
+            }
         }
 
         $mitraProfile->update([
@@ -107,16 +112,23 @@ class MitraProfileController extends Controller
             'website' => $request->website,
             'type' => $request->type,
             'description' => $request->description,
-            'image' => $imagePath,
+            'images' => json_encode($images),
         ]);
 
-        return redirect()->route('mitra.index')->with('success', 'Mitra berhasil diperbarui.');
+        return redirect()->route('mitra.index')->with('success', 'Mitra updated successfully.');
     }
 
+    // Destroy method
     public function destroy($id)
     {
         $mitraProfile = MitraProfile::findOrFail($id);
+        if ($mitraProfile->images) {
+            foreach (json_decode($mitraProfile->images) as $image) {
+                Storage::disk('public')->delete($image);
+            }
+        }
         $mitraProfile->delete();
-        return redirect()->route('mitra.index')->with('success', 'Mitra berhasil dihapus.');
-    }   
+
+        return redirect()->route('mitra.index')->with('success', 'Mitra deleted successfully.');
+    }
 }
