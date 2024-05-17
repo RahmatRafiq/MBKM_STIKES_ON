@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Http\Controllers;
 
 use App\Models\Lowongan;
@@ -8,9 +7,6 @@ use Illuminate\Http\Request;
 
 class LowonganController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
     public function index()
     {
         $lowongans = Lowongan::all();
@@ -18,25 +14,18 @@ class LowonganController extends Controller
         return view('applications.mbkm.lowongan-mitra.index', compact('lowongans', 'mitraProfile'));
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
     public function create()
     {
         $lowongans = Lowongan::all();
         $mitraProfile = MitraProfile::all();
         return view('applications.mbkm.lowongan-mitra.create', compact('lowongans', 'mitraProfile'));
-    
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
     public function store(Request $request)
     {
         $validatedData = $request->validate([
             'name' => 'required|string|max:255',
-            'mitra_id' => 'required|exists:mitra_profiles,id',
+            'mitra_id' => 'required|exists:mitra_profile,id',
             'description' => 'required|string',
             'quota' => 'required|integer',
             'is_open' => 'required|boolean',
@@ -48,52 +37,10 @@ class LowonganController extends Controller
             'end_date' => 'required|date',
         ]);
 
-        Lowongan::create([
-            'name' => $validatedData['name'],
-            'mitra_id' => $validatedData['mitra_id'],
-            'description' => $validatedData['description'],
-            'quota' => $validatedData['quota'],
-            'is_open' => $validatedData['is_open'],
-            'location' => $validatedData['location'],
-            'gpa' => $validatedData['gpa'],
-            'semester' => $validatedData['semester'],
-            'experience_required' => $validatedData['experience_required'],
-            'start_date' => $validatedData['start_date'],
-            'end_date' => $validatedData['end_date'],
-        ]);
+        Lowongan::create($validatedData);
 
         return redirect()->route('lowongan.index')->with('success', 'Lowongan created successfully.');
     }
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(Lowongan $lowongan)
-    {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(Lowongan $lowongan)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, Lowongan $lowongan)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(Lowongan $lowongan)
-    {
-        //
-    }
+    // Methods show, edit, update, and destroy
 }
