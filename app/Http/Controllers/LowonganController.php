@@ -82,4 +82,10 @@ class LowonganController extends Controller
 
         return redirect()->route('lowongan.index')->with('success', 'Lowongan updated successfully.');
     }
+
+    public function destroy(Lowongan $lowongan)
+    {
+        $lowongan->delete();
+        return redirect()->route('lowongan.index')->with('success', 'Lowongan deleted successfully.');
+    }
 }
