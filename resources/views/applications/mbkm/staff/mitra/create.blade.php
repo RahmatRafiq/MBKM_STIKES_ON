@@ -80,15 +80,6 @@
                         <input type="password" class="form-control" id="user_password_confirmation"
                             name="user_password_confirmation" required placeholder="Confirm Password">
                     </div>
-                    <div class="mb-3">
-                        <label for="role" class="form-label">Role</label>
-                        <select class="form-select" id="role" name="role_id" required>
-                            <option value="">Select Role</option>
-                            @foreach ($roles as $role)
-                                <option value="{{ $role->id }}">{{ $role->name }}</option>
-                            @endforeach
-                        </select>
-                    </div>
                 </div>
             </div>
         </div>
