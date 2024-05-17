@@ -44,13 +44,5 @@
         </form>
       </div>
     </div>
-<<<<<<< HEAD
-    <!-- Container end -->
-</body>
-
-</html>
-//////////////////
-=======
   </div>
 @endsection
->>>>>>> 4f88c5cd5c25091aa93c3a61c715331e0b5b3c64

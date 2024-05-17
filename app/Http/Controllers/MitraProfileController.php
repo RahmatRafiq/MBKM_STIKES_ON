@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Helpers\DataTable;
 use App\Models\MitraProfile;
+use App\Models\Role;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 
@@ -34,7 +36,8 @@ class MitraProfileController extends Controller
     // Create method
     public function create()
     {
-        return view('applications.mbkm.staff.mitra.create');
+        $roles = Role::all();
+        return view('applications.mbkm.staff.mitra.create', compact('roles'));
     }
 
     // Store method
@@ -71,6 +74,25 @@ class MitraProfileController extends Controller
         ]);
 
         return redirect()->route('mitra.index')->with('success', 'Mitra created successfully.');
+    }
+
+    public function storeMitraUser(Request $request)
+    {
+        $validatedData = $request->validate([
+            'name' => 'required|string|max:255',
+            'email' => 'required|string|email|max:255|unique:users',
+            'password' => 'required|string|min:8|confirmed',
+            'role_id' => 'required|exists:roles,id',
+        ]);
+
+        User::create([
+            'name' => $validatedData['name'],
+            'email' => $validatedData['email'],
+            'password' => bcrypt($validatedData['password']),
+            'role_id' => $validatedData['role_id'],
+        ]);
+
+        return redirect()->route('mitra.index')->with('success', 'User created successfully.');
     }
 
     // Edit method
