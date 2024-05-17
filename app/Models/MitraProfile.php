@@ -23,4 +23,9 @@ class MitraProfile extends Model
     protected $casts = [
         'images' => 'array',
     ];
+    public function lowongan()
+    {
+        return $this->hasMany(Lowongan::class);
+
+    }
 }
