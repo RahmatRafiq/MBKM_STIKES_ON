@@ -25,5 +25,9 @@ Route::middleware('auth')->group(function () {
 
     Route::resource('mbkm/staff/mitra', \App\Http\Controllers\MitraProfileController::class);
     Route::post('mbkm/staff/mitra/json', [\App\Http\Controllers\MitraProfileController::class, 'json'])->name('mitra.json');
+
+    Route::post('/temp/storage', [\App\Http\Controllers\StorageController::class, 'store'])->name('storage.store');
+    Route::delete('/temp/storage', [\App\Http\Controllers\StorageController::class, 'destroy'])->name('storage.destroy');
+    Route::get('/temp/storage/{path}', [\App\Http\Controllers\StorageController::class, 'show'])->name('storage.show');
 });
 require __DIR__ . '/auth.php';
