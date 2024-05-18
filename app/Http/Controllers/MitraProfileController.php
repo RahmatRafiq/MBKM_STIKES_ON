@@ -62,11 +62,6 @@ class MitraProfileController extends Controller
             'description' => $request->description,
         ]);
 
-        // // store images from temp
-        // foreach ($request->images as $key => $value) {
-        //     $item->addMediaFromDisk($value, 'temp')->toMediaCollection('images');
-        // }
-
         $media = MediaLibrary::put(
             $item,
             'images',
@@ -97,32 +92,10 @@ class MitraProfileController extends Controller
             'website' => 'nullable|url|max:255',
             'type' => 'required|string|max:255',
             'description' => 'required|string',
-            // images is array of string
-            'images.*' => 'nullable|string',
+            'images' => 'array|max:3',
         ]);
-        // dd($request);
 
         $mitraProfile = MitraProfile::findOrFail($id);
-
-        // // retrieve saved images
-        // $images = $mitraProfile->getMedia('images');
-
-        // // get image that will be removed if exists in $images and not exists in $request
-        // $filesToRemove = $images->filter(function ($image) use ($request) {
-        //     return !in_array($image->file_name, $request->images);
-        // });
-
-        // // remove images from media
-        // foreach ($filesToRemove as $image) {
-        //     $image->delete();
-        // }
-
-        // // add images from temp
-        // foreach ($request->images as $key => $value) {
-        //     if (!$images->contains('file_name', $value)) {
-        //         $mitraProfile->addMediaFromDisk($value, 'temp')->toMediaCollection('images');
-        //     }
-        // }
 
         $media = MediaLibrary::put(
             $mitraProfile,

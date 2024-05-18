@@ -54,16 +54,6 @@
                     </div>
                     <div class="mb-3">
                         <label for="images" class="form-label">Images</label>
-                        {{-- @dd($item->getMedia()[0]->getFullUrl()) --}}
-                        {{-- @if ($item->getMedia())
-                            <div class="mb-2">
-                                @foreach (json_decode($item->getMedia()) as $image)
-                                    <img src="{{ $image->original_url }}" alt="Current Image"
-                                        style="max-width: 200px; margin-right: 10px;">
-                                @endforeach
-                            </div>
-                        @endif --}}
-                        {{-- dropzone --}}
                         <div class="dropzone" id="myDropzone"></div>
                     </div>
                     <button type="submit" class="btn btn-primary">Update Mitra</button>
@@ -73,90 +63,46 @@
     </div>
 @endsection
 
-@push('css')
-    <link rel="stylesheet" href="{{ asset('assets/vendor/dropzone/dropzone.min.css') }}">
+@push('head')
+@vite(['resources/js/dropzoner.js'])
 @endpush
 
 @push('javascript')
-    <script src="{{ asset('assets/vendor/dropzone/dropzone.min.js') }}"></script>
-
-    <script>
-        const key = window.location.pathname
+    <script type="module">
         // dropzone
-        Dropzone.autoDiscover = false;
-        var myDropzone = new Dropzone("#myDropzone", {
-            url: "{{ route('storage.store') }}",
-            headers: {
-                'X-CSRF-TOKEN': "{{ csrf_token() }}"
-            },
-            acceptedFiles: 'image/*',
-            maxFiles: 3,
-            addRemoveLinks: true,
-            init: function () {
+        const element = '#myDropzone'
+        const key = 'images'
+        const files = []
+        const urlStore = "{!! route('storage.store') !!}"
+        const urlDestroy = "{!! route('storage.destroy') !!}"
+        const csrf = "{!! csrf_token() !!}"
+        const acceptedFiles = 'image/*'
+        const maxFiles = 3
+        const kind = 'image'
 
-                @if ($item->getMedia('images'))
-                    let input = document.createElement('input')
-                    @foreach ($item->getMedia('images') as $image)
-                        var mockFile = {
-                            name: "{{ $image->file_name }}",
-                            size: {{ $image->size }},
-                            accepted: true,
-                            kind: 'image',
-                            upload: {
-                                filename: "{{ $image->file_name }}",
-                                size: {{ $image->size }}
-                            },
-                            dataURL: "{{ $image->getFullUrl() }}"
-                        };
-                        this.emit("addedfile", mockFile);
-                        this.emit("thumbnail", mockFile, "{{ $image->getFullUrl() }}");
-                        this.emit("complete", mockFile);
+        @foreach ($item->getMedia('images') as $image)
+            files.push({
+                id: '{{ $image->id }}',
+                name: '{{ $image->name }}',
+                size: '{{ $image->size }}',
+                type: '{{ $image->type }}',
+                url: '{{ $image->getUrl() }}',
+                original_url: '{{ $image->getFullUrl() }}',
+            })
+        @endforeach
 
-                        input = document.createElement('input')
-                        input.setAttribute('type', 'hidden')
-                        input.setAttribute('name', 'images[]')
-                        input.setAttribute('value', "{{ $image->file_name }}")
-                        mockFile.previewElement.appendChild(input)
-                    @endforeach
-                @endif
-            },
-            success: function (file, response) {
-                file.upload.filename = response.name
-                file.upload.size = response.size
-
-                const input = document.createElement('input')
-                input.setAttribute('type', 'hidden')
-                input.setAttribute('name', 'images[]')
-                input.setAttribute('value', response.name)
-                file.previewElement.appendChild(input)
-            },
-            removedfile: function (file) {
-                const name = file.upload.filename
-                const size = file.upload.size
-                $.ajax({
-                    type: 'DELETE',
-                    url: "{{ route('storage.destroy') }}",
-                    headers: {
-                        'X-CSRF-TOKEN': "{{ csrf_token() }}"
-                    },
-                    data: {
-                        filename: file.name,
-                    },
-                    success: function (data) {
-                        console.log(data)
-                    },
-                    error: function (e) {
-                        console.log(e)
-                    }
-                });
-                var _ref;
-                return (_ref = file.previewElement) != null ? _ref.parentNode.removeChild(file.previewElement) : void 0;
+        Dropzoner(
+            element,
+            key,
+            {
+                urlStore,
+                urlDestroy,
+                csrf,
+                acceptedFiles,
+                files,
+                maxFiles,
+                kind,
             }
-        });
-
-        // detect window refresh
-        window.addEventListener('beforeunload', function (e) {
-            myDropzone.removeAllFiles(true);
-        });
+        )
     </script>
 @endpush
