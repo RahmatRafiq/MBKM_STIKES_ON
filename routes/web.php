@@ -25,6 +25,9 @@ Route::middleware('auth')->group(function () {
 
     Route::resource('mbkm/staff/mitra', \App\Http\Controllers\MitraProfileController::class);
     Route::post('mbkm/staff/mitra/json', [\App\Http\Controllers\MitraProfileController::class, 'json'])->name('mitra.json');
+    Route::post('mbkm/staff/mitra/create', [\App\Http\Controllers\MitraProfileController::class, 'storeMitraUser'])->name('mitra.user.store');
+
+    Route::resource('mbkm/mitra/lowongan', \App\Http\Controllers\LowonganController::class);
 
     Route::post('/temp/storage', [\App\Http\Controllers\StorageController::class, 'store'])->name('storage.store');
     Route::delete('/temp/storage', [\App\Http\Controllers\StorageController::class, 'destroy'])->name('storage.destroy');

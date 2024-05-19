@@ -25,4 +25,9 @@ class MitraProfile extends Model implements HasMedia
     protected $casts = [
         'images' => 'array',
     ];
+    public function lowongan()
+    {
+        return $this->hasMany(Lowongan::class);
+
+    }
 }
