@@ -62,6 +62,11 @@ $items = [
                     <span class="menu-text">Mitra (Staff)</span>
                 </a>
             </li>
+            <li>
+                <a href="{{ route('lowongan.index') }}">
+                    <i class="bi bi-box"></i>
+                    <span class="menu-text">Lowongan (Staff)</span>
+                </a>
             {{-- <li class="treeview">
                 <a href="#!">
                     <i class="bi bi-stickies"></i>

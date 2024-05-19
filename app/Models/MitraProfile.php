@@ -21,4 +21,8 @@ class MitraProfile extends Model implements HasMedia
         'type',
         'description',
     ];
+    public function lowongan()
+    {
+        return $this->hasMany(Lowongan::class);
+    }
 }
