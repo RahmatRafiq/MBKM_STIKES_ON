@@ -90,12 +90,12 @@ const Dropzoner = (
                 //     return
                 // }
 
-                Object.values(files).forEach(file => {
+                files.forEach(file => {
                     const mockFile = {
                         name: file.file_name,
                         size: file.size,
                         accepted: true,
-                        kind: 'image',
+                        kind,
                         upload: {
                             filename: file.file_name,
                             size: file.size

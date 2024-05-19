@@ -84,12 +84,14 @@
             files.push({
                 id: '{{ $image->id }}',
                 name: '{{ $image->name }}',
+                file_name: '{{ $image->file_name }}',
                 size: '{{ $image->size }}',
                 type: '{{ $image->type }}',
                 url: '{{ $image->getUrl() }}',
                 original_url: '{{ $image->getFullUrl() }}',
             })
         @endforeach
+
 
         Dropzoner(
             element,
