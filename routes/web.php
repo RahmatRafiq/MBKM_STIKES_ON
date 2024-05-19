@@ -28,5 +28,9 @@ Route::middleware('auth')->group(function () {
     Route::post('mbkm/staff/mitra/create', [\App\Http\Controllers\MitraProfileController::class, 'storeMitraUser'])->name('mitra.user.store');
 
     Route::resource('mbkm/mitra/lowongan', \App\Http\Controllers\LowonganController::class);
+
+    Route::post('/temp/storage', [\App\Http\Controllers\StorageController::class, 'store'])->name('storage.store');
+    Route::delete('/temp/storage', [\App\Http\Controllers\StorageController::class, 'destroy'])->name('storage.destroy');
+    Route::get('/temp/storage/{path}', [\App\Http\Controllers\StorageController::class, 'show'])->name('storage.show');
 });
 require __DIR__ . '/auth.php';

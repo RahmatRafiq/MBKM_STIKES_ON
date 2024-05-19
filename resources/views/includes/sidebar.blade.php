@@ -20,7 +20,7 @@ $items = [
     <div class="sidebarMenuScroll">
         <ul class="sidebar-menu">
             <li class="active current-page">
-                <a href="/dashboard">
+                <a href="{{ route('dashboard') }}">
                     <i class="bi bi-box"></i>
                     <span class="menu-text">Dashboard</span>
                 </a>
