@@ -11,27 +11,33 @@
                     @csrf
                     <div class="mb-3">
                         <label for="name" class="form-label">Name</label>
-                        <input type="text" class="form-control" id="name" name="name" required placeholder="Name">
+                        <input type="text" class="form-control" id="name" name="name" required placeholder="Name"
+                            value="{{ old('name') }}" autofocus>
                     </div>
                     <div class="mb-3">
                         <label for="address" class="form-label">Address</label>
-                        <input type="text" class="form-control" id="address" name="address" required placeholder="Address">
+                        <input type="text" class="form-control" id="address" name="address" required placeholder="Address"
+                            value="{{ old('address') }}">
                     </div>
                     <div class="mb-3">
                         <label for="phone" class="form-label">Phone</label>
-                        <input type="text" class="form-control" id="phone" name="phone" required placeholder="Phone">
+                        <input type="text" class="form-control" id="phone" name="phone" required placeholder="Phone"
+                            value="{{ old('phone') }}">
                     </div>
                     <div class="mb-3">
                         <label for="email" class="form-label">Email</label>
-                        <input type="email" class="form-control" id="email" name="email" required placeholder="Email">
+                        <input type="email" class="form-control" id="email" name="email" required placeholder="Email"
+                            value="{{ old('email') }}">
                     </div>
                     <div class="mb-3">
                         <label for="website" class="form-label">Website</label>
-                        <input type="text" class="form-control" id="website" name="website" placeholder="Website">
+                        <input type="text" class="form-control" id="website" name="website" placeholder="Website"
+                            value="{{ old('website') }}">
                     </div>
                     <div class="mb-3">
                         <label for="type" class="form-label">Type</label>
-                        <select class="form-select" id="type" name="type" required>
+                        <select class="form-select" id="type" name="type" required
+                            value="{{ old('type') }}">
                             <option value="Magang Merdeka">Magang Merdeka</option>
                             <option value="Kampus Mengajar">Kampus Mengajar</option>
                             <option value="Pertukaran Mahasiswa">Pertukaran Mahasiswa</option>
@@ -39,11 +45,14 @@
                     </div>
                     <div class="mb-3">
                         <label for="description" class="form-label">Description</label>
-                        <textarea class="form-control" id="description" name="description" required placeholder="Description"></textarea>
+                        <textarea class="form-control" id="description" name="description" required placeholder="Description">
+                            {{ old('description') }}
+                        </textarea>
                     </div>
                     <div class="mb-3">
                         <label for="images" class="form-label">Images</label>
-                        <input type="file" class="form-control" id="images" name="images[]" multiple>
+                        <input type="file" class="form-control" id="images" name="images[]" accept="image/*" multiple
+                            value="{{ old('images') }}">
                     </div>
                     <button type="submit" class="btn btn-primary">Add Mitra</button>
                 </form>

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Helpers\DataTable;
+use App\Helpers\MediaLibrary;
 use App\Models\MitraProfile;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
@@ -51,15 +52,7 @@ class MitraProfileController extends Controller
             'images.*' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
         ]);
 
-        $images = [];
-        if ($request->hasFile('images')) {
-            foreach ($request->file('images') as $image) {
-                $path = $image->store('images', 'public');
-                $images[] = $path;
-            }
-        }
-
-        MitraProfile::create([
+        $item = MitraProfile::create([
             'name' => $request->name,
             'address' => $request->address,
             'phone' => $request->phone,
@@ -67,17 +60,25 @@ class MitraProfileController extends Controller
             'website' => $request->website,
             'type' => $request->type,
             'description' => $request->description,
-            'images' => json_encode($images),
         ]);
 
-        return redirect()->route('mitra.index')->with('success', 'Mitra created successfully.');
+        $media = MediaLibrary::put(
+            $item,
+            'images',
+            $request
+        );
+
+        return redirect()->route('mitra.index')->with([
+            'success' => 'Mitra created successfully.',
+            'media' => $media,
+        ]);
     }
 
     // Edit method
     public function edit($id)
     {
-        $mitraProfile = MitraProfile::findOrFail($id);
-        return view('applications.mbkm.staff.mitra.edit', compact('mitraProfile'));
+        $item = MitraProfile::findOrFail($id);
+        return view('applications.mbkm.staff.mitra.edit', compact('item'));
     }
 
     // Update method
@@ -91,18 +92,16 @@ class MitraProfileController extends Controller
             'website' => 'nullable|url|max:255',
             'type' => 'required|string|max:255',
             'description' => 'required|string',
-            'images.*' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
+            'images' => 'array|max:3',
         ]);
 
         $mitraProfile = MitraProfile::findOrFail($id);
 
-        $images = json_decode($mitraProfile->images, true) ?? [];
-        if ($request->hasFile('images')) {
-            foreach ($request->file('images') as $image) {
-                $path = $image->store('images', 'public');
-                $images[] = $path;
-            }
-        }
+        $media = MediaLibrary::put(
+            $mitraProfile,
+            'images',
+            $request
+        );
 
         $mitraProfile->update([
             'name' => $request->name,
@@ -112,21 +111,19 @@ class MitraProfileController extends Controller
             'website' => $request->website,
             'type' => $request->type,
             'description' => $request->description,
-            'images' => json_encode($images),
         ]);
 
-        return redirect()->route('mitra.index')->with('success', 'Mitra updated successfully.');
+        return redirect()->route('mitra.index')->with([
+            'success' => 'Mitra updated successfully.',
+            'media' => $media,
+        ]);
     }
 
     // Destroy method
     public function destroy($id)
     {
         $mitraProfile = MitraProfile::findOrFail($id);
-        if ($mitraProfile->images) {
-            foreach (json_decode($mitraProfile->images) as $image) {
-                Storage::disk('public')->delete($image);
-            }
-        }
+
         $mitraProfile->delete();
 
         return redirect()->route('mitra.index')->with('success', 'Mitra deleted successfully.');
