@@ -51,8 +51,7 @@
                     </div>
                     <div class="mb-3">
                         <label for="images" class="form-label">Images</label>
-                        <input type="file" class="form-control" id="images" name="images[]" accept="image/*" multiple
-                            value="{{ old('images') }}">
+                        <div class="dropzone" id="myDropzone"></div>
                     </div>
                     <button type="submit" class="btn btn-primary">Add Mitra</button>
                 </form>
@@ -60,3 +59,34 @@
         </div>
     </div>
 @endsection
+@push('head')
+@vite(['resources/js/dropzoner.js'])
+@endpush
+@push('javascript')
+    <script type="module">
+        // dropzone
+        const element = '#myDropzone'
+        const key = 'images'
+        const files = []
+        const urlStore = "{!! route('storage.store') !!}"
+        const urlDestroy = "{!! route('storage.destroy') !!}"
+        const csrf = "{!! csrf_token() !!}"
+        const acceptedFiles = 'image/*'
+        const maxFiles = 3
+        const kind = 'image'
+
+        Dropzoner(
+            element,
+            key,
+            {
+                urlStore,
+                urlDestroy,
+                csrf,
+                acceptedFiles,
+                files,
+                maxFiles,
+                kind,
+            }
+        )
+    </script>
+@endpush

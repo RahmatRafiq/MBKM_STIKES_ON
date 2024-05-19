@@ -18,11 +18,7 @@ class MitraProfile extends Model implements HasMedia
         'phone',
         'email',
         'website',
-        'images',
         'type',
         'description',
-    ];
-    protected $casts = [
-        'images' => 'array',
     ];
 }

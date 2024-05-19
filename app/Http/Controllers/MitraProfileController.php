@@ -49,7 +49,7 @@ class MitraProfileController extends Controller
             'website' => 'nullable|url|max:255',
             'type' => 'required|string|max:255',
             'description' => 'required|string',
-            'images.*' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
+            'images' => 'array|max:3',
         ]);
 
         $item = MitraProfile::create([
