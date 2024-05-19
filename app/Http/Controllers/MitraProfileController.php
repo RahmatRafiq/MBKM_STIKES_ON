@@ -42,14 +42,14 @@ class MitraProfileController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'mitra_name' => 'required|string|max:255',
-            'mitra_address' => 'required|string|max:255',
-            'mitra_phone' => 'required|string|max:15',
-            'mitra_email' => 'required|email|max:255',
-            'mitra_website' => 'nullable|url|max:255',
-            'mitra_type' => 'required|string|max:255',
-            'mitra_description' => 'required|string',
-            'mitra_images.*' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
+            'name' => 'required|string|max:255',
+            'address' => 'required|string|max:255',
+            'phone' => 'required|string|max:15',
+            'email' => 'required|email|max:255',
+            'website' => 'nullable|url|max:255',
+            'type' => 'required|string|max:255',
+            'description' => 'required|string',
+            'images' => 'array|max:3',
             'user_name' => 'required|string|max:255',
             'user_email' => 'required|string|email|max:255|unique:users,email',
             'user_password' => 'required|string|min:8|confirmed',

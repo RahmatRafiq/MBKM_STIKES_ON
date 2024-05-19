@@ -12,7 +12,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('mitra_profile', function (Blueprint $table) {
-            $table->removeColumn('images');
+            $table->dropColumn('images');
         });
     }
 
