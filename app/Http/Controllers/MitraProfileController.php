@@ -20,17 +20,43 @@ class MitraProfileController extends Controller
 
     public function json(Request $request)
     {
-        return response(DataTable::paginate(MitraProfile::class, $request, [
+        $search = $request->search['value'];
+        $query = MitraProfile::query();
+
+        // columns
+        $columns = [
             'id',
             'name',
             'address',
             'phone',
             'email',
             'website',
-            'image',
             'type',
             'description',
-        ]));
+            'images',
+            'created_at',
+            'updated_at',
+        ];
+
+        // search
+        if ($request->filled('search')) {
+            $query->where('name', 'like', "%{$search}%")
+                ->orWhere('address', 'like', "%{$search}%")
+                ->orWhere('phone', 'like', "%{$search}%")
+                ->orWhere('email', 'like', "%{$search}%")
+                ->orWhere('website', 'like', "%{$search}%")
+                ->orWhere('type', 'like', "%{$search}%")
+                ->orWhere('description', 'like', "%{$search}%");
+        }
+
+        // order
+        if ($request->filled('order')) {
+            $query->orderBy($columns[$request->order[0]['column']], $request->order[0]['dir']);
+        }
+
+        $data = DataTable::paginate($query, $request);
+
+        return response()->json($data);
     }
 
     public function create()
