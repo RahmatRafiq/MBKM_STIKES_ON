@@ -1,105 +1,3 @@
-{{-- @extends('layouts.app')
-
-@section('content')
-    <div class="card mb-3">
-        <div class="card-body">
-            <div class="card-header d-flex justify-content-between align-items-center">
-                <h5 class="card-title">User Data</h5>
-                <div class="mb-3">
-                    <a href="{{ route('user.create') }}" class="btn btn-success">Create New Permission</a>
-                </div>
-            </div>
-            <div class="table-responsive">
-                <table class="styled-table" id="users">
-                    <thead>
-                        <tr>
-                            <th>ID</th>
-                            <th>Role ID</th>
-                            <th>Name</th>
-                            <th>Email</th>
-                            <th>Created At</th>
-                            <th>Tanggal Dibuat</th>
-                            <th>Tanggal Diubah</th>
-                            <th>Aksi</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                    </tbody>
-                </table>
-            </div>
-            <a href="#" class="show-all-link">Show All</a>
-        </div>
-    </div>
-@endsection
-
-@push('css')
-    <link rel="stylesheet" href="{{ asset('assets/DataTables/datatables.min.css') }}">
-    <link rel="stylesheet" href="{{ asset('assets/DataTables/custom.css') }}">
-@endpush --}}
-
-
-{{-- @push('javascript')
-    <script src="{{ asset('assets/DataTables/datatables.min.js') }}"></script>
-    <script>
-        console.log(sm.matches)
-        $.ajaxSetup({
-            headers: {
-                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-            }
-        });
-        $('#users').DataTable({
-            responsive: true,
-            serverSide: true,
-            processing: true,
-            paging: true,
-            ajax: {
-                url: '{{ route('user.json') }}',
-                type: 'POST',
-            },
-            columns: [{
-                    data: 'id',
-                    visible: sm.matches
-                },
-                {
-                    data: 'role_id',
-                    visible: sm.matches
-                },
-                {
-                    data: 'name',
-                    visible: sm.matches
-                },
-                {
-                    data: 'email',
-                    visible: sm.matches
-                },
-                {
-                    data: 'created_at',
-                    visible: sm.matches
-                },
-                {
-                    data: 'updated_at',
-                    visible: sm.matches
-                },
-                {
-                    data: 'action',
-                    orderable: false,
-                    searchable: false,
-                    // RENDER
-                    render: function(data, type, row) {
-                        return `
-          <a href="{{ route('user.edit', ':id') }}" class="btn btn-primary">Ubah</a>
-          <form action="{{ route('user.destroy', ':id') }}" method="POST" class="d-inline">
-            @csrf
-            @method('delete')
-            <button type="submit" class="btn btn-danger" onclick="return confirm('Apakah anda yakin ingin menghapus data ini?')">Hapus</button>
-          </form>
-        `.replace(/:id/g, row.id);
-                    }
-                },
-            ]
-        })
-    </script>
-@endpush --}}
 @extends('layouts.app')
 
 @section('content')
@@ -125,28 +23,134 @@
                         </tr>
                     </thead>
                     <tbody>
-                        @foreach ($users as $user)
-                            <tr>
-                                <td>{{ $user->id }}</td>
-                                <td>{{ $user->name }}</td>
-                                <td>{{ $user->role->name }}</td>
-                                <td>{{ $user->email }}</td>
-                                <td>{{ $user->created_at }}</td>
-                                <td>{{ $user->updated_at }}</td>
-                                <td>
-                                    <a href="{{ route('user.edit', $user->id) }}" class="btn btn-primary">Edit</a>
-                                    <form action="{{ route('user.destroy', $user->id) }}" method="POST" class="d-inline">
-                                        @csrf
-                                        @method('delete')
-                                        <button type="submit" class="btn btn-danger" onclick="return confirm('Are you sure you want to delete this user?')">Delete</button>
-                                    </form>
-                                </td>
-                            </tr>
-                        @endforeach
                     </tbody>
                 </table>
             </div>
-            <a href="#" class="show-all-link">Show All</a>
         </div>
     </div>
 @endsection
+@push('css')
+    <link rel="stylesheet" href="{{ asset('assets/DataTables/datatables.min.css') }}">
+    <link rel="stylesheet" href="{{ asset('assets/css/bg-role.css') }}">
+@endpush
+@push('javascript')
+    <script src="{{ asset('assets/DataTables/datatables.min.js') }}"></script>
+    <script src="{{ asset('assets/js/sweetalert2.all.min.js') }}"></script>
+    <script>
+            $('#users').DataTable(
+                {
+                    responsive: true,
+                    serverSide: true,
+                    processing: true,
+                    paging: true,
+                    ajax: {
+                        url: '{{ route('user.json') }}',
+                        type: 'POST',
+                        headers: {
+                            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                        }
+                    },
+                    columns: [
+                        {
+                            data: 'id',
+                        },
+                        {
+                            data: 'name',
+                        },
+                        {
+                            data: 'roles',
+                            render: function(data, type, row) {
+                                return data.map(function(role) {
+                                    // role badge with bg
+                                    const roleClass = role.name
+                                        .replaceAll(' ', '_')
+                                        .toLowerCase();
+                                    return `<span class="badge text-capitalize bg-${roleClass}">${role.name}</span>`;
+                                }).join(', ');
+                            },
+                            orderable: false,
+                        },
+                        {
+                            data: 'email',
+                        },
+                        {
+                            data: 'created_at',
+                        },
+                        {
+                            data: 'updated_at',
+                        },
+                        {
+                            data: 'action',
+                            orderable: false,
+                            searchable: false,
+                            // RENDER
+                            render: function(data, type, row) {
+                                // create element
+                                const editButton = document.createElement('a');
+                                editButton.classList.add('btn', 'btn-primary');
+                                editButton.href = `{{ route('user.edit', ':id') }}`.replace(
+                                    ':id',
+                                    row.id
+                                );
+                                editButton.textContent = 'Edit';
+
+                                // delete use Swal as confirmation
+                                const deleteButton = document.createElement('button');
+                                deleteButton.classList.add('btn', 'btn-danger');
+                                deleteButton.textContent = 'Delete';
+                                deleteButton.addEventListener('click', function() {
+                                    deleteRow(row.id);
+                                });
+                                console.log(row.id)
+                                // Add the buttons to a container element
+                                const container = document.createElement('div');
+                                container.appendChild(editButton);
+                                container.appendChild(deleteButton);
+
+                                // Return the container element
+                                return container;
+                            }
+                        }
+                    ]
+                }
+            );
+
+        // delete row
+        function deleteRow(id) {
+            const url = `{{ route('user.destroy', ':id') }}`
+            // console
+            console.log(
+                'deleteRow -> id',
+                id,
+                url,
+                url.replace(':id', id)
+            );
+            Swal.fire({
+                title: 'Are you sure?',
+                text: 'You will not be able to recover this user!',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonText: 'Yes, delete it!',
+                cancelButtonText: 'No, keep it',
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    $.ajax({
+                        url: url.replace(':id', id),
+                        type: 'POST',
+                        data: {
+                            _token: '{{ csrf_token() }}',
+                            _method: 'DELETE',
+                        },
+                        success: function(response) {
+                            $('#users').DataTable().ajax.reload();
+                            Swal.fire('Deleted!', 'User has been deleted.', 'success');
+                        },
+                        error: function(xhr) {
+                            Swal.fire('Error!', 'Failed to delete user.', 'error');
+                        }
+                    });
+                }
+            });
+        }
+    </script>
+@endpush
