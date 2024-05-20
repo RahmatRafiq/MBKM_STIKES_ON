@@ -34,3 +34,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/temp/storage/{path}', [\App\Http\Controllers\StorageController::class, 'show'])->name('storage.show');
 });
 require __DIR__ . '/auth.php';
+
+
+Route::resource('mahasiswa', \App\Http\Controllers\sisfo\MahasiswaController::class);
+Route::resource('dosen', \App\Http\Controllers\sisfo\DosenController::class);
