@@ -21,13 +21,32 @@ class PermissionController extends Controller
 
     public function json(Request $request)
     {
-        return response(DataTable::paginate(Permission::class, $request, [
+        $search = $request->search['value'];
+        $query = Permission::query();
+
+        // columns
+        $columns = [
             'id',
             'name',
             'guard_name',
             'created_at',
             'updated_at',
-        ]));
+        ];
+
+        // search
+        if ($request->filled('search')) {
+            $query->where('name', 'like', "%{$search}%")
+                ->orWhere('guard_name', 'like', "%{$search}%");
+        }
+
+        // order
+        if ($request->filled('order')) {
+            $query->orderBy($columns[$request->order[0]['column']], $request->order[0]['dir']);
+        }
+
+        $data = DataTable::paginate($query, $request);
+
+        return response()->json($data);
     }
 
     // create reusable function to serve Datatable ajax according json function above
