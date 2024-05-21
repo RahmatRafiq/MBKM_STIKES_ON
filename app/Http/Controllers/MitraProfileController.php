@@ -108,7 +108,7 @@ class MitraProfileController extends Controller
             'name' => $request->user_name,
             'email' => $request->user_email,
             'password' => bcrypt($request->user_password),
-            'role_id' => $mitraRole->id,
+            // 'role_id' => $mitraRole->id,
         ]);
 
         return redirect()->route('mitra.index')->with('success', 'Mitra and User created successfully.');
