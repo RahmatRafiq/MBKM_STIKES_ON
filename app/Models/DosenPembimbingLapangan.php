@@ -11,10 +11,12 @@ class DosenPembimbingLapangan extends Model
 
     protected $table = 'dosen_pembimbing_lapangan';
     protected $fillable = [
-        'users_id',
-        'roles_id',
         'name',
-        'image'
+        'image',
+        'address',
+        'phone',
+        'email',
+        'nip',
     ];
 
     public function roles()
