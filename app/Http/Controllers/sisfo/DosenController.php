@@ -14,10 +14,7 @@ class DosenController extends Controller
     public function index()
     {
         $data = Dosen::all();
-        return response()->json([
-            'message' => 'success',
-            'data' => $data
-        ]);
+        return view('applications/mbkm/dospem/index', compact('data'));
     }
 
     /**
