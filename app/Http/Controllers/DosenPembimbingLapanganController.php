@@ -24,36 +24,38 @@ class DosenPembimbingLapanganController extends Controller
     public function create()
     {
         $dosen = Dosen::all();
+        dd($dosen);
+
         return view('applications.mbkm.dospem.create', compact('dosen'));
     }
 
     public function store(Request $request)
-{
-    $request->validate([
-        'dosen_id' => 'required|exists:sisfo.dosen,id',
-        'password' => 'required|string|min:8|confirmed',
-    ]);
+    {
+        
+        $request->validate([
+            'dosen_id' => 'required|exists:mysql_second.dosen,id_dosen',
+            'password' => 'required|',
+        ]);
 
-    // Ambil data dosen dari formulir
-    $dosen = Dosen::findOrFail($request->dosen_id);
+        // Ambil data dosen dari formulir
+        $dosen = Dosen::findOrFail($request->dosen_id);
 
-    // Simpan data ke tabel users
-    $user = User::create([
-        'name' => $dosen->nama,
-        'email' => $dosen->email,
-        'password' => bcrypt($request->password),
-    ]);
+        // Simpan data ke tabel users
+        $user = User::create([
+            'name' => $dosen->nama,
+            'email' => $dosen->email,
+            'password' => bcrypt($request->password),
+        ]);
 
-    // Simpan data ke tabel dosen_pembimbing_lapangan
-    DosenPembimbingLapangan::create([
-        'name' => $dosen->nama,
-        'email' => $dosen->email,
-        'nip' => $dosen->nip, // atau kolom lain yang diperlukan
-    ]);
+        // Simpan data ke tabel dosen_pembimbing_lapangan
+        DosenPembimbingLapangan::create([
+            'name' => $dosen->nama,
+            'email' => $dosen->email,
+            'nip' => $dosen->nip, // atau kolom lain yang diperlukan
+        ]);
 
-    return redirect()->route('dospem.index')->with('success', 'Dosen Pembimbing Lapangan created successfully.');
-}
-
+        return redirect()->route('dospem.index')->with('success', 'Dosen Pembimbing Lapangan created successfully.');
+    }
 
     public function show($id)
     {
