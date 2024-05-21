@@ -18,11 +18,6 @@ class DosenPembimbingLapangan extends Model
         'email',
         'nip',
     ];
-
-    public function roles()
-    {
-        return $this->belongsTo(Roles::class, 'roles_id', 'id');
-    }
 }
 
 
