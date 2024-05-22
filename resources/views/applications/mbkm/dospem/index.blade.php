@@ -69,7 +69,7 @@
                 },
                 {
                     data: 'phone'
-                }, // pastikan kolom ini ada di model dan database
+                },
                 {
                     data: 'address'
                 },
