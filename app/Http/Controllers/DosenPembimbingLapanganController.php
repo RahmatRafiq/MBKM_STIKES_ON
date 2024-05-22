@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Helpers\DataTable;
 use App\Models\DosenPembimbingLapangan;
 use App\Models\Role;
 use App\Models\sisfo\Dosen;
@@ -20,8 +21,36 @@ class DosenPembimbingLapanganController extends Controller
 
     public function json()
     {
-        $dosenPembimbingLapangan = DosenPembimbingLapangan::all();
-        return response()->json($dosenPembimbingLapangan);
+        $search = request()->search['value'];
+        $query = DosenPembimbingLapangan::query();
+
+        // columns
+        $columns = [
+            'id',
+            'name',
+            'email',
+            'nip',
+            'address',
+            'created_at',
+            'updated_at',
+        ];
+
+        // search
+        if (request()->filled('search')) {
+            $query->where('name', 'like', "%{$search}%")
+                ->orWhere('email', 'like', "%{$search}%")
+                ->orWhere('nip', 'like', "%{$search}%")
+                ->orWhere('address', 'like', "%{$search}%");
+        }
+
+        // order
+        if (request()->filled('order')) {
+            $query->orderBy($columns[request()->order[0]['column']], request()->order[0]['dir']);
+        }
+
+        $data = DataTable::paginate($query, request());
+        
+        return response()->json($data);
     }
 
     public function create()
