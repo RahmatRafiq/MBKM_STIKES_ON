@@ -49,7 +49,7 @@ class DosenPembimbingLapanganController extends Controller
         }
 
         $data = DataTable::paginate($query, request());
-        
+
         return response()->json($data);
     }
 
@@ -60,34 +60,6 @@ class DosenPembimbingLapanganController extends Controller
 
         return view('applications.mbkm.dospem.create', compact('dosen'));
     }
-
-    // public function store(Request $request)
-    // {
-        
-    //     $request->validate([
-    //         'dosen_id' => 'required|exists:mysql_second.dosen,id_dosen',
-    //         'password' => 'required|',
-    //     ]);
-
-    //     // Ambil data dosen dari formulir
-    //     $dosen = Dosen::findOrFail($request->dosen_id);
-
-    //     // Simpan data ke tabel users
-    //     $user = User::create([
-    //         'name' => $dosen->nama,
-    //         'email' => $dosen->email,
-    //         'password' => bcrypt($request->password),
-    //     ]);
-
-    //     // Simpan data ke tabel dosen_pembimbing_lapangan
-    //     DosenPembimbingLapangan::create([
-    //         'name' => $dosen->nama,
-    //         'email' => $dosen->email,
-    //         'nip' => $dosen->nip, // atau kolom lain yang diperlukan
-    //     ]);
-
-    //     return redirect()->route('dospem.index')->with('success', 'Dosen Pembimbing Lapangan created successfully.');
-    // }
 
     public function store(Request $request)
     {
@@ -100,29 +72,38 @@ class DosenPembimbingLapanganController extends Controller
         // Mengambil data dosen dari database kedua
         $dosen = Dosen::findOrFail($request->dosen_id);
 
-        // Menggunakan transaksi untuk memastikan atomicity
-        DB::transaction(function () use ($dosen, $request) {
-            // Simpan data ke tabel users
-            $user = User::create([
-                'name' => $dosen->nama,
-                'email' => $dosen->email,
-                'password' => bcrypt($request->password),
-            ]);
+        $dosen = Dosen::findOrFail($request->dosen_id);
 
-            // Berikan role dosen kepada user
-            $role = Role::findByName('dosen');
-            $user->assignRole($role);
-            // Simpan data ke tabel dosen_pembimbing_lapangan
-            DosenPembimbingLapangan::create([
-                'user_id' => $user->id,
-                'name' => $dosen->nama,
-                'email' => $dosen->email,
-                'nip' => $dosen->nip,
-                'address' => $dosen->alamat,
+        // Check for existing email or name in DosenPembimbingLapangan
+        if (DosenPembimbingLapangan::where('email', $dosen->email)->exists()) {
+            return back()->withErrors(['email' => 'Email already exists in Dosen Pembimbing Lapangan'])->withInput();
+        }
 
-                // Tambahkan field lain sesuai kebutuhan
-            ]);
-        });
+        if (DosenPembimbingLapangan::where('name', $dosen->nama)->exists()) {
+            return back()->withErrors(['name' => 'Name already exists in Dosen Pembimbing Lapangan'])->withInput();
+        }
+
+        $user = User::create([
+            'name' => $dosen->nama,
+            'email' => $dosen->email,
+            'password' => Hash::make($request->password),
+        ]);
+
+
+        $role = Role::findByName('dosen');
+        $user->assignRole($role);
+
+
+        DosenPembimbingLapangan::create([
+            'user_id' => $user->id,
+            'name' => $dosen->nama,
+            'email' => $dosen->email,
+            'nip' => $dosen->nip,
+            'address' => $dosen->alamat,
+            'phone' => $dosen->telepon,
+
+            // Tambahkan field lain sesuai kebutuhan
+        ]);
 
         return redirect()->route('dospem.index')->with('success', 'Dosen Pembimbing Lapangan created successfully.');
     }
@@ -134,16 +115,37 @@ class DosenPembimbingLapanganController extends Controller
 
     public function edit($id)
     {
-        //
+        $dosenPembimbingLapangan = DosenPembimbingLapangan::findOrFail($id);
+        return view('applications.mbkm.dospem.edit', compact('dosenPembimbingLapangan'));
     }
 
     public function update(Request $request, $id)
     {
-        //
+        // Validasi request
+        $request->validate([
+            'name' => 'required|string|max:255',
+            'nip' => 'required|string|max:50',
+            'address' => 'required|string|max:255',
+            'phone' => 'required|string|max:15',
+        ]);
+
+        $dosenPembimbingLapangan = DosenPembimbingLapangan::findOrFail($id);
+
+        $dosenPembimbingLapangan->update([
+            'name' => $request->name,
+            'nip' => $request->nip,
+            'address' => $request->address,
+            'phone' => $request->phone,
+        ]);
+
+        return redirect()->route('dospem.index')->with('success', 'Dosen Pembimbing Lapangan updated successfully.');
     }
 
     public function destroy($id)
     {
-        //
+        $dosenPembimbingLapangan = DosenPembimbingLapangan::findOrFail($id);
+        $dosenPembimbingLapangan->delete();
+
+        return redirect()->route('dospem.index')->with('success', 'Dosen Pembimbing Lapangan deleted successfully.');
     }
 }
