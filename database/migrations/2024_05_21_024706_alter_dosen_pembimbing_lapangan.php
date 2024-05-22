@@ -12,15 +12,15 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::table('dosen_pembimbing_lapangan', function (Blueprint $table) {
+        // Schema::table('dosen_pembimbing_lapangan', function (Blueprint $table) {
            
-            if (Schema::hasColumn('dosen_pembimbing_lapangan', 'user_id')) {
-                $table->dropColumn('user_id');
-            }
-            $table->string('address');
-            $table->string('phone');
-            $table->string('nip');
-        });
+        //     if (Schema::hasColumn('dosen_pembimbing_lapangan', 'user_id')) {
+        //         $table->dropColumn('user_id');
+        //     }
+        //     $table->string('address');
+        //     $table->string('phone');
+        //     $table->string('nip');
+        // });
     }
 
     /**
@@ -28,14 +28,14 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::table('dosen_pembimbing_lapangan', function (Blueprint $table) {
-            $table->foreignIdFor(User::class)->nullable();
-        });
+        // Schema::table('dosen_pembimbing_lapangan', function (Blueprint $table) {
+        //     $table->foreignIdFor(User::class)->nullable();
+        // });
         //
-        Schema::table('dosen_pembimbing_lapangan', function (Blueprint $table) {
-            $table->dropColumn(["address", "phone", "nip"]);
-            // $table->dropColumn('phone');
-            // $table->dropColumn('nip');
-        });
+        // Schema::table('dosen_pembimbing_lapangan', function (Blueprint $table) {
+        //     $table->dropColumn(["address", "phone", "nip"]);
+        //     $table->dropColumn('phone');
+        //     $table->dropColumn('nip');
+        // });
     }
 };

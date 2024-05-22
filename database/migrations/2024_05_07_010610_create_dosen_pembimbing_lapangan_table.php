@@ -13,10 +13,13 @@ return new class extends Migration
     {
         Schema::create('dosen_pembimbing_lapangan', function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger('users_id');
-            $table->unsignedBigInteger('roles_id');
+            $table->unsignedBigInteger('user_id');
             $table->string('name');
             $table->string('image');
+            $table->string('address');
+            $table->string('phone');
+            $table->string('email');
+            $table->string('nip');
             $table->timestamps();
         });
     }
