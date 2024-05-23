@@ -21,5 +21,6 @@ class Dosen extends Model
         'departemen',
         'tahun_mulai',
         'email',
+        'phone',
     ];
 }

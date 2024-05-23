@@ -100,7 +100,8 @@ class DosenPembimbingLapanganController extends Controller
             'email' => $dosen->email,
             'nip' => $dosen->nip,
             'address' => $dosen->alamat,
-            'phone' => $dosen->telepon,
+            'phone' => $dosen->phone,
+            'image' => 'default.jpg',
 
             // Tambahkan field lain sesuai kebutuhan
         ]);
