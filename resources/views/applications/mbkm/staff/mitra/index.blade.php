@@ -10,7 +10,7 @@
             </div>
         </div>
         <div class="table-responsive">
-            <table class="styled-table" id="mitra">
+            <table class="table styled-table" id="mitra">
                 <thead>
                     <tr>
                         <th>ID</th>
@@ -28,7 +28,6 @@
                 </tbody>
             </table>
         </div>
-        <a href="#" class="show-all-link">Show All</a>
     </div>
 </div>
 @endsection
@@ -38,65 +37,112 @@
 <link rel="stylesheet" href="{{ asset('assets/DataTables/custom.css') }}">
 @endpush
 
-
 @push('javascript')
 <script src="{{ asset('assets/DataTables/datatables.min.js') }}"></script>
+<script src="{{ asset('assets/js/sweetalert2.all.min.js') }}"></script>
+
 <script>
     $.ajaxSetup({
-            headers: {
-                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+        headers: {
+            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+        }
+    });
+
+    $('#mitra').DataTable({
+        responsive: true,
+        serverSide: true,
+        processing: true,
+        paging: true,
+        ajax: {
+            url: '{{ route('mitra.json') }}',
+            type: 'POST',
+        },
+        columns: [{
+                data: 'id'
+            },
+            {
+                data: 'name'
+            },
+            {
+                data: 'address'
+            },
+            {
+                data: 'phone'
+            },
+            {
+                data: 'email'
+            },
+            {
+                data: 'website'
+            },
+            {
+                data: 'type'
+            },
+            {
+                data: 'description'
+            },
+            {
+                data: 'action',
+                orderable: false,
+                searchable: false,
+                render: function(data, type, row) {
+                    // create element
+                    const editButton = document.createElement('a');
+                    editButton.classList.add('btn', 'btn-primary', 'mr-2'); // Tambahkan kelas 'mr-2' untuk menambahkan margin kanan
+                    editButton.href = `{{ route('mitra.edit', ':id') }}`.replace(
+                        ':id',
+                        row.id
+                    );
+                    editButton.textContent = 'Edit';
+
+                    // delete use Swal as confirmation
+                    const deleteButton = document.createElement('button');
+                    deleteButton.classList.add('btn', 'btn-danger');
+                    deleteButton.textContent = 'Delete';
+                    deleteButton.addEventListener('click', function() {
+                        deleteRow(row.id);
+                    });
+                    console.log(row.id)
+                    // Add the buttons to a container element
+                    const container = document.createElement('div');
+                    container.appendChild(editButton);
+                    container.appendChild(deleteButton);
+
+                    // Return the container element
+                    return container;
+                }
+            }
+        ]
+    });
+
+    function deleteRow(id) {
+        const url = `{{ route('mitra.destroy', ':id') }}`;
+        Swal.fire({
+            title: 'Are you sure?',
+            text: 'You will not be able to recover this Mitra!',
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonText: 'Yes, delete it!',
+            cancelButtonText: 'No, keep it',
+        }).then((result) => {
+            if (result.isConfirmed) {
+                $.ajax({
+                    url: url.replace(':id', id),
+                    type: 'POST',
+                    data: {
+                        _token: '{{ csrf_token() }}',
+                        _method: 'DELETE',
+                    },
+                    success: function(response) {
+                        $('#mitra').DataTable().ajax.reload();
+                        Swal.fire('Deleted!', 'Mitra has been deleted.', 'success');
+                    },
+                    error: function(xhr) {
+                        Swal.fire('Error!', 'Failed to delete Mitra.', 'error');
+                    }
+                });
             }
         });
-        $('#mitra').DataTable({
-            responsive: true,
-            serverSide: true,
-            processing: true,
-            paging: true,
-            ajax: {
-                url: '{{ route('mitra.json') }}',
-                type: 'POST',
-            },
-            columns: [{
-                    data: 'id'
-                },
-                {
-                    data: 'name'
-                },
-                {
-                    data: 'address'
-                },
-                {
-                    data: 'phone'
-                },
-                {
-                    data: 'email'
-                },
-                {
-                    data: 'website'
-                },
-                {
-                    data: 'type'
-                },
-                {
-                    data: 'description'
-                },
-                {
-                    data: 'action',
-                    orderable: false,
-                    searchable: false,
-                    // RENDER
-                    render: function(data, type, row) {
-                        return `
-          <a href="{{ route('mitra.edit', ':id') }}" class="btn btn-primary">Ubah</a>
-          <form action="{{ route('mitra.destroy', ':id') }}" method="POST" class="d-inline">
-            @csrf
-            @method('delete')
-            <button type="submit" class="btn btn-danger" onclick="return confirm('Apakah anda yakin ingin menghapus data ini?')">Hapus</button>
-          </form>
-        `.replace(/:id/g, row.id);
-                    }
-                },
-            ]
-        })
+    }
 </script>
 @endpush

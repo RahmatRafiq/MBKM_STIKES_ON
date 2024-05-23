@@ -67,7 +67,6 @@ class MitraProfileController extends Controller
 
     public function store(Request $request)
     {
-        // dd($request->all());
         $request->validate([
             'mitra_name' => 'required|string|max:255',
             'mitra_address' => 'required|string|max:255',
@@ -80,17 +79,10 @@ class MitraProfileController extends Controller
             'user_name' => 'required|string|max:255',
             'user_email' => 'required|string|email|max:255|unique:users,email',
             'user_password' => 'required|string|min:8|confirmed',
-            // 'role_id' => 'required|exists:roles,id'
         ]);
 
-        $images = [];
-        if ($request->hasFile('mitra_images')) {
-            foreach ($request->file('mitra_images') as $image) {
-                $path = $image->store('images', 'public');
-                $images[] = $path;
-            }
-        }
 
+        
         $mitraProfile = MitraProfile::create([
             'name' => $request->mitra_name,
             'address' => $request->mitra_address,
@@ -99,19 +91,26 @@ class MitraProfileController extends Controller
             'website' => $request->mitra_website,
             'type' => $request->mitra_type,
             'description' => $request->mitra_description,
-            'images' => json_encode($images),
-
+            
         ]);
+        $media = MediaLibrary::put(
+            $mitraProfile,
+            'mitra_images',
+            $request
+        );
+        
         $mitraRole = Role::where('name', 'Mitra')->firstOrFail();
-
+        
         User::create([
             'name' => $request->user_name,
             'email' => $request->user_email,
             'password' => bcrypt($request->user_password),
-            // 'role_id' => $mitraRole->id,
         ]);
 
-        return redirect()->route('mitra.index')->with('success', 'Mitra and User created successfully.');
+        return redirect()->route('mitra.index')->with([
+            'success' => 'Mitra created successfully.',
+            'media' => $media,
+        ]);
     }
 
 
