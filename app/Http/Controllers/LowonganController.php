@@ -1,6 +1,7 @@
 <?php
 namespace App\Http\Controllers;
 
+use App\Helpers\DataTable;
 use App\Models\Lowongan;
 use App\Models\MitraProfile;
 use Illuminate\Http\Request;
@@ -9,9 +10,56 @@ class LowonganController extends Controller
 {
     public function index()
     {
-        $lowongans = Lowongan::all();
+        $lowongan = Lowongan::all();
         $mitraProfile = MitraProfile::all();
-        return view('applications.mbkm.lowongan-mitra.index', compact('lowongans', 'mitraProfile'));
+        return view('applications.mbkm.lowongan-mitra.index', compact('lowongan', 'mitraProfile'));
+    }
+
+    public function json(Request $request)
+    {
+        $search = $request->search['value'];
+        $query = Lowongan::with('mitra')->query(); // Include the mitra relationship
+
+        // columns
+        $columns = [
+            'name',
+            'mitra_id',
+            'description',
+            'quota',
+            'is_open',
+            'location',
+            'gpa',
+            'semester',
+            'experience_required',
+            'start_date',
+            'end_date',
+            'created_at',
+            'updated_at',
+        ];
+
+        // search
+        if ($request->filled('search')) {
+            $query->where('name', 'like', "%{$search}%")
+                ->orWhere('mitra_id', 'like', "%{$search}%")
+                ->orWhere('description', 'like', "%{$search}%")
+                ->orWhere('quota', 'like', "%{$search}%")
+                ->orWhere('is_open', 'like', "%{$search}%")
+                ->orWhere('location', 'like', "%{$search}%")
+                ->orWhere('gpa', 'like', "%{$search}%")
+                ->orWhere('semester', 'like', "%{$search}%")
+                ->orWhere('experience_required', 'like', "%{$search}%")
+                ->orWhere('start_date', 'like', "%{$search}%")
+                ->orWhere('end_date', 'like', "%{$search}%");
+        }
+
+        // order
+        if ($request->filled('order')) {
+            $query->orderBy($columns[$request->order[0]['column']], $request->order[0]['dir']);
+        }
+
+        $data = DataTable::paginate($query, $request);
+
+        return response()->json($data);
     }
 
     public function create()
