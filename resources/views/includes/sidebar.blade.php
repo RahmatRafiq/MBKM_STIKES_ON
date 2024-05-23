@@ -53,7 +53,7 @@ $items = [
             <li>
                 <a href="{{route('profile.edit')}}">
                     <i class="bi bi-box"></i>
-                    <span class="menu-text">Profil</span>
+                    <span class="menu-text">Profil(All User)</span>
                 </a>
             </li>
             <li>
@@ -63,27 +63,17 @@ $items = [
                 </a>
             </li>
             <li>
+                <a href="{{ route('dospem.index') }}">
+                    <i class="bi bi-box"></i>
+                    <span class="menu-text">Dosen Pembimbing (Staff)</span>
+                </a>
+            </li>
+            <li>
                 <a href="{{ route('lowongan.index') }}">
                     <i class="bi bi-box"></i>
-                    <span class="menu-text">Lowongan (Staff)</span>
+                    <span class="menu-text">Lowongan (Mitra)</span>
                 </a>
-            {{-- <li class="treeview">
-                <a href="#!">
-                    <i class="bi bi-stickies"></i>
-                    <span class="menu-text">MBKM(staff)</span>
-                </a>
-                <ul class="treeview-menu">
-                    <li>
-                        <a href="{{ route('permission.index') }}">kampus Mengajar</a>
-                    </li>
-                    <li>
-                        <a href="{{ route('role.index') }}">Magang Bersertifikat</a>
-                    </li>
-                    <li>
-                        <a href="{{ route('user.index') }}">Pertukaran mahasiswa</a>
-                    </li>
-                </ul>
-            </li> --}}
+            </li>
         </ul>
     </div>
 </nav>

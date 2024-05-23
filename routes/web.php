@@ -32,5 +32,12 @@ Route::middleware('auth')->group(function () {
     Route::post('/temp/storage', [\App\Http\Controllers\StorageController::class, 'store'])->name('storage.store');
     Route::delete('/temp/storage', [\App\Http\Controllers\StorageController::class, 'destroy'])->name('storage.destroy');
     Route::get('/temp/storage/{path}', [\App\Http\Controllers\StorageController::class, 'show'])->name('storage.show');
+
+    Route::resource('mbkm/staff/dospem', \App\Http\Controllers\DosenPembimbingLapanganController::class);
+    Route::post('mbkm/staff/dospem/json', [\App\Http\Controllers\DosenPembimbingLapanganController::class, 'json'])->name('dospem.json');
 });
 require __DIR__ . '/auth.php';
+
+
+Route::resource('mahasiswa', \App\Http\Controllers\sisfo\MahasiswaController::class);
+Route::resource('dosen', \App\Http\Controllers\sisfo\DosenController::class);

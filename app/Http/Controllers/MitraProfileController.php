@@ -20,17 +20,43 @@ class MitraProfileController extends Controller
 
     public function json(Request $request)
     {
-        return response(DataTable::paginate(MitraProfile::class, $request, [
+        $search = $request->search['value'];
+        $query = MitraProfile::query();
+
+        // columns
+        $columns = [
             'id',
             'name',
             'address',
             'phone',
             'email',
             'website',
-            'image',
             'type',
             'description',
-        ]));
+            'images',
+            'created_at',
+            'updated_at',
+        ];
+
+        // search
+        if ($request->filled('search')) {
+            $query->where('name', 'like', "%{$search}%")
+                ->orWhere('address', 'like', "%{$search}%")
+                ->orWhere('phone', 'like', "%{$search}%")
+                ->orWhere('email', 'like', "%{$search}%")
+                ->orWhere('website', 'like', "%{$search}%")
+                ->orWhere('type', 'like', "%{$search}%")
+                ->orWhere('description', 'like', "%{$search}%");
+        }
+
+        // order
+        if ($request->filled('order')) {
+            $query->orderBy($columns[$request->order[0]['column']], $request->order[0]['dir']);
+        }
+
+        $data = DataTable::paginate($query, $request);
+
+        return response()->json($data);
     }
 
     public function create()
@@ -41,19 +67,20 @@ class MitraProfileController extends Controller
 
     public function store(Request $request)
     {
+        // dd($request->all());
         $request->validate([
-            'name' => 'required|string|max:255',
-            'address' => 'required|string|max:255',
-            'phone' => 'required|string|max:15',
-            'email' => 'required|email|max:255',
-            'website' => 'nullable|url|max:255',
-            'type' => 'required|string|max:255',
-            'description' => 'required|string',
-            'images' => 'array|max:3',
+            'mitra_name' => 'required|string|max:255',
+            'mitra_address' => 'required|string|max:255',
+            'mitra_phone' => 'required|string|max:15',
+            'mitra_email' => 'required|email|max:255',
+            'mitra_website' => 'nullable|url|max:255',
+            'mitra_type' => 'required|string|max:255',
+            'mitra_description' => 'required|string',
+            'mitra_images' => 'array|max:3',
             'user_name' => 'required|string|max:255',
             'user_email' => 'required|string|email|max:255|unique:users,email',
             'user_password' => 'required|string|min:8|confirmed',
-            // 'role_id' => 'required|exists:roles,id',
+            // 'role_id' => 'required|exists:roles,id'
         ]);
 
         $images = [];
@@ -73,6 +100,7 @@ class MitraProfileController extends Controller
             'type' => $request->mitra_type,
             'description' => $request->mitra_description,
             'images' => json_encode($images),
+
         ]);
         $mitraRole = Role::where('name', 'Mitra')->firstOrFail();
 
@@ -80,7 +108,7 @@ class MitraProfileController extends Controller
             'name' => $request->user_name,
             'email' => $request->user_email,
             'password' => bcrypt($request->user_password),
-            'role_id' => $mitraRole->id,
+            // 'role_id' => $mitraRole->id,
         ]);
 
         return redirect()->route('mitra.index')->with('success', 'Mitra and User created successfully.');

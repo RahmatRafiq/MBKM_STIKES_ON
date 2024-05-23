@@ -19,14 +19,36 @@ class UserController extends Controller
 
     public function json(Request $request)
     {
-        $data = DataTable::paginate(User::class, $request, [
+        $search = $request->search['value'];
+        $query = User::query();
+
+        // columns
+        $columns = [
             'id',
-            'role_id',
             'name',
+            'roles',
             'email',
             'created_at',
             'updated_at',
-        ]);
+        ];
+
+        // load roles with search from Datatable ajax
+        $query->with('roles', function ($query) use ($search) {
+            $query->where('name', 'like', "%{$search}%");
+        });
+
+        // search
+        if ($request->filled('search')) {
+            $query->where('name', 'like', "%{$search}%")
+                ->orWhere('email', 'like', "%{$search}%");
+        }
+
+        // order
+        if ($request->filled('order')) {
+            $query->orderBy($columns[$request->order[0]['column']], $request->order[0]['dir']);
+        }
+
+        $data = DataTable::paginate($query, $request);
 
         return response()->json($data);
     }
@@ -116,7 +138,7 @@ class UserController extends Controller
 
         return redirect()->route('user.index')->with('success', 'User updated successfully.');
     }
-    
+
     public function destroy(User $user)
     {
         $user->delete();

@@ -19,6 +19,8 @@ class User extends Authenticatable
      * @var array<int, string>
      */
     protected $fillable = [
+
+        //id_dosen di ganti jadi "id" saja.
         'name',
         'email',
         'password',
@@ -47,11 +49,8 @@ class User extends Authenticatable
         return [
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
+            'created_at' => 'datetime:Y-m-d h:i:s',
+            'updated_at' => 'datetime:Y-m-d h:i:s',
         ];
-    }
-
-    public function role()
-    {
-        return $this->belongsTo(Role::class);
     }
 }

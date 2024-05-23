@@ -11,16 +11,19 @@ class DosenPembimbingLapangan extends Model
 
     protected $table = 'dosen_pembimbing_lapangan';
     protected $fillable = [
-        'users_id',
-        'roles_id',
+        'user_id',
         'name',
-        'image'
+        'image',
+        'address',
+        'phone',
+        'email',
+        'nip',
     ];
 
-    public function roles()
-    {
-        return $this->belongsTo(Roles::class, 'roles_id', 'id');
-    }
+    protected $casts = [
+        'created_at' => 'datetime:Y-m-d H:i:s',
+        'updated_at' => 'datetime:Y-m-d H:i:s',
+    ];  
 }
 
 
