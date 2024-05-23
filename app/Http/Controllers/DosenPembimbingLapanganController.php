@@ -72,7 +72,7 @@ class DosenPembimbingLapanganController extends Controller
         // Mengambil data dosen dari database kedua
         $dosen = Dosen::findOrFail($request->dosen_id);
 
-        $dosen = Dosen::findOrFail($request->dosen_id);
+        // $dosen = Dosen::findOrFail($request->dosen_id);
 
         // Check for existing email or name in DosenPembimbingLapangan
         if (DosenPembimbingLapangan::where('email', $dosen->email)->exists()) {
