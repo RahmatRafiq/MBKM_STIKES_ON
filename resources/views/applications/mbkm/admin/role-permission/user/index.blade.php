@@ -36,6 +36,7 @@
 @push('javascript')
     <script src="{{ asset('assets/DataTables/datatables.min.js') }}"></script>
     <script src="{{ asset('assets/js/sweetalert2.all.min.js') }}"></script>
+    <script src="{{ asset('assets/DataTables/dataTables.responsive.js') }}"></script>
     <script>
             $('#users').DataTable(
                 {
@@ -80,7 +81,7 @@
                             data: 'updated_at',
                         },
                         {
-                            data: 'action',
+                            data: 'id',
                             orderable: false,
                             searchable: false,
                             // RENDER
