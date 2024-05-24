@@ -17,8 +17,8 @@ class LowonganController extends Controller
 
     public function json(Request $request)
     {
+        $query = Lowongan::with('mitra');
         $search = $request->search['value'];
-        $query = Lowongan::with('mitra')->query(); // Include the mitra relationship
 
         // columns
         $columns = [
@@ -33,8 +33,6 @@ class LowonganController extends Controller
             'experience_required',
             'start_date',
             'end_date',
-            'created_at',
-            'updated_at',
         ];
 
         // search
@@ -90,8 +88,9 @@ class LowonganController extends Controller
         return redirect()->route('lowongan.index')->with('success', 'Lowongan created successfully.');
     }
 
-    public function edit(Lowongan $lowongan)
+    public function edit($id)
     {
+        $lowongan = Lowongan::findOrFail($id);
         $mitraProfile = MitraProfile::all();
         return view('applications.mbkm.lowongan-mitra.edit', compact('lowongan', 'mitraProfile'));
     }

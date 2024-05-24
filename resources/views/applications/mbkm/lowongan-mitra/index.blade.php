@@ -21,30 +21,14 @@
                         <th>Lokasi</th>
                         <th>IPK</th>
                         <th>Semester</th>
+                        <th>Pengalaman</th>
                         <th>Tanggal Mulai</th>
                         <th>Tanggal Berakhir</th>
                         <th>Aksi</th>
                     </tr>
                 </thead>
                 <tbody>
-                    @foreach($lowongan as $lowongan)
-                    <tr>
-                        <td>{{ $lowongan->name }}</td>
-                        <td>{{ $lowongan->mitra->name }}</td>
-                        <td>{{ $lowongan->description }}</td>
-                        <td>{{ $lowongan->quota }}</td>
-                        <td>{{ $lowongan->is_open ? 'Open' : 'Closed' }}</td>
-                        <td>{{ $lowongan->location }}</td>
-                        <td>{{ $lowongan->gpa }}</td>
-                        <td>{{ $lowongan->semester }}</td>
-                        <td>{{ $lowongan->start_date }}</td>
-                        <td>{{ $lowongan->end_date }}</td>
-                        <td>
-                            <a href="{{ route('lowongan.edit', $lowongan->id) }}" class="btn btn-primary btn-sm mr-2">Edit</a>
-                            <button class="btn btn-danger btn-sm" onclick="deleteRow({{ $lowongan->id }})">Delete</button>
-                        </td>
-                    </tr>
-                    @endforeach
+
                 </tbody>
             </table>
         </div>
@@ -52,10 +36,11 @@
 </div>
 @endsection
 
-{{-- 
+
 @push('css')
 <link rel="stylesheet" href="{{ asset('assets/DataTables/datatables.min.css') }}">
 <link rel="stylesheet" href="{{ asset('assets/DataTables/custom.css') }}">
+<link rel="stylesheet" href="{{ asset('assets/css/badges.css') }}">
 @endpush
 
 @push('javascript')
@@ -82,8 +67,12 @@
             {
                 data: 'name',
             }, 
-            { 
-                data: 'mitra.name', name: 'mitra.name' 
+            {
+                data: 'mitra.name',
+                name: 'mitra.name',
+                render: function(data, type, row) {
+                    return row.mitra ? row.mitra.name : '-';
+                }
             }, 
             {
                 data: 'description',
@@ -92,7 +81,13 @@
                 data: 'quota',
             }, 
             { 
-                data: 'is_open', render: function(data) { return data ? 'Open' : 'Closed'; } 
+                //render is_open with badge
+                data: 'is_open',
+                render: function(data, type, row) {
+                    const badgeClass = data ? 'success' : 'danger';
+                    const badgeText = data ? 'Open' : 'Closed';
+                    return `<span class="badge bg-${badgeClass}">${badgeText}</span>`;
+                }
             },
             {
                 data: 'location',
@@ -104,7 +99,7 @@
                 data: 'semester',
             }, 
             {
-                data: 'experience',
+                data: 'experience_required',
             }, 
             {
                 data: 'start_date',
@@ -119,13 +114,14 @@
                 render: function(data, type, row) {
                     // create element
                     const editButton = document.createElement('a');
-                    editButton.classList.add('btn', 'btn-primary', 'btn-sm', 'mr-2');
+                    editButton.classList.add('btn', 'btn-primary', 'me-2');
                     editButton.href = `{{ route('lowongan.edit', ':id') }}`.replace(
-                        ':id', row.id
+                        ':id',
+                        row.id
                     );
                     editButton.textContent = 'Edit';
 
-                    // delete use Swal as confirmation
+                                // delete use Swal as confirmation
                     const deleteButton = document.createElement('button');
                     deleteButton.classList.add('btn', 'btn-danger');
                     deleteButton.textContent = 'Delete';
@@ -146,34 +142,40 @@
     });
 
     function deleteRow(id) {
-        const url = `{{ route('lowongan.destroy', ':id') }}`;
-        Swal.fire({
-            title: 'Are you sure?',
-            text: 'You will not be able to recover this Lowongan!',
-            icon: 'warning',
-            showCancelButton: true,
-            confirmButtonText: 'Yes, delete it!',
-            cancelButtonText: 'No, keep it',
-        }).then((result) => {
-            if (result.isConfirmed) {
-                $.ajax({
-                    url: url.replace(':id', id),
-                    type: 'POST',
-                    data: {
-                        _token: '{{ csrf_token() }}',
-                        _method: 'DELETE',
-                    },
-                    succes: function (response){
-                        $(`#lowongan`).DataTable().ajax.reload();
-                        Swal.fire('Deleted!', 'Lowongan has been deleted.', 'success');
-                        
-                    },
-                    error: function (response){
-                        Swal.fire('Error!', 'Lowongan cannot be deleted.', 'error');
-                    }
-                });
-            }
-        });
-    }
+            const url = `{{ route('lowongan.destroy', ':id') }}`
+            // console
+            console.log(
+                'deleteRow -> id',
+                id,
+                url,
+                url.replace(':id', id)
+            );
+            Swal.fire({
+                title: 'Are you sure?',
+                text: 'You will not be able to recover this Lowongan!',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonText: 'Yes, delete it!',
+                cancelButtonText: 'No, keep it',
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    $.ajax({
+                        url: url.replace(':id', id),
+                        type: 'POST',
+                        data: {
+                            _token: '{{ csrf_token() }}',
+                            _method: 'DELETE',
+                        },
+                        success: function(response) {
+                            $('#lowongan').DataTable().ajax.reload();
+                            Swal.fire('Deleted!', 'Lowongan has been deleted.', 'success');
+                        },
+                        error: function(xhr) {
+                            Swal.fire('Error!', 'Failed to delete Lowongan.', 'error');
+                        }
+                    });
+                }
+            });
+        }
 </script>
-@endpush --}}
+@endpush
