@@ -31,7 +31,7 @@
 @endsection
 @push('css')
     <link rel="stylesheet" href="{{ asset('assets/DataTables/datatables.min.css') }}">
-    <link rel="stylesheet" href="{{ asset('assets/css/bg-role.css') }}">
+    <link rel="stylesheet" href="{{ asset('assets/css/badges.css') }}">
 @endpush
 @push('javascript')
     <script src="{{ asset('assets/DataTables/datatables.min.js') }}"></script>
@@ -87,7 +87,7 @@
                             render: function(data, type, row) {
                                 // create element
                                 const editButton = document.createElement('a');
-                                editButton.classList.add('btn', 'btn-primary');
+                                editButton.classList.add('btn', 'btn-primary', 'me-2');
                                 editButton.href = `{{ route('user.edit', ':id') }}`.replace(
                                     ':id',
                                     row.id
