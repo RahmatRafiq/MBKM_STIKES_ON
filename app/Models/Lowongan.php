@@ -9,7 +9,10 @@ class Lowongan extends Model
 {
     use HasFactory;
 
+    protected $table = 'lowongans';
+
     protected $fillable = [
+        'id',
         'name',
         'mitra_id',
         'description',
@@ -22,6 +25,12 @@ class Lowongan extends Model
         'start_date',
         'end_date',
     ];
+
+    protected $casts = [
+        'created_at' => 'datetime:Y-m-d H:i:s',
+        'updated_at' => 'datetime:Y-m-d H:i:s',
+    ];
+
     public function mitra()
     {
         return $this->belongsTo(MitraProfile::class);
