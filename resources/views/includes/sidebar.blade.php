@@ -74,6 +74,12 @@ $items = [
                     <span class="menu-text">Lowongan (Mitra)</span>
                 </a>
             </li>
+            <li class="{{ request()->routeIs('peserta.index') ? 'active current-page' : '' }}">
+                <a href="{{ route('peserta.index') }}">
+                    <i class="bi bi-box"></i>
+                    <span class="menu-text">Peserta(Staff)</span>
+                </a>
+            </li>
         </ul>
     </div>
 </nav>
