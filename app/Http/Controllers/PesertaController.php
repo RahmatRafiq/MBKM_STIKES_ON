@@ -132,5 +132,10 @@ class PesertaController extends Controller
         return redirect()->route('peserta.index')->with('success', 'Peserta updated successfully');
     }
 
-    
+    public function destroy(Peserta $peserta) // Gunakan model binding
+    {
+        $peserta->delete();
+
+        return redirect()->route('peserta.index')->with('success', 'Peserta deleted successfully');
+    }
 }
