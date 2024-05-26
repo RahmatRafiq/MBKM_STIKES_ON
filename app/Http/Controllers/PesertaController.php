@@ -100,40 +100,6 @@ class PesertaController extends Controller
         return redirect()->route('peserta.index')->with('success', 'Peserta created successfully');
     }
 
-    // public function edit(Peserta $peserta)
-    // {
-    //     $mahasiswa = Mahasiswa::all();
-
-    //     return view('applications.mbkm.peserta.edit', compact('peserta', 'mahasiswa'));
-    // }
-
-    // public function update(Request $request, $id)
-    // {
-    //     $request->validate([
-    //         'name' => 'required|string|max:255',
-    //         'nim' => 'required|string|max:255',
-    //         'email' => 'required|email',
-    //         'jurusan' => 'required|string|max:255',
-    //         'tanggal_lahir' => 'required|date',
-    //         'jenis_kelamin' => 'required',
-    //         'alamat' => 'required|string',
-    //         'telepon' => 'required|string',
-    //     ]);
-
-    //     $peserta = Peserta::findOrFail($id);
-    //     $peserta->update([
-    //         'name' => $request->name,
-    //         'nim' => $request->nim,
-    //         'email' => $request->email,
-    //         'jurusan' => $request->jurusan,
-    //         'tanggal_lahir' => $request->tanggal_lahir,
-    //         'jenis_kelamin' => $request->jenis_kelamin,
-    //         'alamat' => $request->alamat,
-    //         'telepon' => $request->telepon,
-    //     ]);
-
-    //     return redirect()->route('peserta.index')->with('success', 'Peserta updated successfully');
-    // }
 
     public function edit(Peserta $peserta) // Pastikan parameter ini konsisten dengan route
     {
@@ -165,4 +131,6 @@ class PesertaController extends Controller
 
         return redirect()->route('peserta.index')->with('success', 'Peserta updated successfully');
     }
+
+    
 }
