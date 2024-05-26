@@ -59,20 +59,22 @@ class PesertaController extends Controller
     public function create()
     {
         $mahasiswa = Mahasiswa::all();
+
         return view('applications.mbkm.peserta.create', compact('mahasiswa'));
     }
 
     public function store(Request $request)
     {
+        // dd($request->all());
         $request->validate([
-           'mahasiswa_id' => 'required|exists:mysql_second,mahasiswa,id',
-           'password' => 'required|confirmed|min:8',
+            'mahasiswa_id' => 'required|exists:mysql_second.mahasiswa,id',
+            'password' => 'required|confirmed|min:8',
         ]);
 
         $mahasiswa = Mahasiswa::findOrFail($request->mahasiswa_id);
 
-        if (Mahasiswa::where('email', $mahasiswa->email)->exists()) {
-            return back()->withErrors(['email' => 'Email already exists in Dosen Pembimbing Lapangan'])->withInput();
+        if (Peserta::where('email', $mahasiswa->email)->exists()) {
+            return back()->withErrors(['email' => 'Email already exists in Peserta'])->withInput();
         }
 
         $user = User::create([
@@ -85,18 +87,17 @@ class PesertaController extends Controller
         $user->assignRole($role);
 
         Peserta::create([
-            'user_id' => $user->id,
-            'nim' => $mahasiswa->nim,
-            'nama' => $mahasiswa->nama,
-            'alamat' => $mahasiswa->alamat,
-            'jurusan' => $mahasiswa->jurusan,
-            'email' => $mahasiswa->email,
-            'telepon' => $mahasiswa->telepon,
-            'jenis_kelamin' => $mahasiswa->jenis_kelamin,
+            'user_id' => $user->id ?? null,
+            'nim' => $mahasiswa->nim ?? null,
+            'nama' => $mahasiswa->nama ?? null,
+            'alamat' => $mahasiswa->alamat ?? null,
+            'jurusan' => $mahasiswa->jurusan ?? null,
+            'email' => $mahasiswa->email ?? null,
+            'telepon' => $mahasiswa->telepon ?? null,
+            'jenis_kelamin' => $mahasiswa->jenis_kelamin ?? null,
         ]);
 
         return redirect()->route('peserta.index')->with('success', 'Peserta created successfully');
-
     }
 
 }

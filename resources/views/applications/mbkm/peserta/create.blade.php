@@ -18,7 +18,7 @@
                                         @foreach ($mahasiswa as $item)
                                             <option value="{{ $item->id }}"
                                                 {{ old('mahasiswa_id') == $item->id ? 'selected' : '' }}>
-                                                {{ $item->nama }} - {{ $item->nim }}
+                                                {{ $item->nama }} - {{ $item->email }}
                                             </option>
                                         @endforeach
                                     </select>
@@ -29,22 +29,6 @@
                             </div>
                         </div>
                     </div>
-                    <div class="col-lg-4 col-sm-6 col-12">
-                        <div class="card mb-3">
-                            <div class="card-body">
-                                <div class="m-0">
-                                    <label for="email" class="form-label">Email</label>
-                                    <input type="email" name="email" id="email"
-                                        class="form-control @error('email') is-invalid @enderror" required>
-                                    @error('email')
-                                        <div class="invalid-feedback">{{ $message }}</div>
-                                    @enderror
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="row gx-3">
                     <div class="col-lg-4 col-sm-6 col-12">
                         <div class="card mb-3">
                             <div class="card-body">
