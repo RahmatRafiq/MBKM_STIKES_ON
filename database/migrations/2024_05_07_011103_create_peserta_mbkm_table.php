@@ -6,22 +6,31 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-    /**
-     * Run the migrations.
-     */
+    
     public function up(): void
     {
-        Schema::create('peserta_mbkm', function (Blueprint $table) {
+        Schema::create('peserta', function (Blueprint $table) {
             $table->id();
+            $table->integer('user_id')->unsigned();
+            $table->string('nama');
+            $table->string('nim')->unique();
+            $table->string('email')->unique();
+            $table->string('jurusan');
+            $table->date('tanggal_lahir');
+            $table->string('jenis_kelamin');
+            $table->string('alamat');
+            $table->string('telepon');
             $table->timestamps();
         });
     }
 
     /**
      * Reverse the migrations.
+     *
+     * @return void
      */
-    public function down(): void
+    public function down()
     {
-        Schema::dropIfExists('peserta_mbkm');
+        Schema::dropIfExists('peserta');
     }
 };

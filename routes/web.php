@@ -35,6 +35,9 @@ Route::middleware('auth')->group(function () {
 
     Route::resource('mbkm/staff/dospem', \App\Http\Controllers\DosenPembimbingLapanganController::class);
     Route::post('mbkm/staff/dospem/json', [\App\Http\Controllers\DosenPembimbingLapanganController::class, 'json'])->name('dospem.json');
+
+    Route::resource('mbkm/staff/peserta', \App\Http\Controllers\PesertaController::class);
+    Route::post('mbkm/staff/peserta/json', [\App\Http\Controllers\PesertaController::class, 'json'])->name('peserta.json');
 });
 require __DIR__ . '/auth.php';
 
