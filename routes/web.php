@@ -36,6 +36,16 @@ Route::middleware('auth')->group(function () {
 
     Route::resource('mbkm/staff/dospem', \App\Http\Controllers\DosenPembimbingLapanganController::class);
     Route::post('mbkm/staff/dospem/json', [\App\Http\Controllers\DosenPembimbingLapanganController::class, 'json'])->name('dospem.json');
+
+    // Route::resource('mbkm/staff/peserta', \App\Http\Controllers\PesertaController::class);
+    Route::get('mbkm/staff/peserta', [\App\Http\Controllers\PesertaController::class, 'index'])->name('peserta.index');
+    Route::get('mbkm/staff/peserta/create', [\App\Http\Controllers\PesertaController::class, 'create'])->name('peserta.create');
+    Route::post('mbkm/staff/peserta', [\App\Http\Controllers\PesertaController::class, 'store'])->name('peserta.store');
+    Route::get('mbkm/staff/peserta/{peserta}', [\App\Http\Controllers\PesertaController::class, 'show'])->name('peserta.show');
+    Route::get('mbkm/staff/peserta/{peserta}/edit', [\App\Http\Controllers\PesertaController::class, 'edit'])->name('peserta.edit');
+    Route::put('mbkm/staff/peserta/{peserta}', [\App\Http\Controllers\PesertaController::class, 'update'])->name('peserta.update');
+    Route::delete('mbkm/staff/peserta/{peserta}', [\App\Http\Controllers\PesertaController::class, 'destroy'])->name('peserta.destroy');
+    Route::post('mbkm/staff/peserta/json', [\App\Http\Controllers\PesertaController::class, 'json'])->name('peserta.json');
 });
 require __DIR__ . '/auth.php';
 
