@@ -15,7 +15,9 @@ class RegistrasiController extends Controller
     {
         // Mengambil semua lowongan yang tersedia
         $lowongans = Lowongan::all();
+        // dd(auth()->user());
         return view('applications/mbkm/staff/registrasi-program/peserta.registrasi', compact('lowongans'));
+   
     }
 
     // Method untuk menampilkan halaman registrasi staff
