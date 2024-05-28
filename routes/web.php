@@ -3,6 +3,8 @@
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\RegistrasiController;
+
 
 
 Route::middleware('auth')->group(function () {
@@ -46,6 +48,20 @@ Route::middleware('auth')->group(function () {
     Route::put('mbkm/staff/peserta/{peserta}', [\App\Http\Controllers\PesertaController::class, 'update'])->name('peserta.update');
     Route::delete('mbkm/staff/peserta/{peserta}', [\App\Http\Controllers\PesertaController::class, 'destroy'])->name('peserta.destroy');
     Route::post('mbkm/staff/peserta/json', [\App\Http\Controllers\PesertaController::class, 'json'])->name('peserta.json');
+
+
+    // Route::get('/registrasi', [\App\Http\Controllers\RegistrasiController::class, 'index'])->name('registrasi.index');
+    // Route::get('/peserta-registrasi', [\App\Http\Controllers\RegistrasiController::class, 'showPesertaRegistrasiForm'])->name('peserta.registrasiForm');
+    // Route::post('/registrasi', [\App\Http\Controllers\RegistrasiController::class, 'store'])->name('registrasi.store');
+    // Route::put('/registrasi/{id}', [\App\Http\Controllers\RegistrasiController::class, 'update'])->name('registrasi.update');
+    // Route::post('/registrasi/{id}/accept', [\App\Http\Controllers\RegistrasiController::class, 'acceptOffer'])->name('registrasi.acceptOffer');
+    // Route::get('/peserta/registrasi', [\App\Http\Controllers\RegistrasiController::class, 'showPesertaRegistrasiForm'])->name('peserta.registrasiForm');
+
+    Route::get('/peserta/registrasi', [RegistrasiController::class, 'showPesertaRegistrasiForm'])->name('peserta.registrasiForm');
+    Route::post('/peserta/registrasi', [RegistrasiController::class, 'store'])->name('peserta.registrasi');
+    Route::get('/staff/registrasi', [RegistrasiController::class, 'index'])->name('staff.registrasiIndex');
+    Route::put('/staff/registrasi/{id}', [RegistrasiController::class, 'update'])->name('staff.updateRegistrasi');
+    Route::post('/peserta/registrasi/{id}/accept', [RegistrasiController::class, 'acceptOffer'])->name('peserta.acceptOffer');
 });
 require __DIR__ . '/auth.php';
 

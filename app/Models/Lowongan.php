@@ -35,4 +35,9 @@ class Lowongan extends Model
     {
         return $this->belongsTo(MitraProfile::class);
     }
+
+    public function registrations()
+    {
+        return $this->hasMany(Registration::class);
+    }
 }

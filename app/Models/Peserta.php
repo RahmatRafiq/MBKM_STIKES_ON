@@ -28,4 +28,8 @@ class Peserta extends Model
         'updated_at' => 'datetime:Y-m-d H:i:s',
         'tanggal_lahir' => 'date:Y-m-d',
     ];
+    public function registrations()
+{
+    return $this->hasMany(Registrasi::class);
+}
 }
