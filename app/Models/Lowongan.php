@@ -9,6 +9,8 @@ class Lowongan extends Model
 {
     use HasFactory;
 
+    protected $table = 'lowongan'; // Sesuaikan nama tabel
+
     protected $fillable = [
         'name',
         'mitra_id',
@@ -22,13 +24,14 @@ class Lowongan extends Model
         'start_date',
         'end_date',
     ];
+
     public function mitra()
     {
-        return $this->belongsTo(MitraProfile::class);
+        return $this->belongsTo(MitraProfile::class, 'mitra_id');
     }
 
     public function registrations()
     {
-        return $this->hasMany(Registration::class);
+        return $this->hasMany(Registrasi::class, 'lowongan_id');
     }
 }

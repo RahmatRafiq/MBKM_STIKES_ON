@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -14,7 +15,7 @@ class Registrasi extends Model
         'peserta_id',
         'lowongan_id',
         'status',
-        'mentor_id',
+        'dospem_id', // Sesuaikan dengan nama kolom yang digunakan
     ];
 
     protected $casts = [
@@ -32,7 +33,7 @@ class Registrasi extends Model
         return $this->belongsTo(Lowongan::class, 'lowongan_id');
     }
 
-    public function mentor()
+    public function dospem()
     {
         return $this->belongsTo(DosenPembimbingLapangan::class, 'dospem_id');
     }

@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Registrasi;
 use App\Models\Lowongan;
+use App\Models\Peserta;
 use App\Models\DosenPembimbingLapangan;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
@@ -15,9 +16,7 @@ class RegistrasiController extends Controller
     {
         // Mengambil semua lowongan yang tersedia
         $lowongans = Lowongan::all();
-        // dd(auth()->user());
         return view('applications/mbkm/staff/registrasi-program/peserta.registrasi', compact('lowongans'));
-   
     }
 
     // Method untuk menampilkan halaman registrasi staff
@@ -30,13 +29,15 @@ class RegistrasiController extends Controller
         return view('applications/mbkm/staff/registrasi-program/staff.registrasi', compact('registrations', 'dospems'));
     }
 
-    // Method untuk mendaftarkan peserta pada lowongan
+
     public function store(Request $request)
     {
+        // dd(Peserta::all(), $request->all()); // Tambahkan ini untuk debug
+
         // Validasi input dari request
         $request->validate([
-            'peserta_id' => 'required|exists:peserta,id',
-            'lowongan_id' => 'required|exists:lowongans,id',
+            'peserta_id' => 'required|exists:peserta,user_id',
+            'lowongan_id' => 'required|exists:lowongan,id',
         ]);
 
         $pesertaId = $request->input('peserta_id');
@@ -48,7 +49,7 @@ class RegistrasiController extends Controller
 
         // Cek apakah peserta sudah mendaftar pada lowongan dari tipe mitra yang sama
         $existingRegistration = Registrasi::where('peserta_id', $pesertaId)
-            ->whereHas('lowongan.mitra', function($query) use ($mitraType) {
+            ->whereHas('lowongan.mitra', function ($query) use ($mitraType) {
                 $query->where('type', $mitraType);
             })
             ->first();
@@ -68,6 +69,34 @@ class RegistrasiController extends Controller
     }
 
     // Method untuk mengubah status registrasi
+    // public function update(Request $request, $id)
+    // {
+    //     // Validasi input dari request
+    //     $request->validate([
+    //         'status' => 'required|in:registered,processed,accepted,rejected',
+    //         'dospem_id' => 'sometimes|exists:dosen_pembimbing_lapangan,id',
+    //     ]);
+
+    //     // Mengambil data registrasi berdasarkan ID
+    //     $registration = Registrasi::find($id);
+    //     $registration->status = $request->input('status');
+
+    //     // Jika status diterima dan dosen pembimbing ID disediakan, tambahkan dosen pembimbing
+    //     if ($request->input('status') == 'accepted' && $request->input('dospem_id')) {
+    //         $registration->dospem_id = $request->input('dospem_id');
+    //     }
+
+    //     $registration->save();
+
+    //     // Jika status diterima, tolak semua registrasi lain dari peserta yang sama
+    //     if ($request->input('status') == 'accepted') {
+    //         Registrasi::where('peserta_id', $registration->peserta_id)
+    //                     ->where('lowongan_id', '!=', $registration->lowongan_id)
+    //                     ->update(['status' => 'rejected']);
+    //     }
+
+    //     return back()->with('success', 'Status registrasi berhasil diupdate.');
+    // }
     public function update(Request $request, $id)
     {
         // Validasi input dari request
@@ -90,8 +119,8 @@ class RegistrasiController extends Controller
         // Jika status diterima, tolak semua registrasi lain dari peserta yang sama
         if ($request->input('status') == 'accepted') {
             Registrasi::where('peserta_id', $registration->peserta_id)
-                        ->where('lowongan_id', '!=', $registration->lowongan_id)
-                        ->update(['status' => 'rejected']);
+                ->where('lowongan_id', '!=', $registration->lowongan_id)
+                ->update(['status' => 'rejected']);
         }
 
         return back()->with('success', 'Status registrasi berhasil diupdate.');

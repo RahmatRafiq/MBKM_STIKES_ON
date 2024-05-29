@@ -1,4 +1,3 @@
-<!-- resources/views/applications/mbkm/staff/registrasi-program/staff/registrasi.blade.php -->
 @extends('layouts.app')
 
 @section('content')
@@ -18,8 +17,8 @@
             @foreach($registrations as $registration)
                 <tr>
                     <td>{{ $registration->id }}</td>
-                    <td>{{ $registration->peserta->nama }}</td>
-                    <td>{{ $registration->lowongan->name }}</td>
+                    <td>{{ optional($registration->peserta)->nama }}</td>
+                    <td>{{ optional($registration->lowongan)->name }}</td>
                     <td>{{ $registration->status }}</td>
                     <td>
                         <form action="{{ route('staff.updateRegistrasi', $registration->id) }}" method="POST">
