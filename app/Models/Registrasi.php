@@ -23,6 +23,7 @@ class Registrasi extends Model
         'updated_at' => 'datetime:Y-m-d H:i:s',
     ];
 
+    // Registrasi.php
     public function peserta()
     {
         return $this->belongsTo(Peserta::class, 'peserta_id');

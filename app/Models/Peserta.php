@@ -30,7 +30,10 @@ class Peserta extends Model
     ];
 
     public function registrations()
-    {
+    { 
         return $this->hasMany(Registrasi::class, 'peserta_id');
     }
+
 }
+
+
