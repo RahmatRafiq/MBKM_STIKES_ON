@@ -1,7 +1,5 @@
 @extends('layouts.app')
 
-{{-- @section('title', 'Daftar Registrasi dan Terima Tawaran') --}}
-
 @section('content')
 <div class="container mt-4">
     <div class="card">
