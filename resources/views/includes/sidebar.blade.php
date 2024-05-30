@@ -80,6 +80,19 @@ $items = [
                     <span class="menu-text">Peserta(Staff)</span>
                 </a>
             </li>
+            <li class="{{ request()->routeIs('peserta.registrasiForm') ? 'active current-page' : '' }}">
+                <a href="{{ route('peserta.registrasiForm') }}">
+                    <i class="bi bi-box"></i>
+                    <span class="menu-text">Registrasi Peserta(Peserta)</span>
+                </a>
+            </li>
+            <li class="{{ request()->routeIs('staff.registrasiIndex') ? 'active current-page' : '' }}">
+                <a href="{{ route('staff.registrasiIndex') }}">
+                    <i class="bi bi-box"></i>
+                    <span class="menu-text">Daftar Registrasi Peserta(Staff)</span>
+                </a>
+            </li>
+          
         </ul>
     </div>
 </nav>

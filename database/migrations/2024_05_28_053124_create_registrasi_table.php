@@ -14,6 +14,7 @@ return new class extends Migration
         Schema::create('registrasi', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger('peserta_id');
+            // $table->string('nama_peserta');
             $table->unsignedBigInteger('lowongan_id');
             $table->string('status')->default('registered'); // Ubah status menjadi string
             $table->unsignedBigInteger('dospem_id')->nullable();

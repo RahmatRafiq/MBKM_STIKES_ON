@@ -14,12 +14,11 @@
                 </tr>
             </thead>
             <tbody>
-                {{-- {{ dd($registrations) }} --}}
                 @foreach ($registrations as $registration)
                     <tr>
                         <td>{{ $registration->id }}</td>
-                        
-                        <td>{{ optional($registration->lowongan)->nama }}</td>
+                        <td>{{ $registration->nama_peserta }}</td>
+                        <td>{{ $registration->nama_lowongan }}</td>
                         <td>{{ $registration->status }}</td>
                         <td>
                             <form action="{{ route('staff.updateRegistrasi', $registration->id) }}" method="POST">

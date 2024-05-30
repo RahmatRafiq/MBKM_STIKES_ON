@@ -41,27 +41,4 @@
     </table>
 </div>
 @endsection
-// resources/views/applications/mbkm/staff/registrasi-program/peserta_accept_offer.blade.php
 
-{{-- @extends('layouts.app')
-
-@section('content')
-    <h1>Terima Tawaran</h1>
-    <form action="{{ route('registrasi.update', $registration->id) }}" method="POST">
-        @csrf
-        @method('PUT')
-        <label for="status">Status:</label>
-        <select name="status" required>
-            <option value="processed">Proses</option>
-            <option value="accepted">Diterima</option>
-            <option value="rejected">Ditolak</option>
-        </select>
-        <label for="dospem_id">Pilih Dosen Pembimbing Lapangan:</label>
-        <select name="dospem_id">
-            @foreach($dospems as $dospem)
-                <option value="{{ $dospem->id }}">{{ $dospem->nama }}</option>
-            @endforeach
-        </select>
-        <button type="submit">Submit</button>
-    </form>
-@endsection --}}

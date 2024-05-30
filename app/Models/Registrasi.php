@@ -15,9 +15,11 @@ class Registrasi extends Model
         'peserta_id',
         'lowongan_id',
         'status',
-        'dospem_id', // Sesuaikan dengan nama kolom yang digunakan
+        'dospem_id',
+        'nama_peserta',
+        'nama_lowongan',
     ];
-
+    
     protected $casts = [
         'created_at' => 'datetime:Y-m-d H:i:s',
         'updated_at' => 'datetime:Y-m-d H:i:s',
