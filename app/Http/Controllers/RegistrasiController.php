@@ -43,8 +43,14 @@ class RegistrasiController extends Controller
 
         $mitraType = $lowongan->mitra->type;
 
+        $existingAcceptedRegistration = Registrasi::where('peserta_id', $pesertaId)
+            ->whereIn('status', ['accepted', 'accepted_offer'])
+            ->first();
 
-        
+        if ($existingAcceptedRegistration) {
+            return back()->withErrors('error', 'Peserta sudah memiliki tawaran yang diterima. Tidak dapat mendaftar di lowongan lain.');
+        }
+
         $existingRegistration = Registrasi::where('peserta_id', $pesertaId)
             ->whereHas('lowongan.mitra', function ($query) use ($mitraType) {
                 $query->where('type', $mitraType);
@@ -52,7 +58,7 @@ class RegistrasiController extends Controller
             ->first();
 
         if ($existingRegistration) {
-            return back()->with('error', 'Peserta sudah mendaftar pada lowongan dari tipe mitra yang sama.');
+            return back()->withErrors('error', 'Peserta sudah mendaftar pada lowongan dari tipe mitra yang sama.');
         }
 
         Registrasi::create([
@@ -96,7 +102,7 @@ class RegistrasiController extends Controller
         $registration = Registrasi::find($id);
 
         if ($registration->status != 'accepted') {
-            return back()->with('error', 'Tawaran hanya dapat diambil jika diterima.');
+            return back()->withErrors('error', 'Tawaran hanya dapat diambil jika diterima.');
         }
 
         $registration->dospem_id = $request->input('dospem_id');
