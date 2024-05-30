@@ -3,6 +3,8 @@
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\RegistrasiController;
+
 
 
 Route::middleware('auth')->group(function () {
@@ -46,6 +48,16 @@ Route::middleware('auth')->group(function () {
     Route::put('mbkm/staff/peserta/{peserta}', [\App\Http\Controllers\PesertaController::class, 'update'])->name('peserta.update');
     Route::delete('mbkm/staff/peserta/{peserta}', [\App\Http\Controllers\PesertaController::class, 'destroy'])->name('peserta.destroy');
     Route::post('mbkm/staff/peserta/json', [\App\Http\Controllers\PesertaController::class, 'json'])->name('peserta.json');
+
+
+    Route::get('/peserta/registrasi', [RegistrasiController::class, 'showPesertaRegistrasiForm'])->name('peserta.registrasiForm');
+    Route::post('/peserta/registrasi', [RegistrasiController::class, 'store'])->name('peserta.registrasi');
+    Route::post('/peserta/registrasi/{id}/accept', [RegistrasiController::class, 'acceptOffer'])->name('peserta.acceptOffer');
+    Route::get('/registrasi/{id}/registrations-and-accept-offer', [RegistrasiController::class, 'showRegistrationsAndAcceptOffer'])->name('registrasi.registrations-and-accept-offer');
+    Route::get('/staff/registrasi', [RegistrasiController::class, 'index'])->name('staff.registrasiIndex');
+    Route::put('/staff/registrasi/{id}', [RegistrasiController::class, 'update'])->name('staff.updateRegistrasi');
+    
+
 });
 require __DIR__ . '/auth.php';
 
