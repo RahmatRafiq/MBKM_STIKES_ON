@@ -48,7 +48,7 @@ class RegistrasiController extends Controller
             ->first();
 
         if ($existingAcceptedRegistration) {
-            return back()->withErrors('error', 'Peserta sudah memiliki tawaran yang diterima. Tidak dapat mendaftar di lowongan lain.');
+            return back()->withErrors(['Error'=>'Peserta sudah memiliki tawaran yang diterima. Tidak dapat mendaftar di lowongan lain.']);
         }
 
         $existingRegistration = Registrasi::where('peserta_id', $pesertaId)
@@ -58,7 +58,7 @@ class RegistrasiController extends Controller
             ->first();
 
         if ($existingRegistration) {
-            return back()->withErrors('error', 'Peserta sudah mendaftar pada lowongan dari tipe mitra yang sama.');
+            return back()->withErrors(['error' => 'Peserta sudah mendaftar pada lowongan dari tipe mitra yang sama.']);
         }
 
         Registrasi::create([
