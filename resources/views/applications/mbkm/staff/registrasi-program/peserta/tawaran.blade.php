@@ -1,4 +1,3 @@
-<!-- resources/views/peserta/tawaran.blade.php -->
 @extends('layouts.app')
 
 @section('content')
@@ -21,7 +20,7 @@
                     <td>{{ $registration->lowongan->name }}</td>
                     <td>{{ $registration->status }}</td>
                     <td>
-                        <form action="{{ route('registrasi.acceptOffer', $registration->id) }}" method="POST">
+                        <form action="{{ route('peserta.acceptOffer', $registration->id) }}" method="POST">
                             @csrf
                             <div class="form-group">
                                 <label for="dospem_id">Pilih Dosen Pembimbing</label>
@@ -41,4 +40,3 @@
     </table>
 </div>
 @endsection
-
