@@ -27,13 +27,6 @@
                             @if($registration->status == 'accepted')
                             <form action="{{ route('peserta.acceptOffer', $registration->id) }}" method="POST">
                                 @csrf
-                                <div class="form-group">
-                                    <select name="dospem_id" class="form-control" required>
-                                        @foreach($dospems as $dospem)
-                                            <option value="{{ $dospem->id }}">{{ $dospem->name }}</option>
-                                        @endforeach
-                                    </select>
-                                </div>
                                 <button type="submit" class="btn btn-success">Terima Tawaran</button>
                             </form>
                             @else

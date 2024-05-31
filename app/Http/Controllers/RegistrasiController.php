@@ -75,15 +75,17 @@ class RegistrasiController extends Controller
 
     public function update(Request $request, $id)
     {
+        // dd($request->all());
         $request->validate([
-            'status' => 'required|in:registered,processed,accepted,rejected',
-            'dospem_id' => 'sometimes|exists:dosen_pembimbing_lapangan,id',
+            'status' => 'required|in:registered,processed,accepted,rejected,accepted_offer',
+            'dospem_id' => 'nullable|exists:dosen_pembimbing_lapangan,id',
         ]);
 
         $registration = Registrasi::find($id);
         $registration->status = $request->input('status');
 
-        if ($request->input('status') == 'accepted' && $request->input('dospem_id')) {
+        // Hanya jika status 'accepted_offer' dan dospem_id disertakan
+        if ($request->input('status') == 'accepted_offer' && $request->has('dospem_id')) {
             $registration->dospem_id = $request->input('dospem_id');
         }
 
@@ -92,8 +94,7 @@ class RegistrasiController extends Controller
         return back()->with('success', 'Status registrasi berhasil diupdate.');
     }
 
-
-    public function acceptOffer(Request $request, $id)
+    public function updateDospem(Request $request, $id)
     {
         $request->validate([
             'dospem_id' => 'required|exists:dosen_pembimbing_lapangan,id',
@@ -101,11 +102,31 @@ class RegistrasiController extends Controller
 
         $registration = Registrasi::find($id);
 
-        if ($registration->status != 'accepted') {
-            return back()->withErrors('error', 'Tawaran hanya dapat diambil jika diterima.');
+        // Pastikan status adalah accepted_offer sebelum memperbarui dospem_id
+        if ($registration->status != 'accepted_offer') {
+            return back()->withErrors('Status registrasi harus "accepted_offer" untuk memperbarui dosen pembimbing.');
         }
 
         $registration->dospem_id = $request->input('dospem_id');
+        $registration->save();
+
+        return back()->with('success', 'Dosen pembimbing berhasil diperbarui.');
+    }
+
+
+
+    public function acceptOffer(Request $request, $id)
+    {
+        $request->validate([
+            // Tidak ada validasi dospem_id di sini
+        ]);
+
+        $registration = Registrasi::find($id);
+
+        if ($registration->status != 'accepted') {
+            return back()->withErrors('Tawaran hanya dapat diambil jika diterima.');
+        }
+
         $registration->status = 'accepted_offer';
         $registration->save();
 
@@ -113,8 +134,9 @@ class RegistrasiController extends Controller
             ->where('id', '!=', $registration->id)
             ->update(['status' => 'rejected']);
 
-        return back()->with('success', 'Tawaran berhasil diambil dan dosen pembimbing telah ditetapkan.');
+        return back()->with('success', 'Tawaran berhasil diambil.');
     }
+
 
 
 

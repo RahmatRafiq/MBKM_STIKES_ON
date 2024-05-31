@@ -38,7 +38,6 @@ Route::middleware('auth')->group(function () {
     Route::resource('mbkm/staff/dospem', \App\Http\Controllers\DosenPembimbingLapanganController::class);
     Route::post('mbkm/staff/dospem/json', [\App\Http\Controllers\DosenPembimbingLapanganController::class, 'json'])->name('dospem.json');
 
-    // Route::resource('mbkm/staff/peserta', \App\Http\Controllers\PesertaController::class);
     Route::get('mbkm/staff/peserta', [\App\Http\Controllers\PesertaController::class, 'index'])->name('peserta.index');
     Route::get('mbkm/staff/peserta/create', [\App\Http\Controllers\PesertaController::class, 'create'])->name('peserta.create');
     Route::post('mbkm/staff/peserta', [\App\Http\Controllers\PesertaController::class, 'store'])->name('peserta.store');
@@ -48,14 +47,15 @@ Route::middleware('auth')->group(function () {
     Route::delete('mbkm/staff/peserta/{peserta}', [\App\Http\Controllers\PesertaController::class, 'destroy'])->name('peserta.destroy');
     Route::post('mbkm/staff/peserta/json', [\App\Http\Controllers\PesertaController::class, 'json'])->name('peserta.json');
 
-
     Route::get('/peserta/registrasi', [RegistrasiController::class, 'showPesertaRegistrasiForm'])->name('peserta.registrasiForm');
     Route::post('/peserta/registrasi', [RegistrasiController::class, 'store'])->name('peserta.registrasi');
     Route::post('/peserta/registrasi/{id}/accept', [RegistrasiController::class, 'acceptOffer'])->name('peserta.acceptOffer');
     Route::get('/registrasi/{id}/registrations-and-accept-offer', [RegistrasiController::class, 'showRegistrationsAndAcceptOffer'])->name('registrasi.registrations-and-accept-offer');
+    // Rute untuk staff
     Route::get('/staff/registrasi', [RegistrasiController::class, 'index'])->name('staff.registrasiIndex');
     Route::put('/staff/registrasi/{id}', [RegistrasiController::class, 'update'])->name('staff.updateRegistrasi');
-    
+    Route::put('/staff/registrasi/{id}/dospem', [RegistrasiController::class, 'updateDospem'])->name('staff.updateDospem');
+
 
 });
 require __DIR__ . '/auth.php';
