@@ -41,18 +41,22 @@
                             @endif
                         </td>
                         <td>
-                            <form action="{{ route('staff.updateRegistrasi', $registration->id) }}" method="POST">
-                                @csrf
-                                @method('PUT')
-                                <select name="status" class="form-control">
-                                    <option value="registered" @if ($registration->status == 'registered') selected @endif>Terdaftar</option>
-                                    <option value="processed" @if ($registration->status == 'processed') selected @endif>Diproses</option>
-                                    <option value="accepted" @if ($registration->status == 'accepted') selected @endif>Diterima</option>
-                                    <option value="accepted_offer" @if ($registration->status == 'accepted_offer') selected @endif>Terima Tawaran</option>
-                                    <option value="rejected" @if ($registration->status == 'rejected') selected @endif>Ditolak</option>
-                                </select>
-                                <button type="submit" class="btn btn-success mt-2">Update</button>
-                            </form>
+                            @if($registration->status != 'rejected' && $registration->status != 'accepted_offer')
+                                <form action="{{ route('staff.updateRegistrasi', $registration->id) }}" method="POST">
+                                    @csrf
+                                    @method('PUT')
+                                    <select name="status" class="form-control">
+                                        <option value="registered" @if ($registration->status == 'registered') selected @endif>Terdaftar</option>
+                                        <option value="processed" @if ($registration->status == 'processed') selected @endif>Diproses</option>
+                                        <option value="accepted" @if ($registration->status == 'accepted') selected @endif>Diterima</option>
+                                        <option value="accepted_offer" @if ($registration->status == 'accepted_offer') selected @endif>Terima Tawaran</option>
+                                        <option value="rejected" @if ($registration->status == 'rejected') selected @endif>Ditolak</option>
+                                    </select>
+                                    <button type="submit" class="btn btn-success mt-2">Update</button>
+                                </form>
+                            @else
+                                <span class="text-muted">{{ $registration->status }}</span>
+                            @endif
                         </td>
                     </tr>
                 @endforeach
@@ -60,5 +64,3 @@
         </table>
     </div>
 @endsection
-
-
