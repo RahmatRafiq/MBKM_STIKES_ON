@@ -4,119 +4,161 @@ namespace App\Http\Controllers;
 
 use App\Models\Registrasi;
 use App\Models\Lowongan;
+use App\Models\Peserta;
+use Illuminate\Support\Facades\Auth;
 use App\Models\DosenPembimbingLapangan;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 
 class RegistrasiController extends Controller
 {
-    // Method untuk menampilkan halaman registrasi peserta
     public function showPesertaRegistrasiForm()
     {
-        // Mengambil semua lowongan yang tersedia
         $lowongans = Lowongan::all();
-        // dd(auth()->user());
-        return view('applications/mbkm/staff/registrasi-program/peserta.registrasi', compact('lowongans'));
-   
+        return view('applications.mbkm.staff.registrasi-program.peserta.registrasi', compact('lowongans'));
     }
 
-    // Method untuk menampilkan halaman registrasi staff
     public function index()
     {
-        // Mengambil semua data registrasi dengan relasi peserta dan lowongan
-        $registrations = Registrasi::with(['peserta', 'lowongan'])->get();
-        // Mengambil semua data dosen pembimbing lapangan
+        $registrations = Registrasi::all();
+        $pesertas = Peserta::all();
         $dospems = DosenPembimbingLapangan::all();
-        return view('applications/mbkm/staff/registrasi-program/staff.registrasi', compact('registrations', 'dospems'));
+
+        return view('applications.mbkm.staff.registrasi-program.staff.index', compact('registrations', 'dospems', 'pesertas'));
     }
 
-    // Method untuk mendaftarkan peserta pada lowongan
+
     public function store(Request $request)
     {
-        // Validasi input dari request
         $request->validate([
-            'peserta_id' => 'required|exists:peserta,id',
-            'lowongan_id' => 'required|exists:lowongans,id',
+            'peserta_id' => 'required|exists:peserta,user_id',
+            'lowongan_id' => 'required|exists:lowongan,id',
         ]);
 
         $pesertaId = $request->input('peserta_id');
         $lowonganId = $request->input('lowongan_id');
 
-        // Mengambil data lowongan berdasarkan ID
-        $lowongan = Lowongan::find($lowonganId);
-        $mitraType = $lowongan->mitra->type;
 
-        // Cek apakah peserta sudah mendaftar pada lowongan dari tipe mitra yang sama
         $existingRegistration = Registrasi::where('peserta_id', $pesertaId)
-            ->whereHas('lowongan.mitra', function($query) use ($mitraType) {
-                $query->where('type', $mitraType);
-            })
+            ->where('lowongan_id', $lowonganId)
             ->first();
 
         if ($existingRegistration) {
-            return back()->with('error', 'Peserta sudah mendaftar pada lowongan dari tipe mitra yang sama.');
+            return back()->withErrors(['error' => 'Peserta sudah mendaftar pada lowongan ini. Tidak dapat mendaftar lagi.']);
         }
 
-        // Membuat registrasi baru
+
+        $peserta = Peserta::where('user_id', $pesertaId)->first();
+        $lowongan = Lowongan::find($lowonganId);
+
+        
+        $existingAcceptedRegistration = Registrasi::where('peserta_id', $pesertaId)
+        ->whereIn('status', ['accepted', 'accepted_offer'])
+        ->first();
+        
+        if ($existingAcceptedRegistration) {
+            return back()->withErrors(['Error' => 'Peserta sudah memiliki tawaran yang diterima. Tidak dapat mendaftar di lowongan lain.']);
+        }
+        
+        
         Registrasi::create([
             'peserta_id' => $pesertaId,
             'lowongan_id' => $lowonganId,
             'status' => 'registered',
+            'nama_peserta' => $peserta->nama,
+            'nama_lowongan' => $lowongan->name,
         ]);
-
+        
         return back()->with('success', 'Pendaftaran berhasil.');
     }
-
-    // Method untuk mengubah status registrasi
+    
+    
     public function update(Request $request, $id)
     {
-        // Validasi input dari request
+        // dd($request->all());
         $request->validate([
-            'status' => 'required|in:registered,processed,accepted,rejected',
-            'dospem_id' => 'sometimes|exists:dosen_pembimbing_lapangan,id',
+            'status' => 'required|in:registered,processed,accepted,rejected,accepted_offer',
+            'dospem_id' => 'nullable|exists:dosen_pembimbing_lapangan,id',
         ]);
-
-        // Mengambil data registrasi berdasarkan ID
+        
         $registration = Registrasi::find($id);
         $registration->status = $request->input('status');
-
-        // Jika status diterima dan dosen pembimbing ID disediakan, tambahkan dosen pembimbing
-        if ($request->input('status') == 'accepted' && $request->input('dospem_id')) {
+        
+        // Hanya jika status 'accepted_offer' dan dospem_id disertakan
+        if ($request->input('status') == 'accepted_offer' && $request->has('dospem_id')) {
             $registration->dospem_id = $request->input('dospem_id');
         }
-
+        
         $registration->save();
-
-        // Jika status diterima, tolak semua registrasi lain dari peserta yang sama
-        if ($request->input('status') == 'accepted') {
-            Registrasi::where('peserta_id', $registration->peserta_id)
-                        ->where('lowongan_id', '!=', $registration->lowongan_id)
-                        ->update(['status' => 'rejected']);
-        }
-
+        
         return back()->with('success', 'Status registrasi berhasil diupdate.');
     }
-
-    // Method untuk peserta mengambil tawaran yang diterima
-    public function acceptOffer(Request $request, $id)
+    
+    public function updateDospem(Request $request, $id)
     {
-        // Validasi input dari request
         $request->validate([
             'dospem_id' => 'required|exists:dosen_pembimbing_lapangan,id',
         ]);
-
-        // Mengambil data registrasi berdasarkan ID
+        
         $registration = Registrasi::find($id);
-
-        // Cek jika status registrasi adalah accepted
-        if ($registration->status != 'accepted') {
-            return back()->with('error', 'Tawaran hanya dapat diambil jika diterima.');
+        
+        // Pastikan status adalah accepted_offer sebelum memperbarui dospem_id
+        if ($registration->status != 'accepted_offer') {
+            return back()->withErrors('Status registrasi harus "accepted_offer" untuk memperbarui dosen pembimbing.');
         }
-
-        // Menetapkan dosen pembimbing
+        
         $registration->dospem_id = $request->input('dospem_id');
         $registration->save();
-
-        return back()->with('success', 'Tawaran berhasil diambil dan dosen pembimbing telah ditetapkan.');
+        
+        return back()->with('success', 'Dosen pembimbing berhasil diperbarui.');
+    }
+    
+    
+    public function acceptOffer(Request $request, $id)
+    {
+        $request->validate([
+            // Tidak ada validasi dospem_id di sini
+        ]);
+        
+        $registration = Registrasi::find($id);
+        
+        if ($registration->status != 'accepted') {
+            return back()->withErrors('Tawaran hanya dapat diambil jika diterima.');
+        }
+        
+        $registration->status = 'accepted_offer';
+        $registration->save();
+        
+        Registrasi::where('peserta_id', $registration->peserta_id)
+        ->where('id', '!=', $registration->id)
+        ->update(['status' => 'rejected']);
+        
+        return back()->with('success', 'Tawaran berhasil diambil.');
+    }
+    
+    
+    public function showRegistrationsAndAcceptOffer($id)
+    {
+        $registration = Registrasi::with('lowongan')->find($id);
+        
+        $pesertaId = Auth::user()->id; // Pastikan user login merupakan peserta
+        
+        $registrations = Registrasi::with(['lowongan'])->where('peserta_id', $pesertaId)->get();
+        
+        $dospems = DosenPembimbingLapangan::all();
+        
+        return view('applications.mbkm.staff.registrasi-program.peserta.list', compact('registration', 'registrations', 'dospems'));
     }
 }
+
+// $mitraType = $lowongan->mitra->type;
+
+// $existingRegistration = Registrasi::where('peserta_id', $pesertaId)
+//     ->whereHas('lowongan.mitra', function ($query) use ($mitraType) {
+//         $query->where('type', $mitraType);
+//     })
+//     ->first();
+
+// if ($existingRegistration) {
+//     return back()->withErrors(['error' => 'Peserta sudah mendaftar pada lowongan dari tipe mitra yang sama.']);
+// }
