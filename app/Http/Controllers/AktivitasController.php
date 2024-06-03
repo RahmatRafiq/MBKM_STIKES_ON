@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Http\Controllers;
 
 use App\Models\LaporanHarian;
@@ -7,13 +8,40 @@ use App\Models\LaporanLengkap;
 use App\Models\AktifitasMbkm;
 use App\Models\Peserta;
 use App\Models\Lowongan;
-use App\Models\MitraProfile;
-use App\Models\DosenPembimbingLapangan;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
 
-class LaporanController extends Controller
+class AktivitasController extends Controller
 {
+    public function index()
+    {
+        $laporanHarian = LaporanHarian::with(['peserta', 'lowongan', 'mitra'])->get();
+        $laporanMingguan = LaporanMingguan::with(['peserta', 'lowongan', 'mitra'])->get();
+        $laporanLengkap = LaporanLengkap::with(['peserta', 'lowongan', 'dospem'])->get();
+
+        return view('laporan.index', compact('laporanHarian', 'laporanMingguan', 'laporanLengkap'));
+    }
+
+    public function createLaporanHarian()
+    {
+        $pesertas = Peserta::all();
+        $lowongans = Lowongan::all();
+        return view('laporan.harian.create', compact('pesertas', 'lowongans'));
+    }
+
+    public function createLaporanMingguan()
+    {
+        $pesertas = Peserta::all();
+        $lowongans = Lowongan::all();
+        return view('laporan.mingguan.create', compact('pesertas', 'lowongans'));
+    }
+
+    public function createLaporanLengkap()
+    {
+        $pesertas = Peserta::all();
+        $lowongans = Lowongan::all();
+        return view('laporan.lengkap.create', compact('pesertas', 'lowongans'));
+    }
+
     public function storeLaporanHarian(Request $request)
     {
         $request->validate([
