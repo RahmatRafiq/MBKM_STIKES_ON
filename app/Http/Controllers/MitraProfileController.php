@@ -8,6 +8,7 @@ use App\Models\MitraProfile;
 use App\Models\Role;
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 
 class MitraProfileController extends Controller
@@ -65,7 +66,55 @@ class MitraProfileController extends Controller
         return view('applications.mbkm.staff.mitra.create', compact('roles'));
     }
 
-    
+
+    // public function store(Request $request)
+    // {
+    //     $request->validate([
+    //         'mitra_name' => 'required|string|max:255',
+    //         'mitra_address' => 'required|string|max:255',
+    //         'mitra_phone' => 'required|string|max:15',
+    //         'mitra_email' => 'required|email|max:255',
+    //         'mitra_website' => 'nullable|url|max:255',
+    //         'mitra_type' => 'required|string|max:255',
+    //         'mitra_description' => 'required|string',
+    //         'images' => 'array|max:3',
+    //         'user_name' => 'required|string|max:255',
+    //         'user_email' => 'required|string|email|max:255|unique:users,email',
+    //         'user_password' => 'required|string|min:8|confirmed',
+    //     ]);
+
+    //     $mitraProfile = MitraProfile::create([
+    //         'name' => $request->mitra_name,
+    //         'address' => $request->mitra_address,
+    //         'phone' => $request->mitra_phone,
+    //         'email' => $request->mitra_email,
+    //         'website' => $request->mitra_website,
+    //         'type' => $request->mitra_type,
+    //         'description' => $request->mitra_description,
+    //     ]);
+
+    //     $media = MediaLibrary::put(
+    //         $mitraProfile,
+    //         'images',
+    //         $request
+    //     );
+
+    //     $user = User::create([
+    //         'name' => $request->user_name,
+    //         'email' => $request->user_email,
+    //         'password' => bcrypt($request->user_password),
+    //     ]);
+
+    //     // Assign role after creating the user
+    //     $role = Role::findByName('mitra');
+    //     $user->assignRole($role);
+
+    //     return redirect()->route('mitra.index')->with([
+    //         'success' => 'Mitra created successfully.',
+    //         'media' => $media,
+    //     ]);
+    // }
+
     public function store(Request $request)
     {
         $request->validate([
@@ -81,39 +130,53 @@ class MitraProfileController extends Controller
             'user_email' => 'required|string|email|max:255|unique:users,email',
             'user_password' => 'required|string|min:8|confirmed',
         ]);
-    
-        $mitraProfile = MitraProfile::create([
-            'name' => $request->mitra_name,
-            'address' => $request->mitra_address,
-            'phone' => $request->mitra_phone,
-            'email' => $request->mitra_email,
-            'website' => $request->mitra_website,
-            'type' => $request->mitra_type,
-            'description' => $request->mitra_description,
-        ]);
-    
-        $media = MediaLibrary::put(
-            $mitraProfile,
-            'images',
-            $request
-        );
-    
-        $user = User::create([
-            'name' => $request->user_name,
-            'email' => $request->user_email,
-            'password' => bcrypt($request->user_password),
-        ]);
-    
-        // Assign role after creating the user
-        $role = Role::findByName('mitra');
-        $user->assignRole($role);
-    
-        return redirect()->route('mitra.index')->with([
-            'success' => 'Mitra created successfully.',
-            'media' => $media,
-        ]);
+
+        // Mulai transaksi
+        DB::beginTransaction();
+
+        try {
+            $mitraProfile = MitraProfile::create([
+                'name' => $request->mitra_name,
+                'address' => $request->mitra_address,
+                'phone' => $request->mitra_phone,
+                'email' => $request->mitra_email,
+                'website' => $request->mitra_website,
+                'type' => $request->mitra_type,
+                'description' => $request->mitra_description,
+            ]);
+
+            $media = MediaLibrary::put(
+                $mitraProfile,
+                'images',
+                $request
+            );
+
+            $user = User::create([
+                'name' => $request->user_name,
+                'email' => $request->user_email,
+                'password' => bcrypt($request->user_password),
+            ]);
+
+            // Assign role after creating the user
+            $role = Role::findByName('mitra');
+            $user->assignRole($role);
+
+            // Commit transaksi jika semua operasi berhasil
+            DB::commit();
+
+            return redirect()->route('mitra.index')->with([
+                'success' => 'Mitra created successfully.',
+                'media' => $media,
+            ]);
+
+        } catch (\Exception $e) {
+            // Rollback transaksi jika terjadi kesalahan
+            DB::rollBack();
+
+            return back()->withErrors(['error' => 'An error occurred while creating Mitra: ' . $e->getMessage()])->withInput();
+        }
     }
-    
+
 
     public function edit($id)
     {
