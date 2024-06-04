@@ -30,3 +30,41 @@ return new class extends Migration
         Schema::dropIfExists('laporan_mingguan');
     }
 };
+
+// use Illuminate\Database\Migrations\Migration;
+// use Illuminate\Database\Schema\Blueprint;
+// use Illuminate\Support\Facades\Schema;
+
+// class CreateLaporanMingguansTable extends Migration
+// {
+//     /**
+//      * Run the migrations.
+//      *
+//      * @return void
+//      */
+//     public function up()
+//     {
+//         Schema::create('laporan_mingguans', function (Blueprint $table) {
+//             $table->id();
+//             $table->unsignedBigInteger('peserta_id');
+//             $table->unsignedBigInteger('mitra_id')->nullable();
+//             $table->integer('minggu_ke');
+//             $table->text('isi_laporan');
+//             $table->string('status');
+//             $table->timestamps();
+
+//             $table->foreign('peserta_id')->references('id')->on('pesertas')->onDelete('cascade');
+//             $table->foreign('mitra_id')->references('id')->on('mitra_profiles')->onDelete('set null');
+//         });
+//     }
+
+//     /**
+//      * Reverse the migrations.
+//      *
+//      * @return void
+//      */
+//     public function down()
+//     {
+//         Schema::dropIfExists('laporan_mingguans');
+//     }
+// }

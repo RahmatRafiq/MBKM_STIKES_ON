@@ -28,3 +28,40 @@ return new class extends Migration
         Schema::dropIfExists('laporan_lengkap');
     }
 };
+
+// use Illuminate\Database\Migrations\Migration;
+// use Illuminate\Database\Schema\Blueprint;
+// use Illuminate\Support\Facades\Schema;
+
+// class CreateLaporanLengkapsTable extends Migration
+// {
+//     /**
+//      * Run the migrations.
+//      *
+//      * @return void
+//      */
+//     public function up()
+//     {
+//         Schema::create('laporan_lengkaps', function (Blueprint $table) {
+//             $table->id();
+//             $table->unsignedBigInteger('peserta_id');
+//             $table->unsignedBigInteger('dospem_id');
+//             $table->text('isi_laporan');
+//             $table->string('status');
+//             $table->timestamps();
+
+//             $table->foreign('peserta_id')->references('id')->on('pesertas')->onDelete('cascade');
+//             $table->foreign('dospem_id')->references('id')->on('dosen_pembimbing_lapangans')->onDelete('cascade');
+//         });
+//     }
+
+//     /**
+//      * Reverse the migrations.
+//      *
+//      * @return void
+//      */
+//     public function down()
+//     {
+//         Schema::dropIfExists('laporan_lengkaps');
+//     }
+// }
