@@ -2,13 +2,15 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\AktivitasMbkm;
+use App\Models\DosenPembimbingLapangan;
 use App\Models\LaporanHarian;
 use App\Models\LaporanMingguan;
 use App\Models\LaporanLengkap;
-use App\Models\AktifitasMbkm;
 use App\Models\Peserta;
 use App\Models\Lowongan;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class AktivitasController extends Controller
 {
@@ -62,7 +64,7 @@ class AktivitasController extends Controller
             'status' => 'pending',
         ]);
 
-        AktifitasMbkm::create([
+        AktivitasMbkm::create([
             'peserta_id' => $request->peserta_id,
             'lowongan_id' => $request->lowongan_id,
             'mitra_id' => $mitra->id,
@@ -93,7 +95,7 @@ class AktivitasController extends Controller
             'status' => 'pending',
         ]);
 
-        AktifitasMbkm::create([
+        AktivitasMbkm::create([
             'peserta_id' => $request->peserta_id,
             'lowongan_id' => $request->lowongan_id,
             'mitra_id' => $mitra->id,
@@ -122,7 +124,7 @@ class AktivitasController extends Controller
             'status' => 'pending',
         ]);
 
-        AktifitasMbkm::create([
+        AktivitasMbkm::create([
             'peserta_id' => $request->peserta_id,
             'lowongan_id' => $request->lowongan_id,
             'mitra_id' => $lowongan->mitra_id,
@@ -135,7 +137,7 @@ class AktivitasController extends Controller
 
     public function validateLaporanHarian(Request $request, $id)
     {
-        $aktifitas = AktifitasMbkm::where('laporan_harian_id', $id)->firstOrFail();
+        $aktifitas = AktivitasMbkm::where('laporan_harian_id', $id)->firstOrFail();
         if ($aktifitas->mitra->user_id != Auth::id()) {
             return back()->withErrors('Anda tidak memiliki izin untuk memvalidasi laporan ini.');
         }
@@ -148,7 +150,7 @@ class AktivitasController extends Controller
 
     public function validateLaporanMingguan(Request $request, $id)
     {
-        $aktifitas = AktifitasMbkm::where('laporan_mingguan_id', $id)->firstOrFail();
+        $aktifitas = AktivitasMbkm::where('laporan_mingguan_id', $id)->firstOrFail();
         if ($aktifitas->mitra->user_id != Auth::id()) {
             return back()->withErrors('Anda tidak memiliki izin untuk memvalidasi laporan ini.');
         }
@@ -161,7 +163,7 @@ class AktivitasController extends Controller
 
     public function validateLaporanLengkap(Request $request, $id)
     {
-        $aktifitas = AktifitasMbkm::where('laporan_lengkap_id', $id)->firstOrFail();
+        $aktifitas = AktivitasMbkm::where('laporan_lengkap_id', $id)->firstOrFail();
         if ($aktifitas->dospem->user_id != Auth::id()) {
             return back()->withErrors('Anda tidak memiliki izin untuk memvalidasi laporan ini.');
         }

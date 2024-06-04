@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\AktifitasMbkm;
+use App\Models\AktivitasMbkm;
 use App\Models\Registrasi;
 use App\Models\Lowongan;
 use App\Models\Peserta;
@@ -127,7 +127,7 @@ class RegistrasiController extends Controller
                 return back()->withErrors('Dosen pembimbing harus diisi sebelum mengubah status ke "placement".');
             } else {
                 // Buat entri baru di tabel AktifitasMbkm
-                AktifitasMbkm::create([
+                AktivitasMbkm::create([
                     'peserta_id' => $registration->peserta_id,
                     'lowongan_id' => $registration->lowongan_id,
                     'mitra_id' => $registration->lowongan->mitra_id,
