@@ -25,21 +25,21 @@ class AktivitasController extends Controller
     {
         $pesertas = Peserta::all();
         $lowongans = Lowongan::all();
-        return view('laporan.harian.create', compact('pesertas', 'lowongans'));
+        return view('applications.mbkm.laporan.laporan-harian', compact('pesertas', 'lowongans'));
     }
 
     public function createLaporanMingguan()
     {
         $pesertas = Peserta::all();
         $lowongans = Lowongan::all();
-        return view('laporan.mingguan.create', compact('pesertas', 'lowongans'));
+        return view('applications.mbkm.laporan.laporan-mingguan', compact('pesertas', 'lowongans'));
     }
 
     public function createLaporanLengkap()
     {
         $pesertas = Peserta::all();
         $lowongans = Lowongan::all();
-        return view('laporan.lengkap.create', compact('pesertas', 'lowongans'));
+        return view('applications.mbkm.laporan.laporan-lengkap', compact('pesertas', 'lowongans'));
     }
 
     public function storeLaporanHarian(Request $request)
