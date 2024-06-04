@@ -15,11 +15,11 @@ return new class extends Migration
             $table->string('nama');
             $table->string('nim')->unique();
             $table->string('email')->unique();
-            $table->string('jurusan');
-            $table->date('tanggal_lahir');
-            $table->string('jenis_kelamin');
-            $table->string('alamat');
-            $table->string('telepon');
+            $table->string('jurusan')->nullable();
+            $table->date('tanggal_lahir')->nullable();
+            $table->string('jenis_kelamin')->nullable();
+            $table->string('alamat')->nullable();
+            $table->string('telepon')->nullable();
             $table->timestamps();
         });
     }

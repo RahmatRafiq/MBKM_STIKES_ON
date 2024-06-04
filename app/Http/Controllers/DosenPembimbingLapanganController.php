@@ -95,13 +95,14 @@ class DosenPembimbingLapanganController extends Controller
 
 
         DosenPembimbingLapangan::create([
-            'user_id' => $user->id,
-            'name' => $dosen->nama,
-            'email' => $dosen->email,
-            'nip' => $dosen->nip,
-            'address' => $dosen->alamat,
-            'phone' => $dosen->phone,
-            'image' => 'default.jpg',
+            //nullable
+            'user_id' => $user->id ?? null,
+            'name' => $dosen->nama ?? null,
+            'email' => $dosen->email ?? null,
+            'nip' => $dosen->nip ?? null,
+            'address' => $dosen->alamat ?? null,
+            'phone' => $dosen->phone ?? null,
+            'image' => 'default.jpg' ?? null,
 
             // Tambahkan field lain sesuai kebutuhan
         ]);

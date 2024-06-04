@@ -29,7 +29,7 @@
                                 <td>{{ $registration->nama_lowongan }}</td>
                                 <td>{{ $registration->status }}</td>
                                 <td>
-                                    @if ($registration->status == 'accepted_offer')
+                                    @if ($registration->status == 'placement')
                                         <form action="{{ route('staff.updateDospem', $registration->id) }}" method="POST">
                                             @csrf
                                             @method('PUT')
@@ -50,28 +50,32 @@
                                     @endif
                                 </td>
                                 <td>
-                                    @if ($registration->status != 'rejected' && $registration->status != 'accepted_offer')
+                                    @if ($registration->status != 'rejected' && $registration->status != 'placement')
                                         <form action="{{ route('staff.updateRegistrasi', $registration->id) }}"
                                             method="POST">
                                             @csrf
                                             @method('PUT')
                                             <select name="status" class="form-control">
-                                                <option value="registered"
-                                                    @if ($registration->status == 'registered') selected @endif>
-                                                    Terdaftar</option>
-                                                <option value="processed"
-                                                    @if ($registration->status == 'processed') selected @endif>Diproses
+                                                <option value="registered" @if ($registration->status == 'registered') selected @endif>
+                                                    Terdaftar
+                                                </option>
+                                                <option value="processed" @if ($registration->status == 'processed') selected @endif>
+                                                    Diproses
                                                 </option>
                                                 <option value="accepted" @if ($registration->status == 'accepted') selected @endif>
                                                     Diterima
                                                 </option>
-                                                <option value="accepted_offer"
-                                                    @if ($registration->status == 'accepted_offer') selected @endif>
-                                                    Terima Tawaran</option>
+                                                <option value="accepted_offer" @if ($registration->status == 'accepted_offer') selected @endif>
+                                                    Tawaran Diterima
+                                                </option>
+                                                <option value="placement" @if ($registration->status == 'placement') selected @endif>
+                                                    Penempatan
+                                                </option>
                                                 <option value="rejected" @if ($registration->status == 'rejected') selected @endif>
                                                     Ditolak
                                                 </option>
                                             </select>
+                                            
                                             <button type="submit" class="btn btn-success mt-2">Update</button>
                                         </form>
                                     @else
