@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\AktifitasMbkm;
 use App\Models\Registrasi;
 use App\Models\Lowongan;
 use App\Models\Peserta;
@@ -18,9 +19,18 @@ class RegistrasiController extends Controller
         return view('applications.mbkm.staff.registrasi-program.peserta.registrasi', compact('lowongans'));
     }
 
+    // public function index()
+    // {
+    //     $registrations = Registrasi::all();
+    //     $pesertas = Peserta::all();
+    //     $dospems = DosenPembimbingLapangan::all();
+
+    //     return view('applications.mbkm.staff.registrasi-program.staff.index', compact('registrations', 'dospems', 'pesertas'));
+    // }
+
     public function index()
     {
-        $registrations = Registrasi::all();
+        $registrations = Registrasi::with('dospem')->get();
         $pesertas = Peserta::all();
         $dospems = DosenPembimbingLapangan::all();
 
@@ -93,25 +103,52 @@ class RegistrasiController extends Controller
 
     //     return back()->with('success', 'Status registrasi berhasil diupdate.');
     // }
+
+
     public function update(Request $request, $id)
     {
         $request->validate([
-            'status' => 'required|in:registered,processed,accepted,accepted_offer,placement,rejected',
+            'status' => 'required|in:registered,processed,accepted,rejected,accepted_offer,placement',
             'dospem_id' => 'nullable|exists:dosen_pembimbing_lapangan,id',
         ]);
 
         $registration = Registrasi::find($id);
         $registration->status = $request->input('status');
 
-        // Hanya jika status 'accepted_offer' atau 'placement' dan dospem_id disertakan
-        if (($request->input('status') == 'accepted_offer' || $request->input('status') == 'placement') && $request->has('dospem_id')) {
+        if ($request->input('status') == 'accepted_offer' && $request->has('dospem_id')) {
             $registration->dospem_id = $request->input('dospem_id');
+        }
+
+        if ($request->input('status') == 'placement') {
+            if ($registration->dospem_id === null) {
+                return back()->withErrors('Dosen pembimbing harus diisi sebelum mengubah status ke "placement".');
+            }
         }
 
         $registration->save();
 
         return back()->with('success', 'Status registrasi berhasil diupdate.');
     }
+
+
+    // public function updateDospem(Request $request, $id)
+    // {
+    //     $request->validate([
+    //         'dospem_id' => 'required|exists:dosen_pembimbing_lapangan,id',
+    //     ]);
+
+    //     $registration = Registrasi::find($id);
+
+    //     // Pastikan status adalah accepted_offer sebelum memperbarui dospem_id
+    //     if ($registration->status != 'accepted_offer') {
+    //         return back()->withErrors('Status registrasi harus "Penempatan" untuk memperbarui dosen pembimbing.');
+    //     }
+
+    //     $registration->dospem_id = $request->input('dospem_id');
+    //     $registration->save();
+
+    //     return back()->with('success', 'Dosen pembimbing berhasil diperbarui.');
+    // }
 
 
     public function updateDospem(Request $request, $id)
@@ -122,9 +159,8 @@ class RegistrasiController extends Controller
 
         $registration = Registrasi::find($id);
 
-        // Pastikan status adalah accepted_offer sebelum memperbarui dospem_id
-        if ($registration->status != 'placement') {
-            return back()->withErrors('Status registrasi harus "Penempatan" untuk memperbarui dosen pembimbing.');
+        if ($registration->status != 'accepted_offer') {
+            return back()->withErrors('Status registrasi harus "accepted_offer" untuk memperbarui dosen pembimbing.');
         }
 
         $registration->dospem_id = $request->input('dospem_id');
@@ -157,18 +193,30 @@ class RegistrasiController extends Controller
     }
 
 
+    // public function showRegistrationsAndAcceptOffer($id)
+    // {
+    //     $registration = Registrasi::with('lowongan')->find($id);
+
+    //     $pesertaId = Auth::user()->id; // Pastikan user login merupakan peserta
+
+    //     $registrations = Registrasi::with(['lowongan'])->where('peserta_id', $pesertaId)->get();
+
+    //     $dospems = DosenPembimbingLapangan::all();
+
+    //     return view('applications.mbkm.staff.registrasi-program.peserta.list', compact('registration', 'registrations', 'dospems'));
+    // }
+
     public function showRegistrationsAndAcceptOffer($id)
-    {
-        $registration = Registrasi::with('lowongan')->find($id);
+{
+    $registration = Registrasi::with('lowongan', 'dospem')->find($id);
 
-        $pesertaId = Auth::user()->id; // Pastikan user login merupakan peserta
+    $pesertaId = Auth::user()->id; // Pastikan user login merupakan peserta
 
-        $registrations = Registrasi::with(['lowongan'])->where('peserta_id', $pesertaId)->get();
+    $registrations = Registrasi::with(['lowongan', 'dospem'])->where('peserta_id', $pesertaId)->get();
 
-        $dospems = DosenPembimbingLapangan::all();
+    return view('applications.mbkm.staff.registrasi-program.peserta.list', compact('registration', 'registrations'));
+}
 
-        return view('applications.mbkm.staff.registrasi-program.peserta.list', compact('registration', 'registrations', 'dospems'));
-    }
 }
 
 // $mitraType = $lowongan->mitra->type;
