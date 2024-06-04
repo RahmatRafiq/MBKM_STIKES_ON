@@ -5,10 +5,10 @@ namespace App\Http\Controllers;
 use App\Models\AktivitasMbkm;
 use App\Models\DosenPembimbingLapangan;
 use App\Models\LaporanHarian;
-use App\Models\LaporanMingguan;
 use App\Models\LaporanLengkap;
-use App\Models\Peserta;
+use App\Models\LaporanMingguan;
 use App\Models\Lowongan;
+use App\Models\Peserta;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -135,14 +135,41 @@ class AktivitasController extends Controller
         return back()->with('success', 'Laporan lengkap berhasil disimpan.');
     }
 
+    // public function validateLaporanHarian(Request $request, $id)
+    // {
+    //     $aktifitas = AktivitasMbkm::where('laporan_harian_id', $id)->firstOrFail();
+    //     if ($aktifitas->mitra->user_id != Auth::id()) {
+    //         return back()->withErrors('Anda tidak memiliki izin untuk memvalidasi laporan ini.');
+    //     }
+
+    //     $laporanHarian = LaporanHarian::findOrFail($id);
+    //     $laporanHarian->update(['status' => 'validated']);
+
+    //     return back()->with('success', 'Laporan harian berhasil divalidasi.');
+    // }
+
+    // public function validateLaporanMingguan(Request $request, $id)
+    // {
+    //     $aktifitas = AktivitasMbkm::where('laporan_mingguan_id', $id)->firstOrFail();
+    //     if ($aktifitas->mitra->user_id != Auth::id()) {
+    //         return back()->withErrors('Anda tidak memiliki izin untuk memvalidasi laporan ini.');
+    //     }
+
+    //     $laporanMingguan = LaporanMingguan::findOrFail($id);
+    //     $laporanMingguan->update(['status' => 'validated']);
+
+    //     return back()->with('success', 'Laporan mingguan berhasil divalidasi.');
+    // }
+
     public function validateLaporanHarian(Request $request, $id)
     {
-        $aktifitas = AktivitasMbkm::where('laporan_harian_id', $id)->firstOrFail();
-        if ($aktifitas->mitra->user_id != Auth::id()) {
+        $laporanHarian = LaporanHarian::findOrFail($id);
+        $mitra = $laporanHarian->mitra;
+
+        if ($mitra->user_id != Auth::id()) {
             return back()->withErrors('Anda tidak memiliki izin untuk memvalidasi laporan ini.');
         }
 
-        $laporanHarian = LaporanHarian::findOrFail($id);
         $laporanHarian->update(['status' => 'validated']);
 
         return back()->with('success', 'Laporan harian berhasil divalidasi.');
@@ -150,12 +177,13 @@ class AktivitasController extends Controller
 
     public function validateLaporanMingguan(Request $request, $id)
     {
-        $aktifitas = AktivitasMbkm::where('laporan_mingguan_id', $id)->firstOrFail();
-        if ($aktifitas->mitra->user_id != Auth::id()) {
+        $laporanMingguan = LaporanMingguan::findOrFail($id);
+        $mitra = $laporanMingguan->mitra;
+
+        if ($mitra->user_id != Auth::id()) {
             return back()->withErrors('Anda tidak memiliki izin untuk memvalidasi laporan ini.');
         }
 
-        $laporanMingguan = LaporanMingguan::findOrFail($id);
         $laporanMingguan->update(['status' => 'validated']);
 
         return back()->with('success', 'Laporan mingguan berhasil divalidasi.');
