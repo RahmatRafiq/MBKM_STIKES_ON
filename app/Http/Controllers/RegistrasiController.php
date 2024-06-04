@@ -85,25 +85,28 @@ class RegistrasiController extends Controller
 
     // public function update(Request $request, $id)
     // {
-    //     // dd($request->all());
     //     $request->validate([
-    //         'status' => 'required|in:registered,processed,accepted,rejected,accepted_offer',
+    //         'status' => 'required|in:registered,processed,accepted,rejected,accepted_offer,placement',
     //         'dospem_id' => 'nullable|exists:dosen_pembimbing_lapangan,id',
     //     ]);
 
     //     $registration = Registrasi::find($id);
     //     $registration->status = $request->input('status');
 
-    //     // Hanya jika status 'accepted_offer' dan dospem_id disertakan
     //     if ($request->input('status') == 'accepted_offer' && $request->has('dospem_id')) {
     //         $registration->dospem_id = $request->input('dospem_id');
+    //     }
+
+    //     if ($request->input('status') == 'placement') {
+    //         if ($registration->dospem_id === null) {
+    //             return back()->withErrors('Dosen pembimbing harus diisi sebelum mengubah status ke "placement".');
+    //         }
     //     }
 
     //     $registration->save();
 
     //     return back()->with('success', 'Status registrasi berhasil diupdate.');
     // }
-
 
     public function update(Request $request, $id)
     {
@@ -122,6 +125,18 @@ class RegistrasiController extends Controller
         if ($request->input('status') == 'placement') {
             if ($registration->dospem_id === null) {
                 return back()->withErrors('Dosen pembimbing harus diisi sebelum mengubah status ke "placement".');
+            } else {
+                // Buat entri baru di tabel AktifitasMbkm
+                AktifitasMbkm::create([
+                    'peserta_id' => $registration->peserta_id,
+                    'lowongan_id' => $registration->lowongan_id,
+                    'mitra_id' => $registration->lowongan->mitra_id,
+                    'dospem_id' => $registration->dospem_id,
+                    'laporan_harian_id' => null, // Isi dengan ID laporan harian jika ada
+                    'laporan_mingguan_id' => null, // Isi dengan ID laporan mingguan jika ada
+                    'laporan_lengkap_id' => null, // Isi dengan ID laporan lengkap jika ada
+                    // Anda bisa menambahkan kolom lain yang diperlukan di sini
+                ]);
             }
         }
 
@@ -129,7 +144,6 @@ class RegistrasiController extends Controller
 
         return back()->with('success', 'Status registrasi berhasil diupdate.');
     }
-
 
     // public function updateDospem(Request $request, $id)
     // {
@@ -207,15 +221,15 @@ class RegistrasiController extends Controller
     // }
 
     public function showRegistrationsAndAcceptOffer($id)
-{
-    $registration = Registrasi::with('lowongan', 'dospem')->find($id);
+    {
+        $registration = Registrasi::with('lowongan', 'dospem')->find($id);
 
-    $pesertaId = Auth::user()->id; // Pastikan user login merupakan peserta
+        $pesertaId = Auth::user()->id; // Pastikan user login merupakan peserta
 
-    $registrations = Registrasi::with(['lowongan', 'dospem'])->where('peserta_id', $pesertaId)->get();
+        $registrations = Registrasi::with(['lowongan', 'dospem'])->where('peserta_id', $pesertaId)->get();
 
-    return view('applications.mbkm.staff.registrasi-program.peserta.list', compact('registration', 'registrations'));
-}
+        return view('applications.mbkm.staff.registrasi-program.peserta.list', compact('registration', 'registrations'));
+    }
 
 }
 
