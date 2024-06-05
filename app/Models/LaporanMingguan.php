@@ -9,12 +9,15 @@ class LaporanMingguan extends Model
 {
     use HasFactory;
 
+    protected $table = 'laporan_mingguan';
     protected $fillable = [
         'peserta_id',
-        'mitra_id', // Tambahkan mitra_id di sini
-        'minggu_ke',
+        'mitra_id',
+        'lowongan_id',
+        'tanggal',
         'isi_laporan',
         'status',
+        'kehadiran',
     ];
 
     public function peserta()

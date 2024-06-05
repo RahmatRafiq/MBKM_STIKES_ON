@@ -4,21 +4,11 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-
-// class LaporanHarian extends Model
-// {
-//     use HasFactory;
-//     protected $fillable = [
-//         'users_id',
-//         'is_validate',
-//         'attendance',
-//         'content',
-//     ];
-// }
 class LaporanHarian extends Model
 {
     use HasFactory;
 
+    protected $table = 'laporan_harian';
     protected $fillable = [
         'peserta_id',
         'mitra_id', // Tambahkan mitra_id di sini
