@@ -1,76 +1,70 @@
 <?php
-
 namespace App\Http\Controllers;
 
 use App\Models\AktivitasMbkm;
-use App\Models\DosenPembimbingLapangan;
 use App\Models\LaporanHarian;
 use App\Models\LaporanLengkap;
 use App\Models\LaporanMingguan;
-use App\Models\Lowongan;
-use App\Models\Peserta;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
-class AktivitasController extends Controller
+class AktivitasMbkmController extends Controller
 {
     public function index()
     {
-        $laporanHarian = LaporanHarian::with(['peserta', 'lowongan', 'mitra'])->get();
-        $laporanMingguan = LaporanMingguan::with(['peserta', 'lowongan', 'mitra'])->get();
-        $laporanLengkap = LaporanLengkap::with(['peserta', 'lowongan', 'dospem'])->get();
+        $laporanHarian = LaporanHarian::with(['peserta', 'mitra'])->get();
+        $laporanMingguan = LaporanMingguan::with(['peserta', 'mitra'])->get();
+        $laporanLengkap = LaporanLengkap::with(['peserta', 'dospem'])->get();
 
-        return view('laporan.index', compact('laporanHarian', 'laporanMingguan', 'laporanLengkap'));
+        return view('applications.mbkm.laporan.index', compact('laporanHarian', 'laporanMingguan', 'laporanLengkap'));
     }
 
     public function createLaporanHarian()
     {
-        $pesertas = Peserta::all();
-        $lowongans = Lowongan::all();
-        return view('applications.mbkm.laporan.laporan-harian', compact('pesertas', 'lowongans'));
+        $user = Auth::user();
+        $aktivitas = AktivitasMbkm::where('peserta_id', $user->id)->first();
+
+        return view('applications.mbkm.laporan.laporan-harian', compact('aktivitas'));
     }
 
     public function createLaporanMingguan()
     {
-        $pesertas = Peserta::all();
-        $lowongans = Lowongan::all();
-        return view('applications.mbkm.laporan.laporan-mingguan', compact('pesertas', 'lowongans'));
+        $user = Auth::user();
+        $aktivitas = AktivitasMbkm::where('peserta_id', $user->id)->first();
+
+        return view('applications.mbkm.laporan.laporan-mingguan', compact('aktivitas'));
     }
 
     public function createLaporanLengkap()
     {
-        $pesertas = Peserta::all();
-        $lowongans = Lowongan::all();
-        return view('applications.mbkm.laporan.laporan-lengkap', compact('pesertas', 'lowongans'));
+        $user = Auth::user();
+        $aktivitas = AktivitasMbkm::where('peserta_id', $user->id)->first();
+
+        return view('applications.mbkm.laporan.laporan-lengkap', compact('aktivitas'));
     }
 
     public function storeLaporanHarian(Request $request)
     {
         $request->validate([
-            'peserta_id' => 'required|exists:peserta,id',
-            'lowongan_id' => 'required|exists:lowongan,id',
             'tanggal' => 'required|date',
             'isi_laporan' => 'required|string',
+            'kehadiran' => 'required|string',
         ]);
 
-        $lowongan = Lowongan::find($request->lowongan_id);
-        $mitra = $lowongan->mitra;
+        $user = Auth::user();
+        $aktivitas = AktivitasMbkm::where('peserta_id', $user->id)->first();
 
         $laporanHarian = LaporanHarian::create([
-            'peserta_id' => $request->peserta_id,
-            'mitra_id' => $mitra->id,
+            'peserta_id' => $aktivitas->peserta_id,
+            'mitra_id' => $aktivitas->mitra_id,
             'tanggal' => $request->tanggal,
             'isi_laporan' => $request->isi_laporan,
             'status' => 'pending',
+            'kehadiran' => $request->kehadiran,
         ]);
 
-        AktivitasMbkm::create([
-            'peserta_id' => $request->peserta_id,
-            'lowongan_id' => $request->lowongan_id,
-            'mitra_id' => $mitra->id,
-            'dospem_id' => $lowongan->dospem_id,
-            'laporan_harian_id' => $laporanHarian->id,
-        ]);
+        $aktivitas->laporan_harian_id = $laporanHarian->id;
+        $aktivitas->save();
 
         return back()->with('success', 'Laporan harian berhasil disimpan.');
     }
@@ -78,30 +72,25 @@ class AktivitasController extends Controller
     public function storeLaporanMingguan(Request $request)
     {
         $request->validate([
-            'peserta_id' => 'required|exists:peserta,id',
-            'lowongan_id' => 'required|exists:lowongan,id',
             'minggu_ke' => 'required|integer',
             'isi_laporan' => 'required|string',
+            'kehadiran' => 'required|string',
         ]);
 
-        $lowongan = Lowongan::find($request->lowongan_id);
-        $mitra = $lowongan->mitra;
+        $user = Auth::user();
+        $aktivitas = AktivitasMbkm::where('peserta_id', $user->id)->first();
 
         $laporanMingguan = LaporanMingguan::create([
-            'peserta_id' => $request->peserta_id,
-            'mitra_id' => $mitra->id,
+            'peserta_id' => $aktivitas->peserta_id,
+            'mitra_id' => $aktivitas->mitra_id,
             'minggu_ke' => $request->minggu_ke,
             'isi_laporan' => $request->isi_laporan,
             'status' => 'pending',
+            'kehadiran' => $request->kehadiran,
         ]);
 
-        AktivitasMbkm::create([
-            'peserta_id' => $request->peserta_id,
-            'lowongan_id' => $request->lowongan_id,
-            'mitra_id' => $mitra->id,
-            'dospem_id' => $lowongan->dospem_id,
-            'laporan_mingguan_id' => $laporanMingguan->id,
-        ]);
+        $aktivitas->laporan_mingguan_id = $laporanMingguan->id;
+        $aktivitas->save();
 
         return back()->with('success', 'Laporan mingguan berhasil disimpan.');
     }
@@ -109,64 +98,35 @@ class AktivitasController extends Controller
     public function storeLaporanLengkap(Request $request)
     {
         $request->validate([
-            'peserta_id' => 'required|exists:peserta,id',
-            'lowongan_id' => 'required|exists:lowongan,id',
+            'tanggal' => 'required|date', // Tambahkan validasi 'tanggal
             'isi_laporan' => 'required|string',
+
+
         ]);
 
-        $lowongan = Lowongan::find($request->lowongan_id);
-        $dospem = DosenPembimbingLapangan::find($lowongan->dospem_id);
+        $user = Auth::user();
+        $aktivitas = AktivitasMbkm::where('peserta_id', $user->id)->first();
 
         $laporanLengkap = LaporanLengkap::create([
-            'peserta_id' => $request->peserta_id,
-            'dospem_id' => $dospem->id,
+            'peserta_id' => $aktivitas->peserta_id,
+            'mitra_id' => $aktivitas->mitra_id,
+            'tanggal' => $request->tanggal,
             'isi_laporan' => $request->isi_laporan,
             'status' => 'pending',
         ]);
 
-        AktivitasMbkm::create([
-            'peserta_id' => $request->peserta_id,
-            'lowongan_id' => $request->lowongan_id,
-            'mitra_id' => $lowongan->mitra_id,
-            'dospem_id' => $dospem->id,
-            'laporan_lengkap_id' => $laporanLengkap->id,
-        ]);
+        $aktivitas->laporan_lengkap_id = $laporanLengkap->id;
+        $aktivitas->save();
 
         return back()->with('success', 'Laporan lengkap berhasil disimpan.');
     }
 
-    // public function validateLaporanHarian(Request $request, $id)
-    // {
-    //     $aktifitas = AktivitasMbkm::where('laporan_harian_id', $id)->firstOrFail();
-    //     if ($aktifitas->mitra->user_id != Auth::id()) {
-    //         return back()->withErrors('Anda tidak memiliki izin untuk memvalidasi laporan ini.');
-    //     }
-
-    //     $laporanHarian = LaporanHarian::findOrFail($id);
-    //     $laporanHarian->update(['status' => 'validated']);
-
-    //     return back()->with('success', 'Laporan harian berhasil divalidasi.');
-    // }
-
-    // public function validateLaporanMingguan(Request $request, $id)
-    // {
-    //     $aktifitas = AktivitasMbkm::where('laporan_mingguan_id', $id)->firstOrFail();
-    //     if ($aktifitas->mitra->user_id != Auth::id()) {
-    //         return back()->withErrors('Anda tidak memiliki izin untuk memvalidasi laporan ini.');
-    //     }
-
-    //     $laporanMingguan = LaporanMingguan::findOrFail($id);
-    //     $laporanMingguan->update(['status' => 'validated']);
-
-    //     return back()->with('success', 'Laporan mingguan berhasil divalidasi.');
-    // }
-
     public function validateLaporanHarian(Request $request, $id)
     {
         $laporanHarian = LaporanHarian::findOrFail($id);
-        $mitra = $laporanHarian->mitra;
+        $aktivitas = AktivitasMbkm::where('laporan_harian_id', $id)->firstOrFail();
 
-        if ($mitra->user_id != Auth::id()) {
+        if ($aktivitas->mitra->user_id != Auth::id()) {
             return back()->withErrors('Anda tidak memiliki izin untuk memvalidasi laporan ini.');
         }
 
@@ -178,9 +138,9 @@ class AktivitasController extends Controller
     public function validateLaporanMingguan(Request $request, $id)
     {
         $laporanMingguan = LaporanMingguan::findOrFail($id);
-        $mitra = $laporanMingguan->mitra;
+        $aktivitas = AktivitasMbkm::where('laporan_mingguan_id', $id)->firstOrFail();
 
-        if ($mitra->user_id != Auth::id()) {
+        if ($aktivitas->mitra->user_id != Auth::id()) {
             return back()->withErrors('Anda tidak memiliki izin untuk memvalidasi laporan ini.');
         }
 
@@ -191,12 +151,13 @@ class AktivitasController extends Controller
 
     public function validateLaporanLengkap(Request $request, $id)
     {
-        $aktifitas = AktivitasMbkm::where('laporan_lengkap_id', $id)->firstOrFail();
-        if ($aktifitas->dospem->user_id != Auth::id()) {
+        $laporanLengkap = LaporanLengkap::findOrFail($id);
+        $aktivitas = AktivitasMbkm::where('laporan_lengkap_id', $id)->firstOrFail();
+
+        if ($aktivitas->dospem->user_id != Auth::id()) {
             return back()->withErrors('Anda tidak memiliki izin untuk memvalidasi laporan ini.');
         }
 
-        $laporanLengkap = LaporanLengkap::findOrFail($id);
         $laporanLengkap->update(['status' => 'validated']);
 
         return back()->with('success', 'Laporan lengkap berhasil divalidasi.');

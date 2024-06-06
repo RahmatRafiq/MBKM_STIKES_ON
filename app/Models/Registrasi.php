@@ -18,6 +18,9 @@ class Registrasi extends Model
         'dospem_id',
         'nama_peserta',
         'nama_lowongan',
+        'laporan_harian_id',
+        'laporan_mingguan_id',
+        'laporan_lengkap_id',
     ];
     
     protected $casts = [
