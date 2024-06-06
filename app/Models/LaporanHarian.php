@@ -15,6 +15,7 @@ class LaporanHarian extends Model
         'tanggal',
         'isi_laporan',
         'status',
+        'kehadiran',
     ];
 
     public function peserta()
