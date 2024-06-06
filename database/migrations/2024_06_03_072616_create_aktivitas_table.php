@@ -19,7 +19,7 @@ return new class extends Migration
             $table->unsignedBigInteger('laporan_lengkap_id')->nullable();
             $table->timestamps();
 
-            $table->foreign('peserta_id')->references('id')->on('peserta')->onDelete('cascade');
+            // $table->foreign('peserta_id')->references('id')->on('peserta')->onDelete('cascade');
             $table->foreign('lowongan_id')->references('id')->on('lowongans')->onDelete('cascade');
             $table->foreign('mitra_id')->references('id')->on('mitra_profile')->onDelete('cascade');
             $table->foreign('dospem_id')->references('id')->on('dosen_pembimbing_lapangan')->onDelete('cascade');
