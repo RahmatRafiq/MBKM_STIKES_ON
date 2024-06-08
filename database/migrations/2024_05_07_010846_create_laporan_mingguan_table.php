@@ -4,8 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-return new class extends Migration
-{
+return new class extends Migration {
     /**
      * Run the migrations.
      */
@@ -13,11 +12,12 @@ return new class extends Migration
     {
         Schema::create('laporan_mingguan', function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger('users_id');
             $table->unsignedBigInteger('peserta_id');
-            $table->tinyInteger('is_validate')->default(0);
-            $table->string('attendance');
-            $table->smallInteger('week');
+            $table->unsignedBigInteger('mitra_id')->nullable();
+            $table->integer('minggu_ke');
+            $table->text('isi_laporan');
+            $table->string('status');
+            $table->string('kehadiran');
             $table->timestamps();
         });
     }

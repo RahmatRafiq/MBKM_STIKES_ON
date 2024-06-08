@@ -66,7 +66,6 @@ class MitraProfileController extends Controller
         return view('applications.mbkm.staff.mitra.create', compact('roles'));
     }
 
-
     // public function store(Request $request)
     // {
     //     $request->validate([
@@ -131,52 +130,28 @@ class MitraProfileController extends Controller
             'user_password' => 'required|string|min:8|confirmed',
         ]);
 
-        // Mulai transaksi
-        DB::beginTransaction();
+        $user = User::create([
+            'name' => $request->user_name,
+            'email' => $request->user_email,
+            'password' => bcrypt($request->user_password),
+        ]);
 
-        try {
-            $mitraProfile = MitraProfile::create([
-                'name' => $request->mitra_name,
-                'address' => $request->mitra_address,
-                'phone' => $request->mitra_phone,
-                'email' => $request->mitra_email,
-                'website' => $request->mitra_website,
-                'type' => $request->mitra_type,
-                'description' => $request->mitra_description,
-            ]);
+        $role = Role::findByName('mitra');
+        $user->assignRole($role);
 
-            $media = MediaLibrary::put(
-                $mitraProfile,
-                'images',
-                $request
-            );
+        $mitraProfile = MitraProfile::create([
+            'user_id' => $user->id,
+            'name' => $request->mitra_name,
+            'address' => $request->mitra_address,
+            'phone' => $request->mitra_phone,
+            'email' => $request->mitra_email,
+            'website' => $request->mitra_website,
+            'type' => $request->mitra_type,
+            'description' => $request->mitra_description,
+        ]);
 
-            $user = User::create([
-                'name' => $request->user_name,
-                'email' => $request->user_email,
-                'password' => bcrypt($request->user_password),
-            ]);
-
-            // Assign role after creating the user
-            $role = Role::findByName('mitra');
-            $user->assignRole($role);
-
-            // Commit transaksi jika semua operasi berhasil
-            DB::commit();
-
-            return redirect()->route('mitra.index')->with([
-                'success' => 'Mitra created successfully.',
-                'media' => $media,
-            ]);
-
-        } catch (\Exception $e) {
-            // Rollback transaksi jika terjadi kesalahan
-            DB::rollBack();
-
-            return back()->withErrors(['error' => 'An error occurred while creating Mitra: ' . $e->getMessage()])->withInput();
-        }
+        return redirect()->route('mitra.index')->with('success', 'Mitra created successfully.');
     }
-
 
     public function edit($id)
     {

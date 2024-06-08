@@ -40,6 +40,7 @@ services:
             - 'sail-mariadb:/var/lib/mysql'
             - './docker/mysql/create-testing-database.sh:/docker-entrypoint-initdb.d/10-create-testing-database.sh'
             - './backup.sql:/docker-entrypoint-initdb.d/backup.sql'
+            - './sisfo.sql:/docker-entrypoint-initdb.d/backup.sql'
         networks:
             - sail
         healthcheck:
