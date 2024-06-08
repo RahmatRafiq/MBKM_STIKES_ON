@@ -9,8 +9,6 @@ class Lowongan extends Model
 {
     use HasFactory;
 
-    protected $table = 'lowongan'; // Sesuaikan nama tabel
-
     protected $fillable = [
         'id',
         'name',

@@ -12,8 +12,29 @@ class LaporanLengkap extends Model
     protected $table = 'laporan_lengkap';
     protected $fillable = [
         'peserta_id',
-        'is_validate',
-        'attendance',
-        'content',
+        'dospem_id',
+        'mitra_id', // Tambahkan mitra_id di sini
+        'isi_laporan',
+        'status',
     ];
+
+    public function peserta()
+    {
+        return $this->belongsTo(Peserta::class);
+    }
+
+    public function dospem()
+    {
+        return $this->belongsTo(DosenPembimbingLapangan::class);
+    }
+
+    public function mitra()
+    {
+        return $this->belongsTo(MitraProfile::class);
+    }
+
+    public function lowongan()
+    {
+        return $this->belongsTo(Lowongan::class);
+    }
 }

@@ -31,7 +31,7 @@ Route::middleware('auth')->group(function () {
 
     Route::resource('mbkm/mitra/lowongan', \App\Http\Controllers\LowonganController::class);
     Route::post('mbkm/mitra/lowongan/json', [\App\Http\Controllers\LowonganController::class, 'json'])->name('lowongan.json');
-    
+
     Route::post('/temp/storage', [\App\Http\Controllers\StorageController::class, 'store'])->name('storage.store');
     Route::delete('/temp/storage', [\App\Http\Controllers\StorageController::class, 'destroy'])->name('storage.destroy');
     Route::get('/temp/storage/{path}', [\App\Http\Controllers\StorageController::class, 'show'])->name('storage.show');
@@ -57,6 +57,52 @@ Route::middleware('auth')->group(function () {
     Route::put('/staff/registrasi/{id}', [RegistrasiController::class, 'update'])->name('staff.updateRegistrasi');
     Route::put('/staff/registrasi/{id}/dospem', [RegistrasiController::class, 'updateDospem'])->name('staff.updateDospem');
 
+
+    // Route::post('/laporan-harian/store', [\App\Http\Controllers\LaporanController::class, 'storeLaporanHarian'])->name('laporan.harian.store');
+    // Route::post('/laporan-mingguan/store', [\App\Http\Controllers\LaporanController::class, 'storeLaporanMingguan'])->name('laporan.mingguan.store');
+    // Route::post('/laporan-lengkap/store', [\App\Http\Controllers\LaporanController::class, 'storeLaporanLengkap'])->name('laporan.lengkap.store');
+
+    // Route::patch('/laporan-harian/validate/{id}', [\App\Http\Controllers\LaporanController::class, 'validateLaporanHarian'])->name('laporan.harian.validate');
+    // Route::patch('/laporan-mingguan/validate/{id}', [\App\Http\Controllers\LaporanController::class, 'validateLaporanMingguan'])->name('laporan.mingguan.validate');
+    // Route::patch('/laporan-lengkap/validate/{id}', [\App\Http\Controllers\LaporanController::class, 'validateLaporanLengkap'])->name('laporan.lengkap.validate');
+
+
+
+    
+    // Route::get('/laporan', [\App\Http\Controllers\AktivitasMbkmController::class, 'index'])->name('laporan.index');
+
+    // Route::get('/laporan-harian/create', [\App\Http\Controllers\AktivitasMbkmController::class, 'createLaporanHarian'])->name('laporan.harian.create');
+    // Route::get('/laporan-mingguan/create', [\App\Http\Controllers\AktivitasMbkmController::class, 'createLaporanMingguan'])->name('laporan.mingguan.create');
+    // Route::get('/laporan-lengkap/create', [\App\Http\Controllers\AktivitasMbkmController::class, 'createLaporanLengkap'])->name('laporan.lengkap.create');
+
+    // Route::post('/laporan-harian/store', [\App\Http\Controllers\AktivitasMbkmController::class, 'storeLaporanHarian'])->name('laporan.harian.store');
+    // Route::post('/laporan-mingguan/store', [\App\Http\Controllers\AktivitasMbkmController::class, 'storeLaporanMingguan'])->name('laporan.mingguan.store');
+    // Route::post('/laporan-lengkap/store', [\App\Http\Controllers\AktivitasMbkmController::class, 'storeLaporanLengkap'])->name('laporan.lengkap.store');
+
+    // Route::patch('/laporan-harian/validate/{id}', [\App\Http\Controllers\AktivitasMbkmController::class, 'validateLaporanHarian'])->name('laporan.harian.validate');
+    // Route::patch('/laporan-mingguan/validate/{id}', [\App\Http\Controllers\AktivitasMbkmController::class, 'validateLaporanMingguan'])->name('laporan.mingguan.validate');
+    // Route::patch('/laporan-lengkap/validate/{id}', [\App\Http\Controllers\AktivitasMbkmController::class, 'validateLaporanLengkap'])->name('laporan.lengkap.validate');
+
+
+    Route::middleware(['auth'])->group(function () {
+        // Rute untuk membuat laporan
+        Route::get('/laporan-harian/create', [\App\Http\Controllers\AktivitasMbkmController::class, 'createLaporanHarian'])->name('laporan.harian.create');
+        Route::post('/laporan-harian/store', [\App\Http\Controllers\AktivitasMbkmController::class, 'storeLaporanHarian'])->name('laporan.harian.store');
+    
+        Route::get('/laporan-mingguan/create', [\App\Http\Controllers\AktivitasMbkmController::class, 'createLaporanMingguan'])->name('laporan.mingguan.create');
+        Route::post('/laporan-mingguan/store', [\App\Http\Controllers\AktivitasMbkmController::class, 'storeLaporanMingguan'])->name('laporan.mingguan.store');
+    
+        Route::get('/laporan-lengkap/create', [\App\Http\Controllers\AktivitasMbkmController::class, 'createLaporanLengkap'])->name('laporan.lengkap.create');
+        Route::post('/laporan-lengkap/store', [\App\Http\Controllers\AktivitasMbkmController::class, 'storeLaporanLengkap'])->name('laporan.lengkap.store');
+    
+        // Rute untuk validasi laporan
+        Route::post('/laporan-harian/validate/{id}', [\App\Http\Controllers\AktivitasMbkmController::class, 'validateLaporanHarian'])->name('laporan.harian.validate');
+        Route::post('/laporan-mingguan/validate/{id}', [\App\Http\Controllers\AktivitasMbkmController::class, 'validateLaporanMingguan'])->name('laporan.mingguan.validate');
+        Route::post('/laporan-lengkap/validate/{id}', [\App\Http\Controllers\AktivitasMbkmController::class, 'validateLaporanLengkap'])->name('laporan.lengkap.validate');
+    
+        // Rute untuk melihat daftar laporan
+        Route::get('/laporan', [\App\Http\Controllers\AktivitasMbkmController::class, 'index'])->name('laporan.index');
+    });
 
 });
 require __DIR__ . '/auth.php';

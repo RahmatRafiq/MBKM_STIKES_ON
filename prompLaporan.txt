@@ -1,0 +1,972 @@
+ini adalah model mitra profile saya 
+
+<?php
+
+namespace App\Models;
+
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
+use Spatie\MediaLibrary\HasMedia;
+use Spatie\MediaLibrary\InteractsWithMedia;
+
+class MitraProfile extends Model implements HasMedia
+{
+    use HasFactory, InteractsWithMedia;
+
+    protected $table = 'mitra_profile';
+    protected $fillable = [
+        'name',
+        'address',
+        'phone',
+        'email',
+        'website',
+        'type',
+        'description',
+    ];
+    public function lowongan()
+    {
+        return $this->hasMany(Lowongan::class);
+    }
+}
+
+dan in controllernya 
+
+<?php
+
+namespace App\Http\Controllers;
+
+use App\Helpers\DataTable;
+use App\Helpers\MediaLibrary;
+use App\Models\MitraProfile;
+use App\Models\Role;
+use App\Models\User;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Storage;
+
+class MitraProfileController extends Controller
+{
+    public function index()
+    {
+        $mitraProfile = MitraProfile::all();
+        return view('applications.mbkm.staff.mitra.index', compact('mitraProfile'));
+    }
+
+    public function json(Request $request)
+    {
+        $search = $request->search['value'];
+        $query = MitraProfile::query();
+
+        // columns
+        $columns = [
+            'id',
+            'name',
+            'address',
+            'phone',
+            'email',
+            'website',
+            'type',
+            'description',
+            'images',
+            'created_at',
+            'updated_at',
+        ];
+
+        // search
+        if ($request->filled('search')) {
+            $query->where('name', 'like', "%{$search}%")
+                ->orWhere('address', 'like', "%{$search}%")
+                ->orWhere('phone', 'like', "%{$search}%")
+                ->orWhere('email', 'like', "%{$search}%")
+                ->orWhere('website', 'like', "%{$search}%")
+                ->orWhere('type', 'like', "%{$search}%")
+                ->orWhere('description', 'like', "%{$search}%");
+        }
+
+        // order
+        if ($request->filled('order')) {
+            $query->orderBy($columns[$request->order[0]['column']], $request->order[0]['dir']);
+        }
+
+        $data = DataTable::paginate($query, $request);
+
+        return response()->json($data);
+    }
+
+    public function create()
+    {
+        $roles = Role::all();
+        return view('applications.mbkm.staff.mitra.create', compact('roles'));
+    }
+
+
+    // public function store(Request $request)
+    // {
+    //     $request->validate([
+    //         'mitra_name' => 'required|string|max:255',
+    //         'mitra_address' => 'required|string|max:255',
+    //         'mitra_phone' => 'required|string|max:15',
+    //         'mitra_email' => 'required|email|max:255',
+    //         'mitra_website' => 'nullable|url|max:255',
+    //         'mitra_type' => 'required|string|max:255',
+    //         'mitra_description' => 'required|string',
+    //         'images' => 'array|max:3',
+    //         'user_name' => 'required|string|max:255',
+    //         'user_email' => 'required|string|email|max:255|unique:users,email',
+    //         'user_password' => 'required|string|min:8|confirmed',
+    //     ]);
+
+    //     $mitraProfile = MitraProfile::create([
+    //         'name' => $request->mitra_name,
+    //         'address' => $request->mitra_address,
+    //         'phone' => $request->mitra_phone,
+    //         'email' => $request->mitra_email,
+    //         'website' => $request->mitra_website,
+    //         'type' => $request->mitra_type,
+    //         'description' => $request->mitra_description,
+    //     ]);
+
+    //     $media = MediaLibrary::put(
+    //         $mitraProfile,
+    //         'images',
+    //         $request
+    //     );
+
+    //     $user = User::create([
+    //         'name' => $request->user_name,
+    //         'email' => $request->user_email,
+    //         'password' => bcrypt($request->user_password),
+    //     ]);
+
+    //     // Assign role after creating the user
+    //     $role = Role::findByName('mitra');
+    //     $user->assignRole($role);
+
+    //     return redirect()->route('mitra.index')->with([
+    //         'success' => 'Mitra created successfully.',
+    //         'media' => $media,
+    //     ]);
+    // }
+
+    public function store(Request $request)
+    {
+        $request->validate([
+            'mitra_name' => 'required|string|max:255',
+            'mitra_address' => 'required|string|max:255',
+            'mitra_phone' => 'required|string|max:15',
+            'mitra_email' => 'required|email|max:255',
+            'mitra_website' => 'nullable|url|max:255',
+            'mitra_type' => 'required|string|max:255',
+            'mitra_description' => 'required|string',
+            'images' => 'array|max:3',
+            'user_name' => 'required|string|max:255',
+            'user_email' => 'required|string|email|max:255|unique:users,email',
+            'user_password' => 'required|string|min:8|confirmed',
+        ]);
+
+        // Mulai transaksi
+        DB::beginTransaction();
+
+        try {
+            $mitraProfile = MitraProfile::create([
+                'name' => $request->mitra_name,
+                'address' => $request->mitra_address,
+                'phone' => $request->mitra_phone,
+                'email' => $request->mitra_email,
+                'website' => $request->mitra_website,
+                'type' => $request->mitra_type,
+                'description' => $request->mitra_description,
+            ]);
+
+            $media = MediaLibrary::put(
+                $mitraProfile,
+                'images',
+                $request
+            );
+
+            $user = User::create([
+                'name' => $request->user_name,
+                'email' => $request->user_email,
+                'password' => bcrypt($request->user_password),
+            ]);
+
+            // Assign role after creating the user
+            $role = Role::findByName('mitra');
+            $user->assignRole($role);
+
+            // Commit transaksi jika semua operasi berhasil
+            DB::commit();
+
+            return redirect()->route('mitra.index')->with([
+                'success' => 'Mitra created successfully.',
+                'media' => $media,
+            ]);
+
+        } catch (\Exception $e) {
+            // Rollback transaksi jika terjadi kesalahan
+            DB::rollBack();
+
+            return back()->withErrors(['error' => 'An error occurred while creating Mitra: ' . $e->getMessage()])->withInput();
+        }
+    }
+
+
+    public function edit($id)
+    {
+        $item = MitraProfile::findOrFail($id);
+        return view('applications.mbkm.staff.mitra.edit', compact('item'));
+    }
+
+    public function update(Request $request, $id)
+    {
+        $request->validate([
+            'name' => 'required|string|max:255',
+            'address' => 'required|string|max:255',
+            'phone' => 'required|string|max:15',
+            'email' => 'required|email|max:255',
+            'website' => 'nullable|url|max:255',
+            'type' => 'required|string|max:255',
+            'description' => 'required|string',
+            'images' => 'array|max:3',
+        ]);
+
+        $mitraProfile = MitraProfile::findOrFail($id);
+
+        $media = MediaLibrary::put(
+            $mitraProfile,
+            'images',
+            $request
+        );
+
+        $mitraProfile->update([
+            'name' => $request->name,
+            'address' => $request->address,
+            'phone' => $request->phone,
+            'email' => $request->email,
+            'website' => $request->website,
+            'type' => $request->type,
+            'description' => $request->description,
+        ]);
+
+        return redirect()->route('mitra.index')->with([
+            'success' => 'Mitra updated successfully.',
+            'media' => $media,
+        ]);
+    }
+
+    public function destroy($id)
+    {
+        $mitraProfile = MitraProfile::findOrFail($id);
+
+        $mitraProfile->delete();
+
+        return redirect()->route('mitra.index')->with('success', 'Mitra deleted successfully.');
+    }
+}
+
+
+ini peserta model 
+
+<?php
+
+namespace App\Models;
+
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
+
+class Peserta extends Model
+{
+    use HasFactory;
+
+    protected $table = 'peserta';
+
+    protected $fillable = [
+        'user_id',
+        'nim',
+        'nama',
+        'alamat',
+        'jurusan',
+        'tahun_masuk',
+        'email',
+        'telepon',
+        'jenis_kelamin',
+    ];
+
+    protected $casts = [
+        'created_at' => 'datetime:Y-m-d H:i:s',
+        'updated_at' => 'datetime:Y-m-d H:i:s',
+        'tanggal_lahir' => 'date:Y-m-d',
+    ];
+
+    public function registrations()
+    { 
+        return $this->hasMany(Registrasi::class, 'peserta_id');
+    }
+
+}
+
+
+
+
+dan ini controllernyua 
+<?php
+
+namespace App\Http\Controllers;
+
+use App\Helpers\DataTable;
+use App\Models\Peserta;
+use App\Models\Role;
+use App\Models\sisfo\Mahasiswa;
+use App\Models\User;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+
+class PesertaController extends Controller
+{
+    public function index()
+    {
+        $pesertas = Peserta::all();
+        return view('applications.mbkm.peserta.index', compact('pesertas'));
+    }
+
+    public function json()
+    {
+        $search = request()->search['value'];
+        $query = Peserta::query();
+
+        // columns
+        $columns = [
+            'nim',
+            'nama',
+            'alamat',
+            'jurusan',
+            'email',
+            'telepon',
+            'jenis_kelamin',
+            'created_at',
+            'updated_at',
+        ];
+
+        // search
+        if (request()->filled('search')) {
+            $query->where('nim', 'like', "%{$search}%")
+                ->orWhere('nama', 'like', "%{$search}%")
+                ->orWhere('alamat', 'like', "%{$search}%")
+                ->orWhere('jurusan', 'like', "%{$search}%")
+                ->orWhere('email', 'like', "%{$search}%")
+                ->orWhere('telepon', 'like', "%{$search}%")
+                ->orWhere('jenis_kelamin', 'like', "%{$search}%");
+        }
+
+        // order
+        if (request()->filled('order')) {
+            $query->orderBy($columns[request()->order[0]['column']], request()->order[0]['dir']);
+        }
+
+        $data = DataTable::paginate($query, request());
+
+        return response()->json($data);
+    }
+
+    public function create()
+    {
+        $mahasiswa = Mahasiswa::all();
+
+        return view('applications.mbkm.peserta.create', compact('mahasiswa'));
+    }
+
+    // public function store(Request $request)
+    // {
+    //     // dd($request->all());
+    //     $request->validate([
+    //         'mahasiswa_id' => 'required|exists:mysql_second.mahasiswa,id',
+    //         'password' => 'required|confirmed|min:8',
+    //     ]);
+
+    //     $mahasiswa = Mahasiswa::findOrFail($request->mahasiswa_id);
+
+    //     if (Peserta::where('email', $mahasiswa->email)->exists()) {
+    //         return back()->withErrors(['email' => 'Email already exists in Peserta'])->withInput();
+    //     }
+
+    //     $user = User::create([
+    //         'name' => $mahasiswa->nama,
+    //         'email' => $mahasiswa->email,
+    //         'password' => bcrypt($request->password),
+    //     ]);
+
+    //     $role = Role::findByName('peserta');
+    //     $user->assignRole($role);
+
+    //     Peserta::create([
+    //         'user_id' => $user->id ?? null,
+    //         'nim' => $mahasiswa->nim ?? null,
+    //         'nama' => $mahasiswa->nama ?? null,
+    //         'alamat' => $mahasiswa->alamat ?? null,
+    //         'jurusan' => $mahasiswa->jurusan ?? null,
+    //         'email' => $mahasiswa->email ?? null,
+    //         'telepon' => $mahasiswa->telepon ?? null,
+    //         'jenis_kelamin' => $mahasiswa->jenis_kelamin ?? null,
+    //     ]);
+
+    //     return redirect()->route('peserta.index')->with('success', 'Peserta created successfully');
+    // }
+    public function store(Request $request)
+    {
+        // Validasi input
+        $request->validate([
+            'mahasiswa_id' => 'required|exists:mysql_second.mahasiswa,id',
+            'password' => 'required|confirmed|min:8',
+        ]);
+
+        // Mulai transaksi
+        DB::beginTransaction();
+
+        try {
+            $mahasiswa = Mahasiswa::findOrFail($request->mahasiswa_id);
+
+            if (Peserta::where('email', $mahasiswa->email)->exists()) {
+                return back()->withErrors(['email' => 'Email already exists in Peserta'])->withInput();
+            }
+
+            $user = User::create([
+                'name' => $mahasiswa->nama,
+                'email' => $mahasiswa->email,
+                'password' => bcrypt($request->password),
+            ]);
+
+            $role = Role::findByName('peserta');
+            $user->assignRole($role);
+
+            Peserta::create([
+                'user_id' => $user->id ?? null,
+                'nim' => $mahasiswa->nim ?? null,
+                'nama' => $mahasiswa->nama ?? null,
+                'alamat' => $mahasiswa->alamat ?? null,
+                'jurusan' => $mahasiswa->jurusan ?? null,
+                'email' => $mahasiswa->email ?? null,
+                'telepon' => $mahasiswa->telepon ?? null,
+                'jenis_kelamin' => $mahasiswa->jenis_kelamin ?? null,
+            ]);
+
+            // Commit transaksi jika semua operasi berhasil
+            DB::commit();
+
+            return redirect()->route('peserta.index')->with('success', 'Peserta created successfully');
+
+        } catch (\Exception $e) {
+            // Rollback transaksi jika terjadi kesalahan
+            DB::rollBack();
+
+            return back()->withErrors(['error' => 'An error occurred while creating Peserta: ' . $e->getMessage()])->withInput();
+        }
+    }
+
+    public function edit(Peserta $peserta) // Pastikan parameter ini konsisten dengan route
+    {
+        $mahasiswa = Mahasiswa::all();
+        return view('applications.mbkm.peserta.edit', compact('peserta', 'mahasiswa'));
+    }
+
+    public function update(Request $request, Peserta $peserta) // Gunakan model binding
+    {
+        $request->validate([
+            'nama' => 'required|string|max:255',
+            'nim' => 'required|string|max:255',
+            'jurusan' => 'required|string|max:255',
+            'tanggal_lahir' => 'required|date',
+            'jenis_kelamin' => 'required',
+            'alamat' => 'required|string',
+            'telepon' => 'required|string',
+        ]);
+
+        $peserta->update([
+            'nama' => $request->nama,
+            'nim' => $request->nim,
+            'jurusan' => $request->jurusan,
+            'tanggal_lahir' => $request->tanggal_lahir,
+            'jenis_kelamin' => $request->jenis_kelamin,
+            'alamat' => $request->alamat,
+            'telepon' => $request->telepon,
+        ]);
+
+        return redirect()->route('peserta.index')->with('success', 'Peserta updated successfully');
+    }
+
+    public function destroy(Peserta $peserta) // Gunakan model binding
+    {
+        $peserta->delete();
+
+        return redirect()->route('peserta.index')->with('success', 'Peserta deleted successfully');
+    }
+}
+
+
+ini dosenpembimbing 
+<?php
+
+namespace App\Models;
+
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
+
+class DosenPembimbingLapangan extends Model
+{
+    use HasFactory;
+
+    protected $table = 'dosen_pembimbing_lapangan';
+    protected $fillable = [
+        'user_id',
+        'name',
+        'image',
+        'address',
+        'phone',
+        'email',
+        'nip',
+    ];
+
+    protected $casts = [
+        'created_at' => 'datetime:Y-m-d H:i:s',
+        'updated_at' => 'datetime:Y-m-d H:i:s',
+    ];  
+}
+
+
+
+
+
+dan ini controllernmya 
+<?php
+
+namespace App\Http\Controllers;
+
+use App\Helpers\DataTable;
+use App\Models\DosenPembimbingLapangan;
+use App\Models\Role;
+use App\Models\sisfo\Dosen;
+use App\Models\User;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Hash;
+
+class DosenPembimbingLapanganController extends Controller
+{
+    public function index()
+    {
+        $dosenPembimbingLapangan = DosenPembimbingLapangan::all();
+        return view('applications.mbkm.dospem.index', compact('dosenPembimbingLapangan'));
+    }
+
+    public function json()
+    {
+        $search = request()->search['value'];
+        $query = DosenPembimbingLapangan::query();
+
+        // columns
+        $columns = [
+            'id',
+            'name',
+            'email',
+            'nip',
+            'address',
+            'created_at',
+            'updated_at',
+        ];
+
+        // search
+        if (request()->filled('search')) {
+            $query->where('name', 'like', "%{$search}%")
+                ->orWhere('email', 'like', "%{$search}%")
+                ->orWhere('nip', 'like', "%{$search}%")
+                ->orWhere('address', 'like', "%{$search}%");
+        }
+
+        // order
+        if (request()->filled('order')) {
+            $query->orderBy($columns[request()->order[0]['column']], request()->order[0]['dir']);
+        }
+
+        $data = DataTable::paginate($query, request());
+
+        return response()->json($data);
+    }
+
+    public function create()
+    {
+        $dosen = Dosen::all();
+        // dd($dosen);
+
+        return view('applications.mbkm.dospem.create', compact('dosen'));
+    }
+
+    // public function store(Request $request)
+    // {
+    //     // Validasi request
+    //     $request->validate([
+    //         'dosen_id' => 'required|exists:mysql_second.dosen,id',
+    //         'password' => 'required|confirmed|min:8',
+    //     ]);
+
+    //     // Mengambil data dosen dari database kedua
+    //     $dosen = Dosen::findOrFail($request->dosen_id);
+
+    //     // $dosen = Dosen::findOrFail($request->dosen_id);
+
+    //     // Check for existing email or name in DosenPembimbingLapangan
+    //     if (DosenPembimbingLapangan::where('email', $dosen->email)->exists()) {
+    //         return back()->withErrors(['email' => 'Email already exists in Dosen Pembimbing Lapangan'])->withInput();
+    //     }
+
+    //     if (DosenPembimbingLapangan::where('name', $dosen->nama)->exists()) {
+    //         return back()->withErrors(['name' => 'Name already exists in Dosen Pembimbing Lapangan'])->withInput();
+    //     }
+
+    //     $user = User::create([
+    //         'name' => $dosen->nama,
+    //         'email' => $dosen->email,
+    //         'password' => Hash::make($request->password),
+    //     ]);
+
+
+    //     $role = Role::findByName('dosen');
+    //     $user->assignRole($role);
+
+
+    //     DosenPembimbingLapangan::create([
+    //         'user_id' => $user->id,
+    //         'name' => $dosen->nama,
+    //         'email' => $dosen->email,
+    //         'nip' => $dosen->nip,
+    //         'address' => $dosen->alamat,
+    //         'phone' => $dosen->phone,
+    //         'image' => 'default.jpg',
+
+    //         // Tambahkan field lain sesuai kebutuhan
+    //     ]);
+
+    //     return redirect()->route('dospem.index')->with('success', 'Dosen Pembimbing Lapangan created successfully.');
+    // }
+
+    public function store(Request $request)
+    {
+        // Validasi request
+        $request->validate([
+            'dosen_id' => 'required|exists:mysql_second.dosen,id',
+            'password' => 'required|confirmed|min:8',
+        ]);
+
+        // Mulai transaksi
+        DB::beginTransaction();
+
+        try {
+            // Mengambil data dosen dari database kedua
+            $dosen = Dosen::findOrFail($request->dosen_id);
+
+            // Check for existing email or name in DosenPembimbingLapangan
+            if (DosenPembimbingLapangan::where('email', $dosen->email)->exists()) {
+                return back()->withErrors(['email' => 'Email already exists in Dosen Pembimbing Lapangan'])->withInput();
+            }
+
+            if (DosenPembimbingLapangan::where('name', $dosen->nama)->exists()) {
+                return back()->withErrors(['name' => 'Name already exists in Dosen Pembimbing Lapangan'])->withInput();
+            }
+
+            $user = User::create([
+                'name' => $dosen->nama,
+                'email' => $dosen->email,
+                'password' => Hash::make($request->password),
+            ]);
+
+            $role = Role::findByName('dosen');
+            $user->assignRole($role);
+
+            DosenPembimbingLapangan::create([
+                'user_id' => $user->id,
+                'name' => $dosen->nama,
+                'email' => $dosen->email,
+                'nip' => $dosen->nip,
+                'address' => $dosen->alamat,
+                'phone' => $dosen->phone,
+                'image' => 'default.jpg',
+                // Tambahkan field lain sesuai kebutuhan
+            ]);
+
+            // Commit transaksi jika semua operasi berhasil
+            DB::commit();
+
+            return redirect()->route('dospem.index')->with('success', 'Dosen Pembimbing Lapangan created successfully.');
+
+        } catch (\Exception $e) {
+            // Rollback transaksi jika terjadi kesalahan
+            DB::rollBack();
+
+            return back()->withErrors(['error' => 'An error occurred while creating Dosen Pembimbing Lapangan: ' . $e->getMessage()])->withInput();
+        }
+    }
+
+
+    public function show($id)
+    {
+        //
+    }
+
+    public function edit($id)
+    {
+        $dosenPembimbingLapangan = DosenPembimbingLapangan::findOrFail($id);
+        return view('applications.mbkm.dospem.edit', compact('dosenPembimbingLapangan'));
+    }
+
+    public function update(Request $request, $id)
+    {
+        // Validasi request
+        $request->validate([
+            'name' => 'required|string|max:255',
+            'nip' => 'required|string|max:50',
+            'address' => 'required|string|max:255',
+            'phone' => 'required|string|max:15',
+        ]);
+
+        $dosenPembimbingLapangan = DosenPembimbingLapangan::findOrFail($id);
+
+        $dosenPembimbingLapangan->update([
+            'name' => $request->name,
+            'nip' => $request->nip,
+            'address' => $request->address,
+            'phone' => $request->phone,
+        ]);
+
+        return redirect()->route('dospem.index')->with('success', 'Dosen Pembimbing Lapangan updated successfully.');
+    }
+
+    public function destroy($id)
+    {
+        $dosenPembimbingLapangan = DosenPembimbingLapangan::findOrFail($id);
+        $dosenPembimbingLapangan->delete();
+
+        return redirect()->route('dospem.index')->with('success', 'Dosen Pembimbing Lapangan deleted successfully.');
+    }
+}
+
+
+
+saya memiliki maslah yaitu dimana saya membangun aplikasi mbkm dan pada controller diatas, ketika kita menambahkan suatu data itu berarti menambhkan 1 user juga dengan role yang sudah di setel
+
+saya juga sudah membuat controller dan model untuk registrasi
+
+ini dia modelnya 
+<?php
+
+namespace App\Models;
+
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
+
+class Registrasi extends Model
+{
+    use HasFactory;
+
+    protected $table = 'registrasi';
+
+    protected $fillable = [
+        'peserta_id',
+        'lowongan_id',
+        'status',
+        'dospem_id',
+        'nama_peserta',
+        'nama_lowongan',
+    ];
+    
+    protected $casts = [
+        'created_at' => 'datetime:Y-m-d H:i:s',
+        'updated_at' => 'datetime:Y-m-d H:i:s',
+    ];
+
+    // Registrasi.php
+    public function peserta()
+    {
+        return $this->belongsTo(Peserta::class, 'peserta_id');
+    }
+
+    public function lowongan()
+    {
+        return $this->belongsTo(Lowongan::class, 'lowongan_id');
+    }
+
+    public function dospem()
+    {
+        return $this->belongsTo(DosenPembimbingLapangan::class, 'dospem_id');
+    }
+}
+
+
+sedangakn controllernya 
+<?php
+
+namespace App\Http\Controllers;
+
+use App\Models\Registrasi;
+use App\Models\Lowongan;
+use App\Models\Peserta;
+use Illuminate\Support\Facades\Auth;
+use App\Models\DosenPembimbingLapangan;
+use Illuminate\Http\Request;
+use App\Http\Controllers\Controller;
+
+class RegistrasiController extends Controller
+{
+    public function showPesertaRegistrasiForm()
+    {
+        $lowongans = Lowongan::all();
+        return view('applications.mbkm.staff.registrasi-program.peserta.registrasi', compact('lowongans'));
+    }
+
+    public function index()
+    {
+        $registrations = Registrasi::all();
+        $pesertas = Peserta::all();
+        $dospems = DosenPembimbingLapangan::all();
+
+        return view('applications.mbkm.staff.registrasi-program.staff.index', compact('registrations', 'dospems', 'pesertas'));
+    }
+
+
+    public function store(Request $request)
+    {
+        $request->validate([
+            'peserta_id' => 'required|exists:peserta,user_id',
+            'lowongan_id' => 'required|exists:lowongan,id',
+        ]);
+
+        $pesertaId = $request->input('peserta_id');
+        $lowonganId = $request->input('lowongan_id');
+
+
+        $existingRegistration = Registrasi::where('peserta_id', $pesertaId)
+            ->where('lowongan_id', $lowonganId)
+            ->first();
+
+        if ($existingRegistration) {
+            return back()->withErrors(['error' => 'Peserta sudah mendaftar pada lowongan ini. Tidak dapat mendaftar lagi.']);
+        }
+
+
+        $peserta = Peserta::where('user_id', $pesertaId)->first();
+        $lowongan = Lowongan::find($lowonganId);
+
+        
+        $existingAcceptedRegistration = Registrasi::where('peserta_id', $pesertaId)
+        ->whereIn('status', ['accepted', 'accepted_offer'])
+        ->first();
+        
+        if ($existingAcceptedRegistration) {
+            return back()->withErrors(['Error' => 'Peserta sudah memiliki tawaran yang diterima. Tidak dapat mendaftar di lowongan lain.']);
+        }
+        
+        
+        Registrasi::create([
+            'peserta_id' => $pesertaId,
+            'lowongan_id' => $lowonganId,
+            'status' => 'registered',
+            'nama_peserta' => $peserta->nama,
+            'nama_lowongan' => $lowongan->name,
+        ]);
+        
+        return back()->with('success', 'Pendaftaran berhasil.');
+    }
+    
+    
+    public function update(Request $request, $id)
+    {
+        // dd($request->all());
+        $request->validate([
+            'status' => 'required|in:registered,processed,accepted,rejected,accepted_offer',
+            'dospem_id' => 'nullable|exists:dosen_pembimbing_lapangan,id',
+        ]);
+        
+        $registration = Registrasi::find($id);
+        $registration->status = $request->input('status');
+        
+        // Hanya jika status 'accepted_offer' dan dospem_id disertakan
+        if ($request->input('status') == 'accepted_offer' && $request->has('dospem_id')) {
+            $registration->dospem_id = $request->input('dospem_id');
+        }
+        
+        $registration->save();
+        
+        return back()->with('success', 'Status registrasi berhasil diupdate.');
+    }
+    
+    public function updateDospem(Request $request, $id)
+    {
+        $request->validate([
+            'dospem_id' => 'required|exists:dosen_pembimbing_lapangan,id',
+        ]);
+        
+        $registration = Registrasi::find($id);
+        
+        // Pastikan status adalah accepted_offer sebelum memperbarui dospem_id
+        if ($registration->status != 'accepted_offer') {
+            return back()->withErrors('Status registrasi harus "accepted_offer" untuk memperbarui dosen pembimbing.');
+        }
+        
+        $registration->dospem_id = $request->input('dospem_id');
+        $registration->save();
+        
+        return back()->with('success', 'Dosen pembimbing berhasil diperbarui.');
+    }
+    
+    
+    public function acceptOffer(Request $request, $id)
+    {
+        $request->validate([
+            // Tidak ada validasi dospem_id di sini
+        ]);
+        
+        $registration = Registrasi::find($id);
+        
+        if ($registration->status != 'accepted') {
+            return back()->withErrors('Tawaran hanya dapat diambil jika diterima.');
+        }
+        
+        $registration->status = 'accepted_offer';
+        $registration->save();
+        
+        Registrasi::where('peserta_id', $registration->peserta_id)
+        ->where('id', '!=', $registration->id)
+        ->update(['status' => 'rejected']);
+        
+        return back()->with('success', 'Tawaran berhasil diambil.');
+    }
+    
+    
+    public function showRegistrationsAndAcceptOffer($id)
+    {
+        $registration = Registrasi::with('lowongan')->find($id);
+        
+        $pesertaId = Auth::user()->id; // Pastikan user login merupakan peserta
+        
+        $registrations = Registrasi::with(['lowongan'])->where('peserta_id', $pesertaId)->get();
+        
+        $dospems = DosenPembimbingLapangan::all();
+        
+        return view('applications.mbkm.staff.registrasi-program.peserta.list', compact('registration', 'registrations', 'dospems'));
+    }
+}
+
+// $mitraType = $lowongan->mitra->type;
+
+// $existingRegistration = Registrasi::where('peserta_id', $pesertaId)
+//     ->whereHas('lowongan.mitra', function ($query) use ($mitraType) {
+//         $query->where('type', $mitraType);
+//     })
+//     ->first();
+
+// if ($existingRegistration) {
+//     return back()->withErrors(['error' => 'Peserta sudah mendaftar pada lowongan dari tipe mitra yang sama.']);
+// }
+
+
+
+ini sudah sukses hingga ketika kita di tahap masalah aktifitas nya 
+
+dimana saat mahasiswa tersebut sudah meneyelesaikan proses seleksi maka dia akan mengikuti kegiatan mbkmnya, maslah nya adalah saat mengisi laporan, dimana laporan ada laporan harian, mingguan dan lengkap, saya sudah memiliki model ke 3 jenis laporan itu dan juga migrasinya. saya ingin agar saat peserta mengikuti kegian mbkm dia akan melakukan pengisian laporan harian, dan mingguan dimana laporan harian dan mingguan itu di valisadi oleh akun mitra, akun mitra tersebut sudah ada saat kita memasukkan dat amitra baru syang sekaligus membuat akun mitras juga, kau paham kan maksud ku, nah si mitra ini lah yang melakukan validasi untuk laporan harian dan mingguan setelah di isi user. selanjutnya untuk laporan lengkap, dia akan di vaidasi oleh dosen pembimbing lapangan menggunakan akun yang sudah di buat juga bsaat melakuakn penambahan dosen, kau bisa membantuku ?

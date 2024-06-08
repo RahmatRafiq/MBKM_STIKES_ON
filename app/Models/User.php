@@ -53,4 +53,10 @@ class User extends Authenticatable
             'updated_at' => 'datetime:Y-m-d h:i:s',
         ];
     }
+
+    // hasOne peserta
+    public function peserta()
+    {
+        return $this->hasOne(Peserta::class, 'user_id', 'id');
+    }
 }

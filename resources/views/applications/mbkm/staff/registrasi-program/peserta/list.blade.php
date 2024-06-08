@@ -1,3 +1,4 @@
+
 @extends('layouts.app')
 
 @section('content')
@@ -14,6 +15,7 @@
                         <th>ID Registrasi</th>
                         <th>Nama Lowongan</th>
                         <th>Status</th>
+                        <th>Dosen Pembimbing</th>
                         <th>Aksi</th>
                     </tr>
                 </thead>
@@ -23,6 +25,13 @@
                         <td>{{ $registration->id }}</td>
                         <td>{{ $registration->lowongan->name }}</td>
                         <td>{{ $registration->status }}</td>
+                        <td>
+                            @if($registration->status == 'placement' && $registration->dospem)
+                            {{ $registration->dospem->name }}
+                            @else
+                            <span class="text-muted">-</span>
+                            @endif
+                        </td>
                         <td>
                             @if($registration->status == 'accepted')
                             <form action="{{ route('peserta.acceptOffer', $registration->id) }}" method="POST">

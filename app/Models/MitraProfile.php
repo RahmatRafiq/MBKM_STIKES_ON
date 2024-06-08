@@ -14,6 +14,7 @@ class MitraProfile extends Model implements HasMedia
     protected $table = 'mitra_profile';
     protected $fillable = [
         'name',
+        'user_id',
         'address',
         'phone',
         'email',
@@ -24,5 +25,9 @@ class MitraProfile extends Model implements HasMedia
     public function lowongan()
     {
         return $this->hasMany(Lowongan::class);
+    }
+
+    public function user() {
+        return $this->belongsTo(User::class, 'user_id');
     }
 }
