@@ -4,8 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-return new class extends Migration
-{
+return new class extends Migration {
     /**
      * Run the migrations.
      */
@@ -13,9 +12,10 @@ return new class extends Migration
     {
         Schema::create('laporan_lengkap', function (Blueprint $table) {
             $table->id();
-            $table->integer('peserta_id');
-            $table->tinyInteger('is_validate')->default(0);
-            $table->string('document');
+            $table->unsignedBigInteger('peserta_id');
+            $table->unsignedBigInteger('dospem_id');
+            $table->text('isi_laporan');
+            $table->string('status');
             $table->timestamps();
         });
     }
@@ -28,3 +28,4 @@ return new class extends Migration
         Schema::dropIfExists('laporan_lengkap');
     }
 };
+

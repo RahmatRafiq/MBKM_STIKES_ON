@@ -14,17 +14,12 @@ return new class extends Migration
         Schema::create('registrasi', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger('peserta_id');
-            // $table->string('nama_peserta');
+            $table->string('nama_peserta')->nullable();
             $table->unsignedBigInteger('lowongan_id');
-            $table->string('status')->default('registered'); // Ubah status menjadi string
+            $table->string('nama_lowongan')->nullable();
+            $table->string('status')->default('registered');
             $table->unsignedBigInteger('dospem_id')->nullable();
             $table->timestamps();
-            
-            // Indexes
-            // $table->index('peserta_id');
-            // $table->index('lowongan_id');
-            // $table->index('dospem_id');
-            // $table->timestamps();
         });
     }
 
