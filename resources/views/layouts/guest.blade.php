@@ -14,8 +14,9 @@
   <!-- *************
    ************ CSS Files *************
   ************* -->
-  <link rel="stylesheet" href="{{ asset('assets/fonts/bootstrap/bootstrap-icons.css') }}" />
+  {{-- <link rel="stylesheet" href="{{ asset('assets/fonts/bootstrap/bootstrap-icons.css') }}" />
   <link rel="stylesheet" href="{{ asset('assets/css/main.min.css') }}" />
+  <link rel="stylesheet" href="{{ asset('assets/css/bootstrap-custom.css') }}"> --}}
 
   <!-- *************
    ************ Vendor Css Files *************
@@ -26,6 +27,8 @@
 
   <!-- Toastify CSS -->
   <link rel="stylesheet" href="{{ asset('assets/vendor/toastify/toastify.css') }}" />
+
+  <link rel="stylesheet" href="{{ asset('assets/vendor/font-awesome-4.7.0/css/font-awesome.min.css') }}">
   <!-- Scripts -->
   @vite(['resources/css/app.css', 'resources/js/app.js'])
   {{-- <link rel="stylesheet" href="{{ asset('assets/bootstrap/css/bootstrap.min.css') }}"> --}}
@@ -34,6 +37,8 @@
 </head>
 
 <body>
+  @include('applications.mbkm.guest.components.navbar')
+
   @yield('content')
   <script src="{{ asset('assets/js/jquery.min.js') }}"></script>
   <script src="{{ asset('assets/js/bootstrap.bundle.min.js') }}"></script>
