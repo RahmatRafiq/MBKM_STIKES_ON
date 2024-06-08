@@ -8,6 +8,17 @@ use App\Http\Controllers\RegistrasiController;
 use App\Http\Controllers\Guest;
 Route::name('guest.')->group(function() {
     Route::get('/', [Guest\DashboardController::class, 'index'])->name('dashboard');
+
+    // program
+    Route::get('/program', [Guest\ProgramController::class, 'index'])->name('program');
+    Route::get('/program/{slug}', [Guest\ProgramController::class, 'show'])->name('program.show');
+
+    // pengumuman
+    Route::get('/pengumuman', [Guest\PengumumanController::class, 'index'])->name('pengumuman');
+    Route::get('/pengumuman/{slug}', [Guest\PengumumanController::class, 'show'])->name('pengumuman.show');
+
+    // login-error
+    Route::get('/login-error', [Guest\LoginErrorController::class, 'index'])->name('login-error');
 });
 
 Route::middleware('auth')->group(function () {
