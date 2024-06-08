@@ -31,7 +31,13 @@
   <link rel="stylesheet" href="{{ asset('assets/vendor/font-awesome-4.7.0/css/font-awesome.min.css') }}">
   <!-- Scripts -->
   @vite(['resources/css/app.css', 'resources/js/app.js'])
+
+  <link rel="stylesheet" href="{{ asset('css/password.css') }}">
+  <script src="{{ asset('js/password.js') }}"></script>
+
   {{-- <link rel="stylesheet" href="{{ asset('assets/bootstrap/css/bootstrap.min.css') }}"> --}}
+  @stack('head')
+  @yield('head')
   @stack('css')
   @yield('css')
 </head>
@@ -39,12 +45,16 @@
 <body>
   @include('applications.mbkm.guest.components.navbar')
 
-  @yield('content')
+  <main class="min-h-[110vh]">
+    @yield('content')
+  </main>
   <script src="{{ asset('assets/js/jquery.min.js') }}"></script>
   <script src="{{ asset('assets/js/bootstrap.bundle.min.js') }}"></script>
   <script src="{{ asset('assets/js/moment.min.js') }}"></script>
 
   <script src="{{ asset('assets/vendor/toastify/toastify.js') }}"></script>
+
+  <script src="{{ asset('assets/js/sweetalert2.all.min.js') }}"></script>
 
   {{-- <script src="{{asset('assets/vendor/apex/apexcharts.min.js')}}"></script>
       <script src="{{asset('assets/vendor/apex/custom/dash1/visitors.js')}}"></script>
