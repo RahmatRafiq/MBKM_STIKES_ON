@@ -33,7 +33,7 @@
                 <tbody>
                     @foreach($laporanHarian as $laporan)
                     <tr>
-                        {{-- <td>{{ $laporan->peserta->nama }}</td> --}}
+                        <td>{{ $laporan->peserta->nama }}</td>
                         <td>{{ $laporan->mitra->name }}</td>
                         <td>{{ $laporan->tanggal }}</td>
                         <td>{{ $laporan->isi_laporan }}</td>

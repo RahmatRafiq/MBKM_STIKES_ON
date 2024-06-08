@@ -14,7 +14,7 @@ class LaporanMingguan extends Model
         'peserta_id',
         'mitra_id',
         'lowongan_id',
-        'tanggal',
+        'minggu_ke',
         'isi_laporan',
         'status',
         'kehadiran',
