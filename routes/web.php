@@ -5,10 +5,13 @@ use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\RegistrasiController;
 
-
+use App\Http\Controllers\Guest;
+Route::name('guest.')->group(function() {
+    Route::get('/', [Guest\DashboardController::class, 'index'])->name('dashboard');
+});
 
 Route::middleware('auth')->group(function () {
-    Route::get('/', function () {
+    Route::get('/mbkm', function () {
         return view('applications/mbkm/dashboard');
     })->middleware(['auth'])->name('dashboard');
 
@@ -68,7 +71,7 @@ Route::middleware('auth')->group(function () {
 
 
 
-    
+
     // Route::get('/laporan', [\App\Http\Controllers\AktivitasMbkmController::class, 'index'])->name('laporan.index');
 
     // Route::get('/laporan-harian/create', [\App\Http\Controllers\AktivitasMbkmController::class, 'createLaporanHarian'])->name('laporan.harian.create');
@@ -88,18 +91,18 @@ Route::middleware('auth')->group(function () {
         // Rute untuk membuat laporan
         Route::get('/laporan-harian/create', [\App\Http\Controllers\AktivitasMbkmController::class, 'createLaporanHarian'])->name('laporan.harian.create');
         Route::post('/laporan-harian/store', [\App\Http\Controllers\AktivitasMbkmController::class, 'storeLaporanHarian'])->name('laporan.harian.store');
-    
+
         Route::get('/laporan-mingguan/create', [\App\Http\Controllers\AktivitasMbkmController::class, 'createLaporanMingguan'])->name('laporan.mingguan.create');
         Route::post('/laporan-mingguan/store', [\App\Http\Controllers\AktivitasMbkmController::class, 'storeLaporanMingguan'])->name('laporan.mingguan.store');
-    
+
         Route::get('/laporan-lengkap/create', [\App\Http\Controllers\AktivitasMbkmController::class, 'createLaporanLengkap'])->name('laporan.lengkap.create');
         Route::post('/laporan-lengkap/store', [\App\Http\Controllers\AktivitasMbkmController::class, 'storeLaporanLengkap'])->name('laporan.lengkap.store');
-    
+
         // Rute untuk validasi laporan
         Route::post('/laporan-harian/validate/{id}', [\App\Http\Controllers\AktivitasMbkmController::class, 'validateLaporanHarian'])->name('laporan.harian.validate');
         Route::post('/laporan-mingguan/validate/{id}', [\App\Http\Controllers\AktivitasMbkmController::class, 'validateLaporanMingguan'])->name('laporan.mingguan.validate');
         Route::post('/laporan-lengkap/validate/{id}', [\App\Http\Controllers\AktivitasMbkmController::class, 'validateLaporanLengkap'])->name('laporan.lengkap.validate');
-    
+
         // Rute untuk melihat daftar laporan
         Route::get('/laporan', [\App\Http\Controllers\AktivitasMbkmController::class, 'index'])->name('laporan.index');
     });
