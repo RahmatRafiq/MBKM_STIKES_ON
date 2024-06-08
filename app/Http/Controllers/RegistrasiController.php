@@ -40,7 +40,7 @@ class RegistrasiController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'peserta_id' => 'required|exists:peserta,user_id',
+            'peserta_id' => 'required|exists:peserta,id',
             'lowongan_id' => 'required|exists:lowongans,id',
         ]);
 
@@ -55,7 +55,7 @@ class RegistrasiController extends Controller
             return back()->withErrors(['error' => 'Peserta sudah mendaftar pada lowongan ini. Tidak dapat mendaftar lagi.']);
         }
 
-        $peserta = Peserta::where('user_id', $pesertaId)->first();
+        $peserta = Peserta::find($pesertaId);
         $lowongan = Lowongan::find($lowonganId);
 
         $existingAcceptedRegistration = Registrasi::where('peserta_id', $pesertaId)
@@ -251,9 +251,12 @@ class RegistrasiController extends Controller
     {
         $registration = Registrasi::with('lowongan', 'dospem')->find($id);
 
-        $pesertaId = Auth::user()->id; // Pastikan user login merupakan peserta
+        $user = Auth::user(); // Pastikan user login merupakan peserta
 
-        $registrations = Registrasi::with(['lowongan', 'dospem'])->where('peserta_id', $pesertaId)->get();
+        // load peserta
+        $user->load('peserta');
+
+        $registrations = Registrasi::with(['lowongan'])->where('peserta_id', $user->peserta->id)->get();
 
         return view('applications.mbkm.staff.registrasi-program.peserta.list', compact('registration', 'registrations'));
     }
