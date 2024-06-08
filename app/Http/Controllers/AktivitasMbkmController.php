@@ -52,19 +52,29 @@ class AktivitasMbkmController extends Controller
         ]);
 
         $user = Auth::user();
-        $aktivitas = AktivitasMbkm::where('peserta_id', $user->id)->first();
+
+        $semesterStart = env('SEMESTER_START');
+        $semesterEnd = env('SEMESTER_END');
+
+        $user->load([
+            'peserta.registrationPlacement.lowongan',
+        ]);
+
+        // dd($user->peserta->registrationPlacement);
+
+        // $aktivitas = AktivitasMbkm::find('peserta_id', $user->peserta->id);
 
         $laporanHarian = LaporanHarian::create([
-            'peserta_id' => $aktivitas->peserta_id,
-            'mitra_id' => $aktivitas->mitra_id,
+            'peserta_id' => $user->peserta->id,
+            'mitra_id' => $user->peserta->registrationPlacement->lowongan->mitra_id,
             'tanggal' => $request->tanggal,
             'isi_laporan' => $request->isi_laporan,
             'status' => 'pending',
             'kehadiran' => $request->kehadiran,
         ]);
 
-        $aktivitas->laporan_harian_id = $laporanHarian->id;
-        $aktivitas->save();
+        // $aktivitas->laporan_harian_id = $laporanHarian->id;
+        // $aktivitas->save();
 
         return back()->with('success', 'Laporan harian berhasil disimpan.');
     }
