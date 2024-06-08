@@ -30,10 +30,20 @@ class Peserta extends Model
     ];
 
     public function registrations()
-    { 
+    {
         return $this->hasMany(Registrasi::class, 'peserta_id');
     }
 
+    // has One
+    public function registrationPlacement()
+    {
+        $semesterStart = env('SEMESTER_START');
+        $semesterEnd = env('SEMESTER_END');
+        return $this->hasOne(Registrasi::class, 'peserta_id')
+            ->where('status', 'placement')
+            ->whereDate('registrasi.created_at', '>=', $semesterStart)
+            ->whereDate('registrasi.created_at', '<=', $semesterEnd);
+    }
 }
 
 
