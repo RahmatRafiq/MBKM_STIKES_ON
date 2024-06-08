@@ -109,7 +109,6 @@ class AktivitasMbkmController extends Controller
             'tanggal' => 'required|date', // Tambahkan validasi 'tanggal
             'isi_laporan' => 'required|string',
 
-
         ]);
 
         $user = Auth::user();
@@ -129,12 +128,15 @@ class AktivitasMbkmController extends Controller
         return back()->with('success', 'Laporan lengkap berhasil disimpan.');
     }
 
+
     public function validateLaporanHarian(Request $request, $id)
     {
-        $laporanHarian = LaporanHarian::findOrFail($id);
-        $aktivitas = AktivitasMbkm::where('laporan_harian_id', $id)->firstOrFail();
+        // dd($id);
 
-        if ($aktivitas->mitra->user_id != Auth::id()) {
+        $laporanHarian = LaporanHarian::findOrFail($id);
+        // $aktivitas = AktivitasMbkm::where('laporan_harian_id', $id)->firstOrFail();
+
+        if ($laporanHarian->mitra->user_id != Auth::id()) {
             return back()->withErrors('Anda tidak memiliki izin untuk memvalidasi laporan ini.');
         }
 
