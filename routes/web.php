@@ -51,37 +51,13 @@ Route::middleware('auth')->group(function () {
     Route::get('/peserta/registrasi', [RegistrasiController::class, 'showPesertaRegistrasiForm'])->name('peserta.registrasiForm');
     Route::post('/peserta/registrasi', [RegistrasiController::class, 'store'])->name('peserta.registrasi');
     Route::post('/peserta/registrasi/{id}/accept', [RegistrasiController::class, 'acceptOffer'])->name('peserta.acceptOffer');
+    Route::post('/peserta/registrasi/{id}/reject', [RegistrasiController::class, 'rejectOffer'])->name('peserta.rejectOffer');
     Route::get('/registrasi/{id}/registrations-and-accept-offer', [RegistrasiController::class, 'showRegistrationsAndAcceptOffer'])->name('registrasi.registrations-and-accept-offer');
+
     // Rute untuk staff
     Route::get('/staff/registrasi', [RegistrasiController::class, 'index'])->name('staff.registrasiIndex');
     Route::put('/staff/registrasi/{id}', [RegistrasiController::class, 'update'])->name('staff.updateRegistrasi');
     Route::put('/staff/registrasi/{id}/dospem', [RegistrasiController::class, 'updateDospem'])->name('staff.updateDospem');
-
-
-    // Route::post('/laporan-harian/store', [\App\Http\Controllers\LaporanController::class, 'storeLaporanHarian'])->name('laporan.harian.store');
-    // Route::post('/laporan-mingguan/store', [\App\Http\Controllers\LaporanController::class, 'storeLaporanMingguan'])->name('laporan.mingguan.store');
-    // Route::post('/laporan-lengkap/store', [\App\Http\Controllers\LaporanController::class, 'storeLaporanLengkap'])->name('laporan.lengkap.store');
-
-    // Route::patch('/laporan-harian/validate/{id}', [\App\Http\Controllers\LaporanController::class, 'validateLaporanHarian'])->name('laporan.harian.validate');
-    // Route::patch('/laporan-mingguan/validate/{id}', [\App\Http\Controllers\LaporanController::class, 'validateLaporanMingguan'])->name('laporan.mingguan.validate');
-    // Route::patch('/laporan-lengkap/validate/{id}', [\App\Http\Controllers\LaporanController::class, 'validateLaporanLengkap'])->name('laporan.lengkap.validate');
-
-
-
-    
-    // Route::get('/laporan', [\App\Http\Controllers\AktivitasMbkmController::class, 'index'])->name('laporan.index');
-
-    // Route::get('/laporan-harian/create', [\App\Http\Controllers\AktivitasMbkmController::class, 'createLaporanHarian'])->name('laporan.harian.create');
-    // Route::get('/laporan-mingguan/create', [\App\Http\Controllers\AktivitasMbkmController::class, 'createLaporanMingguan'])->name('laporan.mingguan.create');
-    // Route::get('/laporan-lengkap/create', [\App\Http\Controllers\AktivitasMbkmController::class, 'createLaporanLengkap'])->name('laporan.lengkap.create');
-
-    // Route::post('/laporan-harian/store', [\App\Http\Controllers\AktivitasMbkmController::class, 'storeLaporanHarian'])->name('laporan.harian.store');
-    // Route::post('/laporan-mingguan/store', [\App\Http\Controllers\AktivitasMbkmController::class, 'storeLaporanMingguan'])->name('laporan.mingguan.store');
-    // Route::post('/laporan-lengkap/store', [\App\Http\Controllers\AktivitasMbkmController::class, 'storeLaporanLengkap'])->name('laporan.lengkap.store');
-
-    // Route::patch('/laporan-harian/validate/{id}', [\App\Http\Controllers\AktivitasMbkmController::class, 'validateLaporanHarian'])->name('laporan.harian.validate');
-    // Route::patch('/laporan-mingguan/validate/{id}', [\App\Http\Controllers\AktivitasMbkmController::class, 'validateLaporanMingguan'])->name('laporan.mingguan.validate');
-    // Route::patch('/laporan-lengkap/validate/{id}', [\App\Http\Controllers\AktivitasMbkmController::class, 'validateLaporanLengkap'])->name('laporan.lengkap.validate');
 
 
     Route::middleware(['auth'])->group(function () {
