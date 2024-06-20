@@ -32,4 +32,11 @@ class LaporanHarian extends Model
     {
         return $this->belongsTo(Lowongan::class);
     }
+    public static function getByUser($user)
+    {
+        return self::with(['peserta', 'mitra'])
+            ->whereHas('mitra', function ($query) use ($user) {
+                $query->where('user_id', $user->id);
+            })->get();
+    }
 }

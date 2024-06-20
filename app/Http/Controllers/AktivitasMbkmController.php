@@ -12,9 +12,12 @@ class AktivitasMbkmController extends Controller
 {
     public function index()
     {
-        $laporanHarian = LaporanHarian::with(['peserta', 'mitra'])->get();
-        $laporanMingguan = LaporanMingguan::with(['peserta', 'mitra'])->get();
-        $laporanLengkap = LaporanLengkap::with(['peserta', 'dospem'])->get();
+        $user = Auth::user();
+        
+        // Mengambil data laporan harian, mingguan, dan lengkap dari model masing-masing
+        $laporanHarian = LaporanHarian::getByUser($user);
+        $laporanMingguan = LaporanMingguan::getByUser($user);
+        $laporanLengkap = LaporanLengkap::getByUser($user);
 
         return view('applications.mbkm.laporan.index', compact('laporanHarian', 'laporanMingguan', 'laporanLengkap'));
     }

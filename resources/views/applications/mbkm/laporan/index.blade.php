@@ -110,7 +110,7 @@
                     <tbody>
                         @foreach ($laporanLengkap as $laporan)
                             <tr>
-                                {{-- <td>{{ $laporan->peserta->nama }}</td> --}}
+                                <td>{{ $laporan->peserta->nama }}</td>
                                 <td>{{ $laporan->dospem->name }}</td>
                                 <td>{{ $laporan->isi_laporan }}</td>
                                 <td>{{ $laporan->status }}</td>
@@ -131,45 +131,3 @@
         </div>
     </div>
 @endsection
-
-
-{{-- 
-
-// public function createLaporanHarian()
-// {
-//     $user = Auth::user();
-//     $aktivitas = AktivitasMbkm::where('peserta_id', $user->id)->first();
-
-//     $startOfWeek = \Carbon\Carbon::now()->startOfWeek();
-//     $endOfWeek = \Carbon\Carbon::now()->endOfWeek();
-
-//     $laporanHarian = LaporanHarian::where('peserta_id', $user->peserta->id)
-//         ->whereBetween('tanggal', [$startOfWeek, $endOfWeek])
-//         ->get()
-//         ->keyBy('tanggal');
-
-//     return view('applications.mbkm.laporan.laporan-harian', compact('aktivitas', 'laporanHarian'));
-// }
-
-// public function validateLaporanHarian(Request $request, $id)
-//     {
-//         // dd($id);
-
-//         $laporanHarian = LaporanHarian::findOrFail($id);
-//         // $aktivitas = AktivitasMbkm::where('laporan_harian_id', $id)->firstOrFail();
-
-//         if ($laporanHarian->mitra->user_id != Auth::id()) {
-//             return back()->withErrors('Anda tidak memiliki izin untuk memvalidasi laporan ini.');
-//         }
-
-//         if ($request->action == 'validasi') {
-//             $laporanHarian->update(['status' => 'validasi']);
-//             return back()->with('success', 'Laporan harian berhasil divalidasi.');
-//         } elseif ($request->action == 'revisi') {
-//             $laporanHarian->update(['status' => 'revisi']);
-//             return back()->with('success', 'Laporan harian berhasil direvisi.');
-//         }
-
-
-//         return back()->with('success', 'Laporan harian berhasil divalidasi.');
-//     } --}}
