@@ -5,7 +5,7 @@
         <h2>Daftar Laporan</h2>
 
         <!-- Dropdown untuk memilih peserta -->
-        <form method="GET" action="{{ route('aktivitas.index') }}">
+        <form method="GET" action="{{ route('laporan.index') }}">
             <div class="form-group">
                 <label for="peserta_id">Pilih Peserta:</label>
                 <select class="form-control" id="peserta_id" name="peserta_id" onchange="this.form.submit()">
