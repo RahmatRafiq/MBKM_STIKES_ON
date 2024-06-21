@@ -8,12 +8,9 @@ use Illuminate\Http\Request;
 
 class UserController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
     public function index()
     {
-        $users = User::all();
+        $users = User::with('roles')->get();
         return view('applications.mbkm.admin.role-permission.user.index', compact('users'));
     }
 
@@ -22,7 +19,6 @@ class UserController extends Controller
         $search = $request->search['value'];
         $query = User::query();
 
-        // columns
         $columns = [
             'id',
             'name',
@@ -32,18 +28,15 @@ class UserController extends Controller
             'updated_at',
         ];
 
-        // load roles with search from Datatable ajax
         $query->with('roles', function ($query) use ($search) {
             $query->where('name', 'like', "%{$search}%");
         });
 
-        // search
         if ($request->filled('search')) {
             $query->where('name', 'like', "%{$search}%")
                 ->orWhere('email', 'like', "%{$search}%");
         }
 
-        // order
         if ($request->filled('order')) {
             $query->orderBy($columns[$request->order[0]['column']], $request->order[0]['dir']);
         }
@@ -52,30 +45,6 @@ class UserController extends Controller
 
         return response()->json($data);
     }
-    // public function create()
-    // {
-    //     $roles = Role::all();
-    //     return view('applications.mbkm.admin.role-permission.user.create', compact('roles'));
-    // }
-
-    // public function store(Request $request)
-    // {
-    //     $validatedData = $request->validate([
-    //         'name' => 'required|string|max:255',
-    //         'email' => 'required|string|email|max:255|unique:users',
-    //         'password' => 'required|string|min:8|confirmed',
-    //         'role_id' => 'required|exists:roles,id',
-    //     ]);
-
-    //     User::create([
-    //         'name' => $validatedData['name'],
-    //         'email' => $validatedData['email'],
-    //         'password' => bcrypt($validatedData['password']),
-    //         'role_id' => $validatedData['role_id'],
-    //     ]);
-
-    //     return redirect()->route('user.index')->with('success', 'User created successfully.');
-    // }
 
     public function create()
     {
