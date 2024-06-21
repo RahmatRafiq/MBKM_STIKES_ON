@@ -34,11 +34,17 @@ class LaporanMingguan extends Model
     {
         return $this->belongsTo(Lowongan::class);
     }
-    public static function getByUser($user)
+    public static function getByUser($user, $pesertaId = null)
     {
-        return self::with(['peserta', 'mitra'])
+        $query = self::with(['peserta', 'mitra'])
             ->whereHas('mitra', function ($query) use ($user) {
                 $query->where('user_id', $user->id);
-            })->get();
+            });
+
+        if ($pesertaId) {
+            $query->where('peserta_id', $pesertaId);
+        }
+
+        return $query->get();
     }
 }

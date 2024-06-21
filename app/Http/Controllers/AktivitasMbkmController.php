@@ -5,22 +5,30 @@ use App\Models\AktivitasMbkm;
 use App\Models\LaporanHarian;
 use App\Models\LaporanLengkap;
 use App\Models\LaporanMingguan;
+use App\Models\Peserta;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
 class AktivitasMbkmController extends Controller
 {
-    public function index()
-    {
-        $user = Auth::user();
-        
-        // Mengambil data laporan harian, mingguan, dan lengkap dari model masing-masing
-        $laporanHarian = LaporanHarian::getByUser($user);
-        $laporanMingguan = LaporanMingguan::getByUser($user);
-        $laporanLengkap = LaporanLengkap::getByUser($user);
+    public function index(Request $request)
+{
+    $user = Auth::user();
+    $pesertaId = $request->input('peserta_id');
 
-        return view('applications.mbkm.laporan.index', compact('laporanHarian', 'laporanMingguan', 'laporanLengkap'));
-    }
+    // Mengambil daftar peserta berdasarkan kriteria yang sudah ditentukan
+    $daftarPeserta = Peserta::whereHas('registrationPlacement.lowongan.mitra', function ($query) use ($user) {
+        $query->where('user_id', $user->id);
+    })->get();
+
+    // Mengambil data laporan berdasarkan peserta yang dipilih
+    $laporanHarian = $pesertaId ? LaporanHarian::getByUser($user, $pesertaId) : collect();
+    $laporanMingguan = $pesertaId ? LaporanMingguan::getByUser($user, $pesertaId) : collect();
+    $laporanLengkap = $pesertaId ? LaporanLengkap::getByUser($user, $pesertaId) : collect();
+
+    return view('applications.mbkm.laporan.index', compact('daftarPeserta', 'laporanHarian', 'laporanMingguan', 'laporanLengkap', 'pesertaId'));
+}
+
 
     public function createLaporanHarian()
     {
