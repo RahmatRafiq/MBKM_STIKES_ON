@@ -167,13 +167,18 @@ class AktivitasMbkmController extends Controller
     public function validateLaporanMingguan(Request $request, $id)
     {
         $laporanMingguan = LaporanMingguan::findOrFail($id);
-        $aktivitas = AktivitasMbkm::where('laporan_mingguan_id', $id)->firstOrFail();
 
-        if ($aktivitas->mitra->user_id != Auth::id()) {
+        if ($laporanMingguan->mitra->user_id != Auth::id()) {
             return back()->withErrors('Anda tidak memiliki izin untuk memvalidasi laporan ini.');
         }
 
-        $laporanMingguan->update(['status' => 'validated']);
+        if ($request->action == 'validasi') {
+            $laporanMingguan->update(['status' => 'validasi']);
+            return back()->with('success', 'Laporan mingguan berhasil divalidasi.');
+        } elseif ($request->action == 'revisi') {
+            $laporanMingguan->update(['status' => 'revisi']);
+            return back()->with('success', 'Laporan mingguan berhasil direvisi.');
+        }
 
         return back()->with('success', 'Laporan mingguan berhasil divalidasi.');
     }
