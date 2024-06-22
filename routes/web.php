@@ -61,7 +61,8 @@ Route::middleware('auth')->group(function () {
 
 
     Route::middleware(['auth'])->group(function () {
-        // Rute untuk membuat laporan
+        // Rute untuk laporan harian
+        Route::get('/laporan-harian', [\App\Http\Controllers\AktivitasMbkmController::class, 'createLaporanHarian'])->name('laporan.harian');
         Route::get('/laporan-harian/create', [\App\Http\Controllers\AktivitasMbkmController::class, 'createLaporanHarian'])->name('laporan.harian.create');
         Route::post('/laporan-harian/store', [\App\Http\Controllers\AktivitasMbkmController::class, 'storeLaporanHarian'])->name('laporan.harian.store');
     
