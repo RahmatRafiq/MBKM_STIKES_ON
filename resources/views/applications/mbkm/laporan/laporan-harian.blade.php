@@ -6,38 +6,27 @@
             <div class="col-xxl-12">
                 <div class="card mb-3">
                     <div class="card-header text-center">
-                        <h5>Nama Peserta: {{ $aktivitas->peserta->name }}</h5>
+                        <h5>Nama Peserta: {{ $aktivitas }}</h5>
                     </div>
                     <div class="card-body text-center">
                         <p>Total Laporan: {{ $totalLaporan }}</p>
                         <p>Laporan Validasi: {{ $validasiLaporan }}</p>
                         <p>Laporan Revisi: {{ $revisiLaporan }}</p>
                         <p>Laporan Pending: {{ $pendingLaporan }}</p>
-                        <nav>
-                            <ul class="pagination justify-content-center">
-                                @for ($week = 1; $week <= $totalWeeks; $week++)
-                                    <li class="page-item {{ $week == $currentWeek ? 'active' : '' }}">
-                                        <a class="page-link" href="{{ route('laporan.harian', ['peserta_id' => $pesertaId, 'week' => $week]) }}">
-                                            Minggu Ke-{{ $week }}
-                                        </a>
-                                    </li>
-                                @endfor
-                            </ul>
-                        </nav>
                     </div>
                 </div>
             </div>
         </div>
         <div class="row gx-3">
-            @for ($i = 0; $i < 7; $i++) <!-- Menggunakan 7 untuk minggu penuh -->
+            @for ($i = 0; $i < 5; $i++)
                 <div class="col-xxl-12">
                     @php
-                        $date = \Carbon\Carbon::parse(env('SEMESTER_START'))->addWeeks($currentWeek - 1)->startOfWeek()->addDays($i)->format('Y-m-d');
+                        $date = \Carbon\Carbon::now()->startOfWeek()->addDays($i)->format('Y-m-d');
                         $laporan = $laporanHarian->get($date);
                     @endphp
                     <div class="card mb-3">
                         <div class="card-header text-center">
-                            <h5>Hari {{ \Carbon\Carbon::parse($date)->format('l') }}</h5>
+                            <h5>Hari {{ \Carbon\Carbon::now()->startOfWeek()->addDays($i)->format('l') }}</h5>
                             <p>{{ $date }}</p>
                             @if ($laporan)
                                 <span class="badge bg-{{ $laporan->status == 'pending' ? 'warning' : ($laporan->status == 'validasi' ? 'success' : 'danger') }}">
@@ -48,7 +37,6 @@
                         <div class="card-body text-center">
                             @if ($laporan)
                                 <p>{{ $laporan->isi_laporan }}</p>
-                                <p>Nama Peserta: {{ $laporan->peserta->name }}</p> <!-- Tampilkan nama peserta -->
                                 @if ($laporan->status == 'revisi')
                                     <button class="btn btn-info" data-bs-toggle="modal" data-bs-target="#modalForm_{{ $i }}">Submit Ulang</button>
                                 @endif
@@ -64,7 +52,7 @@
                     <div class="modal-dialog">
                         <div class="modal-content">
                             <div class="modal-header">
-                                <h5 class="modal-title" id="modalLabel_{{ $i }}">Isi Laporan Hari {{ \Carbon\Carbon::parse($date)->format('l') }}</h5>
+                                <h5 class="modal-title" id="modalLabel_{{ $i }}">Isi Laporan Hari {{ \Carbon\Carbon::now()->startOfWeek()->addDays($i)->format('l') }}</h5>
                                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                             </div>
                             <div class="modal-body">
