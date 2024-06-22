@@ -31,7 +31,7 @@ class AktivitasMbkmController extends Controller
     public function createLaporanHarian()
     {
         $user = Auth::user();
-        $aktivitas = $user->peserta->nama;    // dd($user->peserta->nama);
+        $namaPeserta = $user->peserta->nama;    // dd($user->peserta->nama);
     // dd($aktivitas);
         $startOfWeek = \Carbon\Carbon::now()->startOfWeek();
         $endOfWeek = \Carbon\Carbon::now()->endOfWeek();
@@ -57,7 +57,7 @@ class AktivitasMbkmController extends Controller
         $currentWeek = \Carbon\Carbon::now()->weekOfYear;
     
         return view('applications.mbkm.laporan.laporan-harian', compact(
-            'aktivitas', 
+            'namaPeserta', 
             'laporanHarian', 
             'totalLaporan', 
             'validasiLaporan', 
