@@ -11,24 +11,73 @@ use Illuminate\Support\Facades\Auth;
 
 class AktivitasMbkmController extends Controller
 {
+//     public function index(Request $request)
+// {
+//     $user = Auth::user();
+//     $pesertaId = $request->input('peserta_id');
+
+//     // Mengambil daftar peserta berdasarkan kriteria yang sudah ditentukan
+//     $daftarPeserta = Peserta::whereHas('registrationPlacement.lowongan.mitra', function ($query) use ($user) {
+//         $query->where('user_id', $user->id);
+//     })->get();
+
+//     // Mengambil data laporan berdasarkan peserta yang dipilih
+//     $laporanHarian = $pesertaId ? LaporanHarian::getByUser($user, $pesertaId) : collect();
+//     $laporanMingguan = $pesertaId ? LaporanMingguan::getByUser($user, $pesertaId) : collect();
+//     $laporanLengkap = $pesertaId ? LaporanLengkap::getByUser($user, $pesertaId) : collect();
+
+//     return view('applications.mbkm.laporan.index', compact('daftarPeserta', 'laporanHarian', 'laporanMingguan', 'laporanLengkap', 'pesertaId'));
+// }
+
+//     public function createLaporanHarian()
+//     {
+//         $user = Auth::user();
+//         $aktivitas = AktivitasMbkm::where('peserta_id', $user->id)->first();
+
+//         $startOfWeek = \Carbon\Carbon::now()->startOfWeek();
+//         $endOfWeek = \Carbon\Carbon::now()->endOfWeek();
+
+//         $laporanHarian = LaporanHarian::where('peserta_id', $user->peserta->id)
+//             ->whereBetween('tanggal', [$startOfWeek, $endOfWeek])
+//             ->get()
+//             ->keyBy('tanggal');
+
+//         return view('applications.mbkm.laporan.laporan-harian', compact('aktivitas', 'laporanHarian'));
+//     }
+
+//     public function createLaporanMingguan()
+//     {
+//         $user = Auth::user();
+//         $aktivitas = AktivitasMbkm::where('peserta_id', $user->id)->first();
+
+//         return view('applications.mbkm.laporan.laporan-mingguan', compact('aktivitas'));
+//     }
+
+//     public function createLaporanLengkap()
+//     {
+//         $user = Auth::user();
+//         $aktivitas = AktivitasMbkm::where('peserta_id', $user->id)->first();
+
+//         return view('applications.mbkm.laporan.laporan-lengkap', compact('aktivitas'));
+//     }
+
     public function index(Request $request)
-{
-    $user = Auth::user();
-    $pesertaId = $request->input('peserta_id');
+    {
+        $user = Auth::user();
+        $pesertaId = $request->input('peserta_id');
 
-    // Mengambil daftar peserta berdasarkan kriteria yang sudah ditentukan
-    $daftarPeserta = Peserta::whereHas('registrationPlacement.lowongan.mitra', function ($query) use ($user) {
-        $query->where('user_id', $user->id);
-    })->get();
+        // Mengambil daftar peserta berdasarkan kriteria yang sudah ditentukan
+        $daftarPeserta = Peserta::whereHas('registrationPlacement.lowongan.mitra', function ($query) use ($user) {
+            $query->where('user_id', $user->id);
+        })->get();
 
-    // Mengambil data laporan berdasarkan peserta yang dipilih
-    $laporanHarian = $pesertaId ? LaporanHarian::getByUser($user, $pesertaId) : collect();
-    $laporanMingguan = $pesertaId ? LaporanMingguan::getByUser($user, $pesertaId) : collect();
-    $laporanLengkap = $pesertaId ? LaporanLengkap::getByUser($user, $pesertaId) : collect();
+        // Mengambil data laporan berdasarkan peserta yang dipilih
+        $laporanHarian = $pesertaId ? LaporanHarian::getByUser($user, $pesertaId) : collect();
+        $laporanMingguan = $pesertaId ? LaporanMingguan::getByUser($user, $pesertaId) : collect();
+        $laporanLengkap = $pesertaId ? LaporanLengkap::getByUser($user, $pesertaId) : collect();
 
-    return view('applications.mbkm.laporan.index', compact('daftarPeserta', 'laporanHarian', 'laporanMingguan', 'laporanLengkap', 'pesertaId'));
-}
-
+        return view('applications.mbkm.laporan.index', compact('daftarPeserta', 'laporanHarian', 'laporanMingguan', 'laporanLengkap', 'pesertaId'));
+    }
 
     public function createLaporanHarian()
     {
@@ -51,7 +100,29 @@ class AktivitasMbkmController extends Controller
         $user = Auth::user();
         $aktivitas = AktivitasMbkm::where('peserta_id', $user->id)->first();
 
-        return view('applications.mbkm.laporan.laporan-mingguan', compact('aktivitas'));
+        $semesterStart = \Carbon\Carbon::parse(env('SEMESTER_START'));
+        $semesterEnd = \Carbon\Carbon::parse(env('SEMESTER_END'));
+        $currentWeek = \Carbon\Carbon::now()->diffInWeeks($semesterStart) + 1;
+        $totalWeeks = $semesterStart->diffInWeeks($semesterEnd) + 1;
+
+        $weeks = [];
+        for ($i = 0; $i < $totalWeeks; $i++) {
+            $startOfWeek = $semesterStart->copy()->addWeeks($i)->startOfWeek();
+            $endOfWeek = $startOfWeek->copy()->endOfWeek();
+            $isComplete = AktivitasMbkm::isWorkWeekReportComplete($user->peserta->id, $startOfWeek, $endOfWeek);
+            $laporanMingguan = LaporanMingguan::where('peserta_id', $user->peserta->id)
+                ->where('minggu_ke', $i + 1)
+                ->first();
+
+            $weeks[$i + 1] = [
+                'startOfWeek' => $startOfWeek,
+                'endOfWeek' => $endOfWeek,
+                'isComplete' => $isComplete,
+                'laporanMingguan' => $laporanMingguan,
+            ];
+        }
+
+        return view('applications.mbkm.laporan.laporan-mingguan', compact('aktivitas', 'weeks', 'currentWeek'));
     }
 
     public function createLaporanLengkap()
@@ -78,7 +149,6 @@ class AktivitasMbkmController extends Controller
         $user->load([
             'peserta.registrationPlacement.lowongan',
         ]);
-
 
         $laporanHarian = LaporanHarian::create([
             'peserta_id' => $user->peserta->id,
@@ -118,7 +188,6 @@ class AktivitasMbkmController extends Controller
             'kehadiran' => $request->kehadiran,
         ]);
 
-
         return back()->with('success', 'Laporan mingguan berhasil disimpan.');
     }
 
@@ -147,7 +216,6 @@ class AktivitasMbkmController extends Controller
         return back()->with('success', 'Laporan lengkap berhasil disimpan.');
     }
 
-
     public function validateLaporanHarian(Request $request, $id)
     {
         $laporanHarian = LaporanHarian::findOrFail($id);
@@ -164,10 +232,8 @@ class AktivitasMbkmController extends Controller
             return back()->with('success', 'Laporan harian berhasil direvisi.');
         }
 
-
         return back()->with('success', 'Laporan harian berhasil divalidasi.');
     }
-
 
     public function validateLaporanMingguan(Request $request, $id)
     {
