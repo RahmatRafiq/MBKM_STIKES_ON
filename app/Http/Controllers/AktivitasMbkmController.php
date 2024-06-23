@@ -16,6 +16,7 @@ class AktivitasMbkmController extends Controller
         $user = Auth::user();
         $pesertaId = $request->input('peserta_id');
 
+
         // Mengambil daftar peserta berdasarkan kriteria yang sudah ditentukan
         $daftarPeserta = Peserta::whereHas('registrationPlacement.lowongan.mitra', function ($query) use ($user) {
             $query->where('user_id', $user->id);
@@ -136,22 +137,25 @@ class AktivitasMbkmController extends Controller
         $semesterStart = env('SEMESTER_START');
         $semesterEnd = env('SEMESTER_END');
 
-        $user->load([
-            'peserta.registrationPlacement.lowongan',
-        ]);
+        $user->load(['peserta.registrationPlacement.lowongan']);
 
-        $laporanHarian = LaporanHarian::create([
-            'peserta_id' => $user->peserta->id,
-            'mitra_id' => $user->peserta->registrationPlacement->lowongan->mitra_id,
-            'tanggal' => $request->tanggal,
-            'isi_laporan' => $request->isi_laporan,
-            'status' => 'pending',
-            'kehadiran' => $request->kehadiran,
-        ]);
+
+        // Menggunakan updateOrCreate untuk memperbarui data yang ada atau membuat baru jika tidak ada
+        $laporanHarian = LaporanHarian::updateOrCreate(
+            [
+                'peserta_id' => $user->peserta->id,
+                'mitra_id' => $user->peserta->registrationPlacement->lowongan->mitra_id,
+                'tanggal' => $request->tanggal,
+            ],
+            [
+                'isi_laporan' => $request->isi_laporan,
+                'status' => 'pending',
+                'kehadiran' => $request->kehadiran,
+            ]
+        );
 
         return back()->with('success', 'Laporan harian berhasil disimpan.');
     }
-
     public function storeLaporanMingguan(Request $request)
     {
         $request->validate([
@@ -165,40 +169,47 @@ class AktivitasMbkmController extends Controller
         $semesterStart = env('SEMESTER_START');
         $semesterEnd = env('SEMESTER_END');
 
-        $user->load([
-            'peserta.registrationPlacement.lowongan',
-        ]);
+        $user->load(['peserta.registrationPlacement.lowongan']);
 
-        $laporanMingguan = LaporanMingguan::create([
-            'peserta_id' => $user->peserta->id,
-            'mitra_id' => $user->peserta->registrationPlacement->lowongan->mitra_id,
-            'minggu_ke' => $request->minggu_ke,
-            'isi_laporan' => $request->isi_laporan,
-            'status' => 'pending',
-            'kehadiran' => $request->kehadiran,
-        ]);
+
+        // Menggunakan updateOrCreate untuk memperbarui data yang ada atau membuat baru jika tidak ada
+        $laporanMingguan = LaporanMingguan::updateOrCreate(
+            [
+                'peserta_id' => $user->peserta->id,
+                'mitra_id' => $user->peserta->registrationPlacement->lowongan->mitra_id,
+                'minggu_ke' => $request->minggu_ke,
+            ],
+            [
+                'isi_laporan' => $request->isi_laporan,
+                'status' => 'pending',
+                'kehadiran' => $request->kehadiran,
+            ]
+        );
 
         return back()->with('success', 'Laporan mingguan berhasil disimpan.');
     }
-
     public function storeLaporanLengkap(Request $request)
     {
         $request->validate([
-            'tanggal' => 'required|date', // Tambahkan validasi 'tanggal
+            'tanggal' => 'required|date',
             'isi_laporan' => 'required|string',
-
         ]);
 
         $user = Auth::user();
         $aktivitas = AktivitasMbkm::where('peserta_id', $user->id)->first();
 
-        $laporanLengkap = LaporanLengkap::create([
-            'peserta_id' => $aktivitas->peserta_id,
-            'mitra_id' => $aktivitas->mitra_id,
-            'tanggal' => $request->tanggal,
-            'isi_laporan' => $request->isi_laporan,
-            'status' => 'pending',
-        ]);
+        // Menggunakan updateOrCreate untuk memperbarui data yang ada atau membuat baru jika tidak ada
+        $laporanLengkap = LaporanLengkap::updateOrCreate(
+            [
+                'peserta_id' => $aktivitas->peserta_id,
+                'mitra_id' => $aktivitas->mitra_id,
+                'tanggal' => $request->tanggal,
+            ],
+            [
+                'isi_laporan' => $request->isi_laporan,
+                'status' => 'pending',
+            ]
+        );
 
         $aktivitas->laporan_lengkap_id = $laporanLengkap->id;
         $aktivitas->save();
@@ -228,13 +239,18 @@ class AktivitasMbkmController extends Controller
     public function validateLaporanMingguan(Request $request, $id)
     {
         $laporanMingguan = LaporanMingguan::findOrFail($id);
-        $aktivitas = AktivitasMbkm::where('laporan_mingguan_id', $id)->firstOrFail();
 
-        if ($aktivitas->mitra->user_id != Auth::id()) {
+        if ($laporanMingguan->mitra->user_id != Auth::id()) {
             return back()->withErrors('Anda tidak memiliki izin untuk memvalidasi laporan ini.');
         }
 
-        $laporanMingguan->update(['status' => 'validated']);
+        if ($request->action == 'validasi') {
+            $laporanMingguan->update(['status' => 'validasi']);
+            return back()->with('success', 'Laporan mingguan berhasil divalidasi.');
+        } elseif ($request->action == 'revisi') {
+            $laporanMingguan->update(['status' => 'revisi']);
+            return back()->with('success', 'Laporan mingguan berhasil direvisi.');
+        }
 
         return back()->with('success', 'Laporan mingguan berhasil divalidasi.');
     }

@@ -1,8 +1,8 @@
 @extends('layouts.app')
 
 @section('content')
-    <div class="container">
-        <h2>Daftar Laporan</h2>
+<div class="container">
+    <h2>Daftar Laporan</h2>
 
         <!-- Dropdown untuk memilih peserta -->
         <form method="GET" action="{{ route('laporan.index') }}">
@@ -146,4 +146,5 @@
             </div>
         @endif
     </div>
+</div>
 @endsection
