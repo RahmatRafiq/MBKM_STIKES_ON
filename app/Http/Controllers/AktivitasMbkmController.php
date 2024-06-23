@@ -35,40 +35,106 @@ class AktivitasMbkmController extends Controller
     // dd($aktivitas);
         $startOfWeek = \Carbon\Carbon::now()->startOfWeek();
         $endOfWeek = \Carbon\Carbon::now()->endOfWeek();
-    
+
         // Mengambil semua laporan dalam minggu ini
         $laporanHarian = LaporanHarian::where('peserta_id', $user->peserta->id)
             ->whereBetween('tanggal', [$startOfWeek, $endOfWeek])
             ->get()
             ->keyBy('tanggal');
-    
+
         // Menghitung total laporan dan kategori laporan
         $totalLaporan = $laporanHarian->count();
         $validasiLaporan = $laporanHarian->where('status', 'validasi')->count();
         $revisiLaporan = $laporanHarian->where('status', 'revisi')->count();
         $pendingLaporan = $laporanHarian->where('status', 'pending')->count();
-    
+
         // Menghitung jumlah minggu dan minggu saat ini
         $totalWeeks = LaporanHarian::where('peserta_id', $user->peserta->id)
             ->selectRaw('WEEK(tanggal) as week')
             ->distinct()
             ->count();
-    
+
         $currentWeek = \Carbon\Carbon::now()->weekOfYear;
-    
+
         return view('applications.mbkm.laporan.laporan-harian', compact(
-            'namaPeserta', 
-            'laporanHarian', 
-            'totalLaporan', 
-            'validasiLaporan', 
-            'revisiLaporan', 
-            'pendingLaporan', 
-            'totalWeeks', 
+            'namaPeserta',
+            'laporanHarian',
+            'totalLaporan',
+            'validasiLaporan',
+            'revisiLaporan',
+            'pendingLaporan',
+            'totalWeeks',
             'currentWeek'
         ));
     }
-    
-    
+
+    // public function createLaporanMingguan()
+    // {
+    //     $user = Auth::user();
+    //     $aktivitas = AktivitasMbkm::where('peserta_id', $user->id)->first();
+
+    //     $semesterStart = \Carbon\Carbon::parse(env('SEMESTER_START'));
+    //     $semesterEnd = \Carbon\Carbon::parse(env('SEMESTER_END'));
+    //     $currentWeek = \Carbon\Carbon::now()->diffInWeeks($semesterStart) + 1;
+    //     $totalWeeks = $semesterStart->diffInWeeks($semesterEnd) + 1;
+
+    //     $weeks = [];
+    //     for ($i = 0; $i < $totalWeeks; $i++) {
+    //         $startOfWeek = $semesterStart->copy()->addWeeks($i)->startOfWeek();
+    //         $endOfWeek = $startOfWeek->copy()->endOfWeek();
+    //         $isComplete = AktivitasMbkm::isWorkWeekReportComplete($user->peserta->id, $startOfWeek, $endOfWeek);
+    //         $laporanMingguan = LaporanMingguan::where('peserta_id', $user->peserta->id)
+    //             ->where('minggu_ke', $i + 1)
+    //             ->first();
+
+    //         $weeks[$i + 1] = [
+    //             'startOfWeek' => $startOfWeek,
+    //             'endOfWeek' => $endOfWeek,
+    //             'isComplete' => $isComplete,
+    //             'laporanMingguan' => $laporanMingguan,
+    //         ];
+    //     }
+
+    //     return view('applications.mbkm.laporan.laporan-mingguan', compact('aktivitas', 'weeks', 'currentWeek'));
+    // }
+
+    // public function createLaporanHarian(Request $request)
+    // {
+    //     $user = Auth::user();
+    //     $namaPeserta = $user->peserta->nama;
+    //     $weekNumber = $request->input('week');
+    //     $startOfWeek = \Carbon\Carbon::now()->startOfWeek()->addWeeks($weekNumber - 1);
+    //     $endOfWeek = \Carbon\Carbon::now()->startOfWeek()->addWeeks($weekNumber - 1)->endOfWeek();
+
+    //     $laporanHarian = LaporanHarian::where('peserta_id', $user->peserta->id)
+    //         ->whereBetween('tanggal', [$startOfWeek, $endOfWeek])
+    //         ->get()
+    //         ->keyBy('tanggal');
+
+    //     $totalLaporan = $laporanHarian->count();
+    //     $validasiLaporan = $laporanHarian->where('status', 'validasi')->count();
+    //     $revisiLaporan = $laporanHarian->where('status', 'revisi')->count();
+    //     $pendingLaporan = $laporanHarian->where('status', 'pending')->count();
+
+    //     $totalWeeks = LaporanHarian::where('peserta_id', $user->peserta->id)
+    //         ->selectRaw('WEEK(tanggal) as week')
+    //         ->distinct()
+    //         ->count();
+
+    //     $currentWeek = \Carbon\Carbon::now()->weekOfYear;
+
+    //     return view('applications.mbkm.laporan.laporan-harian', compact(
+    //         'namaPeserta', 
+    //         'laporanHarian', 
+    //         'totalLaporan', 
+    //         'validasiLaporan', 
+    //         'revisiLaporan', 
+    //         'pendingLaporan', 
+    //         'totalWeeks', 
+    //         'currentWeek',
+    //         'weekNumber'
+    //     ));
+    // }
 
     public function createLaporanMingguan()
     {
@@ -94,6 +160,8 @@ class AktivitasMbkmController extends Controller
                 'endOfWeek' => $endOfWeek,
                 'isComplete' => $isComplete,
                 'laporanMingguan' => $laporanMingguan,
+                'canFill' => $i < $currentWeek && $isComplete,
+                'canFillDaily' => $i <= $currentWeek,
             ];
         }
 
