@@ -24,8 +24,6 @@
                     <div class="col-12 mb-3">
                         <div class="card">
                             <div class="card-header">
-                                <h5>Minggu Ke-{{ $weekNumber }}</h5>
-                                <p>{{ $week['startOfWeek']->format('d M Y') }} - {{ $week['endOfWeek']->format('d M Y') }}</p>
                                 @if ($week['laporanMingguan'])
                                     <div class="d-flex justify-content-end">
                                         <span class="badge bg-{{ $week['laporanMingguan']->status == 'pending' ? 'warning' : ($week['laporanMingguan']->status == 'validasi' ? 'success' : 'danger') }}">
@@ -33,6 +31,8 @@
                                         </span>
                                     </div>
                                 @endif
+                                <h5>Minggu Ke-{{ $weekNumber }}</h5>
+                                <p>{{ $week['startOfWeek']->format('d M Y') }} - {{ $week['endOfWeek']->format('d M Y') }}</p>
                             </div>
                             <div class="card-body">
                                 @if ($week['laporanMingguan'])
@@ -63,7 +63,7 @@
                                     @else
                                         @if ($week['canFillDaily'])
                                             <div class="text-center">
-                                                <button class="btn btn-secondary" onclick="window.location.href='{{ route('laporan.harian.create', ['week' => $weekNumber]) }}'">Lengkapi Laporan Harian</button>
+                                                <button class="btn btn-warning" onclick="window.location.href='{{ route('laporan.harian.create', ['week' => $weekNumber]) }}'">Lengkapi Laporan Harian</button>
                                             </div>
                                         @else
                                             <div class="text-center">

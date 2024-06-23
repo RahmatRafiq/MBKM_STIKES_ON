@@ -97,10 +97,12 @@
                                     <td>{{ $laporan->status }}</td>
                                     <td>
                                         @if ($laporan->status == 'pending')
-                                            <form action="{{ route('laporan.mingguan.validate', $laporan->id) }}"
-                                                method="POST">
+                                            <form action="{{ route('laporan.mingguan.validate', $laporan->id) }}" method="POST">
                                                 @csrf
-                                                <button type="submit" class="btn btn-success">Validasi</button>
+                                                <button type="submit" class="btn btn-success" name="action"
+                                                    value="validasi">Validasi</button>
+                                                <button type="submit" class="btn btn-warning" name="action"
+                                                    value="revisi">Revisi</button>
                                             </form>
                                         @endif
                                     </td>
