@@ -2,6 +2,7 @@
 
 @section('content')
 <div class="container">
+    <h2 class="text-center my-4">Isi Laporan Harian</h2>
     <div class="row gx-3 mb-4">
         <div class="col-xl-4 col-lg-12">
             <div class="card mb-3">

@@ -3,7 +3,6 @@
 @section('content')
 <div class="container">
     <h2 class="text-center my-4">Isi Laporan Mingguan</h2>
-
     <div class="row gx-3 mb-4">
         <div class="col-xl-4 col-lg-12">
             <div class="card mb-3">
@@ -12,8 +11,8 @@
                 </div>
                 <div class="card-body text-center">
                     <p>Total Laporan yang sudah kamu buat: {{ $totalLaporan }}</p>
-                    <p>Laporan kamu yang ter Validasi: {{ $validasiLaporan }}</p>
-                    <p>Laporan kamu yang harus di Revisi: {{ $revisiLaporan }}</p>
+                    <p>Laporan kamu yang tervalidasi: {{ $validasiLaporan }}</p>
+                    <p>Laporan kamu yang harus direvisi: {{ $revisiLaporan }}</p>
                     <p>Laporan kamu yang masih dalam review: {{ $pendingLaporan }}</p>
                 </div>
             </div>
