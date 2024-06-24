@@ -29,48 +29,44 @@ class AktivitasMbkmController extends Controller
         return view('applications.mbkm.laporan.index', compact('daftarPeserta', 'laporanHarian', 'laporanMingguan', 'laporanLengkap', 'pesertaId'));
     }
     public function createLaporanHarian(Request $request)
-{
-    $user = Auth::user();
-    $namaPeserta = $user->peserta->nama;
+    {
+        $user = Auth::user();
+        $namaPeserta = $user->peserta->nama;
 
-    $weekNumber = $request->query('week', null);
-    if ($weekNumber !== null) {
-        $semesterStart = \Carbon\Carbon::parse(env('SEMESTER_START'));
-        $startOfWeek = $semesterStart->copy()->addWeeks($weekNumber - 1)->startOfWeek();
-        $endOfWeek = $startOfWeek->copy()->endOfWeek();
-    } else {
-        $startOfWeek = \Carbon\Carbon::now()->startOfWeek();
-        $endOfWeek = \Carbon\Carbon::now()->endOfWeek();
+        $weekNumber = $request->query('week', null);
+        if ($weekNumber !== null) {
+            $semesterStart = \Carbon\Carbon::parse(env('SEMESTER_START'));
+            $startOfWeek = $semesterStart->copy()->addWeeks($weekNumber - 1)->startOfWeek();
+            $endOfWeek = $startOfWeek->copy()->endOfWeek();
+        } else {
+            $startOfWeek = \Carbon\Carbon::now()->startOfWeek();
+            $endOfWeek = \Carbon\Carbon::now()->endOfWeek();
+        }
+
+        $currentDate = \Carbon\Carbon::now();
+
+        $laporanHarian = LaporanHarian::where('peserta_id', $user->peserta->id)
+            ->whereBetween('tanggal', [$startOfWeek, $endOfWeek])
+            ->get()
+            ->keyBy('tanggal');
+
+        $totalLaporan = $laporanHarian->count();
+        $validasiLaporan = $laporanHarian->where('status', 'validasi')->count();
+        $revisiLaporan = $laporanHarian->where('status', 'revisi')->count();
+        $pendingLaporan = $laporanHarian->where('status', 'pending')->count();
+
+        return view('applications.mbkm.laporan.laporan-harian', compact(
+            'namaPeserta',
+            'laporanHarian',
+            'totalLaporan',
+            'validasiLaporan',
+            'revisiLaporan',
+            'pendingLaporan',
+            'startOfWeek',
+            'endOfWeek',
+            'currentDate'
+        ));
     }
-
-    $currentDate = \Carbon\Carbon::now();
-
-    $laporanHarian = LaporanHarian::where('peserta_id', $user->peserta->id)
-        ->whereBetween('tanggal', [$startOfWeek, $endOfWeek])
-        ->get()
-        ->keyBy('tanggal');
-
-    $totalLaporan = $laporanHarian->count();
-    $validasiLaporan = $laporanHarian->where('status', 'validasi')->count();
-    $revisiLaporan = $laporanHarian->where('status', 'revisi')->count();
-    $pendingLaporan = $laporanHarian->where('status', 'pending')->count();
-
-    return view('applications.mbkm.laporan.laporan-harian', compact(
-        'namaPeserta',
-        'laporanHarian',
-        'totalLaporan',
-        'validasiLaporan',
-        'revisiLaporan',
-        'pendingLaporan',
-        'startOfWeek',
-        'endOfWeek',
-        'currentDate'
-    ));
-}
-
-
-
-
     public function createLaporanMingguan()
     {
         $user = Auth::user();
@@ -107,7 +103,7 @@ class AktivitasMbkmController extends Controller
                 'laporanMingguan' => $weekLaporanMingguan,
                 'canFill' => $isComplete,
                 'canFillDaily' => !$isComplete,
-                'isCurrentOrPastWeek' => $startOfWeek->lte($currentDate) && $endOfWeek->gte($semesterStart)
+                'isCurrentOrPastWeek' => $startOfWeek->lte($currentDate) && $endOfWeek->gte($semesterStart),
             ];
         }
 
@@ -122,9 +118,6 @@ class AktivitasMbkmController extends Controller
         )
         );
     }
-
-
-
     public function createLaporanLengkap()
     {
         $user = Auth::user();
@@ -132,7 +125,6 @@ class AktivitasMbkmController extends Controller
 
         return view('applications.mbkm.laporan.laporan-lengkap', compact('aktivitas'));
     }
-
     public function storeLaporanHarian(Request $request)
     {
         $request->validate([
@@ -223,7 +215,6 @@ class AktivitasMbkmController extends Controller
 
         return back()->with('success', 'Laporan lengkap berhasil disimpan.');
     }
-
     public function validateLaporanHarian(Request $request, $id)
     {
         $laporanHarian = LaporanHarian::findOrFail($id);
@@ -242,7 +233,6 @@ class AktivitasMbkmController extends Controller
 
         return back()->with('success', 'Laporan harian berhasil divalidasi.');
     }
-
     public function validateLaporanMingguan(Request $request, $id)
     {
         $laporanMingguan = LaporanMingguan::findOrFail($id);
@@ -261,7 +251,6 @@ class AktivitasMbkmController extends Controller
 
         return back()->with('success', 'Laporan mingguan berhasil divalidasi.');
     }
-
     public function validateLaporanLengkap(Request $request, $id)
     {
         $laporanLengkap = LaporanLengkap::findOrFail($id);
