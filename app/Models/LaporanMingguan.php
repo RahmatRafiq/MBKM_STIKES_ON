@@ -34,6 +34,11 @@ class LaporanMingguan extends Model
     {
         return $this->belongsTo(Lowongan::class);
     }
+
+    public function laporanHarian()
+    {
+        return $this->hasMany(LaporanHarian::class, 'minggu_ke', 'minggu_ke');
+    }
     public static function getByUser($user, $pesertaId = null)
     {
         $query = self::with(['peserta', 'mitra'])
