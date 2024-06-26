@@ -5,6 +5,7 @@ use App\Models\AktivitasMbkm;
 use App\Models\LaporanHarian;
 use App\Models\LaporanLengkap;
 use App\Models\LaporanMingguan;
+use App\Models\Peserta;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -25,10 +26,16 @@ class AktivitasMbkmController extends Controller
     public function createLaporanHarian()
     {
         $user = Auth::user();
-        $disabledPage = AktivitasMbkm::where('peserta_id', $user->id)->first();
+        $peserta = Peserta::with('registrationPlacement')->where('user_id', $user->id)->first();
+
+        if (!$peserta) {
+            return response()->view('applications.mbkm.error-page.not-registered', ['message' => 'Anda tidak terdaftar sebagai peserta.'], 403);
+        }
+
+        $disabledPage = $peserta->registrationPlacement;
 
         if (!$disabledPage) {
-            return response()->view('applications.mbkm.error-page.not-registered', ['message' => 'Anda tidak terdaftar dalam kegiatan MBKM apapun.'], 403);
+            return response()->view('errors.403', ['message' => 'Anda tidak terdaftar dalam kegiatan MBKM apapun.'], 403);
         }
 
         $aktivitas = AktivitasMbkm::where('peserta_id', $user->id)->first();
@@ -41,7 +48,7 @@ class AktivitasMbkmController extends Controller
             ->get()
             ->keyBy('tanggal');
 
-        return view('applications.mbkm.laporan.laporan-harian', compact('aktivitas', 'laporanHarian', 'disabledPage '));
+        return view('applications.mbkm.laporan.laporan-harian', compact('aktivitas', 'laporanHarian', 'disabledPage'));
     }
 
     public function createLaporanMingguan()
