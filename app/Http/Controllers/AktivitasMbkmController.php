@@ -13,7 +13,7 @@ class AktivitasMbkmController extends Controller
     public function index()
     {
         $user = Auth::user();
-        
+
         // Mengambil data laporan harian, mingguan, dan lengkap dari model masing-masing
         $laporanHarian = LaporanHarian::getByUser($user);
         $laporanMingguan = LaporanMingguan::getByUser($user);
@@ -25,6 +25,12 @@ class AktivitasMbkmController extends Controller
     public function createLaporanHarian()
     {
         $user = Auth::user();
+        $disabledPage = AktivitasMbkm::where('peserta_id', $user->id)->first();
+
+        if (!$disabledPage) {
+            return response()->view('applications.mbkm.error-page.not-registered', ['message' => 'Anda tidak terdaftar dalam kegiatan MBKM apapun.'], 403);
+        }
+
         $aktivitas = AktivitasMbkm::where('peserta_id', $user->id)->first();
 
         $startOfWeek = \Carbon\Carbon::now()->startOfWeek();
@@ -35,7 +41,7 @@ class AktivitasMbkmController extends Controller
             ->get()
             ->keyBy('tanggal');
 
-        return view('applications.mbkm.laporan.laporan-harian', compact('aktivitas', 'laporanHarian'));
+        return view('applications.mbkm.laporan.laporan-harian', compact('aktivitas', 'laporanHarian', 'disabledPage '));
     }
 
     public function createLaporanMingguan()
@@ -70,7 +76,6 @@ class AktivitasMbkmController extends Controller
         $user->load([
             'peserta.registrationPlacement.lowongan',
         ]);
-
 
         $laporanHarian = LaporanHarian::create([
             'peserta_id' => $user->peserta->id,
@@ -110,7 +115,6 @@ class AktivitasMbkmController extends Controller
             'kehadiran' => $request->kehadiran,
         ]);
 
-
         return back()->with('success', 'Laporan mingguan berhasil disimpan.');
     }
 
@@ -139,7 +143,6 @@ class AktivitasMbkmController extends Controller
         return back()->with('success', 'Laporan lengkap berhasil disimpan.');
     }
 
-
     public function validateLaporanHarian(Request $request, $id)
     {
         $laporanHarian = LaporanHarian::findOrFail($id);
@@ -156,10 +159,8 @@ class AktivitasMbkmController extends Controller
             return back()->with('success', 'Laporan harian berhasil direvisi.');
         }
 
-
         return back()->with('success', 'Laporan harian berhasil divalidasi.');
     }
-
 
     public function validateLaporanMingguan(Request $request, $id)
     {
