@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Helpers\DataTable;
 use App\Models\BatchMbkm;
 use Illuminate\Http\Request;
 
@@ -11,6 +12,38 @@ class BatchMbkmController extends Controller
     {
         $batches = BatchMbkm::all();
         return view('applications.mbkm.batch-mbkm.index', compact('batches'));
+    }
+
+    public function json()
+    {
+        $search = request()->search['value'];
+        $query = BatchMbkm::query();
+
+        // columns
+        $columns = [
+            'id',
+            'name',
+            'semester_start',
+            'semester_end',
+            'created_at',
+            'updated_at',
+        ];
+
+        // search
+        if (request()->filled('search')) {
+            $query->where('name', 'like', "%{$search}%")
+                ->orWhere('semester_start', 'like', "%{$search}%")
+                ->orWhere('semester_end', 'like', "%{$search}%");
+        }
+
+        // order
+        if (request()->filled('order')) {
+            $query->orderBy($columns[request()->order[0]['column']], request()->order[0]['dir']);
+        }
+
+        $data = DataTable::paginate($query, request());
+
+        return response()->json($data);
     }
 
     public function create()

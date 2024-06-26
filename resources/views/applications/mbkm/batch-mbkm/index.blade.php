@@ -15,23 +15,52 @@
             </tr>
         </thead>
         <tbody>
-            @foreach($batches as $batch)
-                <tr>
-                    <td>{{ $batch->id }}</td>
-                    <td>{{ $batch->name }}</td>
-                    <td>{{ $batch->semester_start }}</td>
-                    <td>{{ $batch->semester_end }}</td>
-                    <td>
-                        <a href="{{ route('batch-mbkms.edit', $batch->id) }}" class="btn btn-warning">Edit</a>
-                        <form action="{{ route('batch-mbkms.destroy', $batch->id) }}" method="POST" style="display:inline-block;">
-                            @csrf
-                            @method('DELETE')
-                            <button type="submit" class="btn btn-danger">Delete</button>
-                        </form>
-                    </td>
-                </tr>
-            @endforeach
         </tbody>
     </table>
 </div>
 @endsection
+
+@push('css')
+<link rel="stylesheet" href="{{ asset('assets/DataTables/datatables.min.css') }}">
+<link rel="stylesheet" href="{{ asset('assets/DataTables/custom.css') }}">
+@endpush
+@push('javascript')
+<script src="{{ asset('assets/DataTables/datatables.min.js') }}"></script>
+<script src="{{ asset('assets/js/sweetalert2.all.min.js') }}"></script>
+<script>
+    $(document).ready(function() {
+            $.ajaxSetup({
+                headers: {
+                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                }
+            });
+
+            $('table').DataTable({
+                responsive: true,
+                serverSide: true,
+                processing: true,
+                paging: true,
+                ajax: {
+                    url: '{{ route('batch-mbkms.json') }}',
+                    type: 'POST',
+                },
+                columns: [
+                    data: 'action',
+                    ordearble: false,
+                    render: function(data, type, row) {
+                        return `
+                        <a href="{{ route('batch-mbkm.edit', ':id') }}" class="btn btn-primary">Ubah</a>
+                        <form action="{{ route('batch-mbkm.destroy', ':id') }}" method="POST" style="display: inline;">
+                            @csrf
+                            @method('delete')
+                            <button type="submit" class="btn btn-danger">Hapus</button>
+                        </form>
+                        `.replace(/:id/g, row.id);
+                    }
+                },
+            
+                ]       
+            });
+        });
+</script>
+@endpush
