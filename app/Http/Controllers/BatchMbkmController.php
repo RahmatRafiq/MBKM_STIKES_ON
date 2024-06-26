@@ -20,46 +20,52 @@ class BatchMbkmController extends Controller
 
     public function store(Request $request)
     {
-        $request->validate([
+        $validatedData = $request->validate([
             'name' => 'required|string',
             'semester_start' => 'required|date',
             'semester_end' => 'required|date',
         ]);
 
-        BatchMbkm::create($request->all());
+        BatchMbkm::create($validatedData);
 
-        // Redirect ke indeks batch setelah berhasil membuat batch
-        return redirect()->route('mbkm.batch-mbkms.index')->with('success', 'Batch created successfully.');
+        return redirect()->route('batch-mbkms.index')->with('success', 'Batch created successfully.');
     }
 
-    public function show(BatchMbkm $batchMbkm)
+    public function show($id)
     {
-        return view('applications.mbkm.batch-mbkm.show', compact('batchMbkm'));
+        $batch = BatchMbkm::findOrFail($id);
+        return view('applications.mbkm.batch-mbkm.show', compact('batch'));
     }
 
-    public function edit(BatchMbkm $batchMbkm)
+    public function edit($id)
     {
-        return view('applications.mbkm.batch-mbkm.edit', compact('batchMbkm'));
+        $batch = BatchMbkm::findOrFail($id);
+        return view('applications.mbkm.batch-mbkm.edit', compact('batch'));
     }
 
-    public function update(Request $request, BatchMbkm $batchMbkm)
+    public function update(Request $request, $id)
     {
-        $request->validate([
+        $validatedData = $request->validate([
             'name' => 'required|string',
             'semester_start' => 'required|date',
             'semester_end' => 'required|date',
         ]);
 
-        $batchMbkm->update($request->all());
-        return redirect()->route('applications.mbkm.batch-mbkm.index')->with('success', 'Batch updated successfully.');
+        $batch = BatchMbkm::findOrFail($id);
+        $batch->update($validatedData);
+
+        return redirect()->route('batch-mbkms.index')->with('success', 'Batch updated successfully.');
     }
 
-    public function destroy(BatchMbkm $batchMbkm)
+    public function destroy($id)
     {
-        $batchMbkm->delete();
-        return redirect()->route('applications.mbkm.batch-mbkm.index')->with('success', 'Batch deleted successfully.');
+        $batch = BatchMbkm::findOrFail($id);
+        $batch->delete();
+
+        return redirect()->route('batch-mbkms.index')->with('success', 'Batch deleted successfully.');
     }
 }
+
 
 
 // use App\Models\BatchMbkm;
