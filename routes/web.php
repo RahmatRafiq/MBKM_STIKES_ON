@@ -12,6 +12,8 @@ Route::middleware('auth')->group(function () {
         return view('applications/mbkm/dashboard');
     })->middleware(['auth'])->name('dashboard');
 
+Route::resource('mbkm/about-mbkms', \App\Http\Controllers\AboutMbkmController::class);
+
     Route::get('mbkm/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('mbkm/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('mbkm/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
