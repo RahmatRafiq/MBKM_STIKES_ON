@@ -42,7 +42,7 @@ class AboutMbkmController extends Controller
 
         AboutMbkm::create($request->all());
 
-        return redirect()->route('applications.mbkm.about_mbkms.index')
+        return redirect()->route('about_mbkms.index')
             ->with('success', 'About MBKM created successfully.');
     }
 
