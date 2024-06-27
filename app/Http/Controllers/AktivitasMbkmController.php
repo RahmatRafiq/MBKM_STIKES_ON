@@ -35,7 +35,7 @@ class AktivitasMbkmController extends Controller
         $disabledPage = $peserta->registrationPlacement;
 
         if (!$disabledPage) {
-            return response()->view('errors.403', ['message' => 'Anda tidak terdaftar dalam kegiatan MBKM apapun.'], 403);
+            return response()->view('applications.mbkm.error-page.not-registered', ['message' => 'Anda tidak terdaftar dalam kegiatan MBKM apapun.'], 403);
         }
 
         $aktivitas = AktivitasMbkm::where('peserta_id', $user->id)->first();
@@ -53,7 +53,19 @@ class AktivitasMbkmController extends Controller
 
     public function createLaporanMingguan()
     {
+
         $user = Auth::user();
+        $peserta = Peserta::with('registrationPlacement')->where('user_id', $user->id)->first();
+
+        if (!$peserta) {
+            return response()->view('applications.mbkm.error-page.not-registered', ['message' => 'Anda tidak terdaftar sebagai peserta.'], 403);
+        }
+
+        $disabledPage = $peserta->registrationPlacement;
+
+        if (!$disabledPage) {
+            return response()->view('applications.mbkm.error-page.not-registered', ['message' => 'Anda tidak terdaftar dalam kegiatan MBKM apapun.'], 403);
+        }
         $aktivitas = AktivitasMbkm::where('peserta_id', $user->id)->first();
 
         return view('applications.mbkm.laporan.laporan-mingguan', compact('aktivitas'));
@@ -62,6 +74,17 @@ class AktivitasMbkmController extends Controller
     public function createLaporanLengkap()
     {
         $user = Auth::user();
+        $peserta = Peserta::with('registrationPlacement')->where('user_id', $user->id)->first();
+
+        if (!$peserta) {
+            return response()->view('applications.mbkm.error-page.not-registered', ['message' => 'Anda tidak terdaftar sebagai peserta.'], 403);
+        }
+
+        $disabledPage = $peserta->registrationPlacement;
+
+        if (!$disabledPage) {
+            return response()->view('applications.mbkm.error-page.not-registered', ['message' => 'Anda tidak terdaftar dalam kegiatan MBKM apapun.'], 403);
+        }
         $aktivitas = AktivitasMbkm::where('peserta_id', $user->id)->first();
 
         return view('applications.mbkm.laporan.laporan-lengkap', compact('aktivitas'));
