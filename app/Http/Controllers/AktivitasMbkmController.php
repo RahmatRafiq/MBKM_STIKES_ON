@@ -31,6 +31,18 @@ class AktivitasMbkmController extends Controller
     public function createLaporanHarian(Request $request)
     {
         $user = Auth::user();
+        $peserta = Peserta::with('registrationPlacement')->where('user_id', $user->id)->first();
+
+        if (!$peserta) {
+            return response()->view('applications.mbkm.error-page.not-registered', ['message' => 'Anda tidak terdaftar sebagai peserta.'], 403);
+        }
+
+        $disabledPage = $peserta->registrationPlacement;
+
+        if (!$disabledPage) {
+            return response()->view('applications.mbkm.error-page.not-registered', ['message' => 'Anda tidak terdaftar dalam kegiatan MBKM apapun.'], 403);
+        }
+
         $namaPeserta = $user->peserta->nama;
 
         $weekNumber = $request->query('week', null);
@@ -128,7 +140,19 @@ class AktivitasMbkmController extends Controller
 
     public function createLaporanMingguan()
     {
+
         $user = Auth::user();
+        $peserta = Peserta::with('registrationPlacement')->where('user_id', $user->id)->first();
+
+        if (!$peserta) {
+            return response()->view('applications.mbkm.error-page.not-registered', ['message' => 'Anda tidak terdaftar sebagai peserta.'], 403);
+        }
+
+        $disabledPage = $peserta->registrationPlacement;
+
+        if (!$disabledPage) {
+            return response()->view('applications.mbkm.error-page.not-registered', ['message' => 'Anda tidak terdaftar dalam kegiatan MBKM apapun.'], 403);
+        }
         $namaPeserta = $user->peserta->nama;
 
         $semesterStart = \Carbon\Carbon::parse(env('SEMESTER_START'));
@@ -189,6 +213,17 @@ class AktivitasMbkmController extends Controller
     public function createLaporanLengkap()
     {
         $user = Auth::user();
+        $peserta = Peserta::with('registrationPlacement')->where('user_id', $user->id)->first();
+
+        if (!$peserta) {
+            return response()->view('applications.mbkm.error-page.not-registered', ['message' => 'Anda tidak terdaftar sebagai peserta.'], 403);
+        }
+
+        $disabledPage = $peserta->registrationPlacement;
+
+        if (!$disabledPage) {
+            return response()->view('applications.mbkm.error-page.not-registered', ['message' => 'Anda tidak terdaftar dalam kegiatan MBKM apapun.'], 403);
+        }
         $aktivitas = AktivitasMbkm::where('peserta_id', $user->id)->first();
 
         return view('applications.mbkm.laporan.laporan-lengkap', compact('aktivitas'));
@@ -207,7 +242,6 @@ class AktivitasMbkmController extends Controller
         $semesterEnd = env('SEMESTER_END');
 
         $user->load(['peserta.registrationPlacement.lowongan']);
-
         // Menggunakan updateOrCreate untuk memperbarui data yang ada atau membuat baru jika tidak ada
         $laporanHarian = LaporanHarian::updateOrCreate(
             [
