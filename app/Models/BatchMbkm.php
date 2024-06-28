@@ -16,7 +16,21 @@ class BatchMbkm extends Model
         'name',
         'semester_start',
         'semester_end',
+        'is_active',
     ];
+
+    public static function getActiveBatch()
+    {
+        return self::where('is_active', true)->first();
+    }
+
+    public static function isActiveBatchExists()
+    {
+        $currentDate = \Carbon\Carbon::now();
+        return self::where('is_active', true)
+            ->where('semester_end', '>=', $currentDate)
+            ->exists();
+    }
 
     protected $casts = [
         'created_at' => 'datetime:Y-m-d H:i:s',
