@@ -6,7 +6,6 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\RegistrasiController;
 
 
-use App\Http\Controllers\BatchMbkmController;
 
 use App\Http\Controllers\AboutMbkmController;
 
@@ -17,7 +16,8 @@ Route::middleware('auth')->group(function () {
 
 
     Route::resource('mbkm/about-mbkms', AboutMbkmController::class);
-    Route::resource('mbkm/batch-mbkms', BatchMbkmController::class);
+    Route::resource('mbkm/batch-mbkms', \App\Http\Controllers\BatchMbkmController::class);
+    Route::post('mbkm/batch-mbkms/json', [\App\Http\Controllers\BatchMbkmController::class, 'json'])->name('batch-mbkms.json');
 
     Route::get('mbkm/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('mbkm/profile', [ProfileController::class, 'update'])->name('profile.update');

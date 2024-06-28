@@ -14,7 +14,7 @@ class BatchMbkmController extends Controller
         return view('applications.mbkm.batch-mbkm.index', compact('batches'));
     }
 
-    public function json()
+    public function json(Request $request)
     {
         $search = request()->search['value'];
         $query = BatchMbkm::query();
@@ -25,8 +25,6 @@ class BatchMbkmController extends Controller
             'name',
             'semester_start',
             'semester_end',
-            'created_at',
-            'updated_at',
         ];
 
         // search
@@ -41,7 +39,7 @@ class BatchMbkmController extends Controller
             $query->orderBy($columns[request()->order[0]['column']], request()->order[0]['dir']);
         }
 
-        $data = DataTable::paginate($query, request());
+        $data = DataTable::paginate($query, $request);
 
         return response()->json($data);
     }
