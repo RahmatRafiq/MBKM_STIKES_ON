@@ -1,4 +1,3 @@
-
 <head>
     <style>
         .custom-scrollbar {
@@ -41,6 +40,14 @@
                         <li>
                             <a href="{{ route('user.index') }}"
                                 class="{{ request()->routeIs('user.index') ? 'active-sub' : '' }}">Users</a>
+                        </li>
+                        <li>
+                            <a href="{{ route('about-mbkms.index') }}"
+                                class="{{ request()->routeIs('about-mbkms.index') ? 'active-sub' : '' }}">About MBKM</a>
+                        </li>
+                        <li>
+                            <a href="{{ route('batch-mbkms.index') }}"
+                                class="{{ request()->routeIs('batch-mbkms.index') ? 'active-sub' : '' }}">Batch MBKM</a>
                         </li>
                     </ul>
                 </li>
