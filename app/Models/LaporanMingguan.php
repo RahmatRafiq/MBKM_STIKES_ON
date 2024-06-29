@@ -34,4 +34,22 @@ class LaporanMingguan extends Model
     {
         return $this->belongsTo(Lowongan::class);
     }
+
+    public function laporanHarian()
+    {
+        return $this->hasMany(LaporanHarian::class, 'minggu_ke', 'minggu_ke');
+    }
+    public static function getByUser($user, $pesertaId = null)
+    {
+        $query = self::with(['peserta', 'mitra'])
+            ->whereHas('mitra', function ($query) use ($user) {
+                $query->where('user_id', $user->id);
+            });
+
+        if ($pesertaId) {
+            $query->where('peserta_id', $pesertaId);
+        }
+
+        return $query->get();
+    }
 }

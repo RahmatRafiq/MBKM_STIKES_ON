@@ -32,4 +32,23 @@ class LaporanHarian extends Model
     {
         return $this->belongsTo(Lowongan::class);
     }
+    public function laporanMingguan()
+    {
+        $semesterStart = \Carbon\Carbon::parse(env('SEMESTER_START'));
+        return $this->belongsTo(LaporanMingguan::class, 'peserta_id', 'peserta_id')
+                    ->whereRaw('WEEKOFYEAR(laporan_harian.tanggal) - WEEKOFYEAR(?) + 1 = laporan_mingguan.minggu_ke', [$semesterStart]);
+    }
+    public static function getByUser($user, $pesertaId = null)
+    {
+        $query = self::with(['peserta', 'mitra'])
+            ->whereHas('mitra', function ($query) use ($user) {
+                $query->where('user_id', $user->id);
+            });
+
+        if ($pesertaId) {
+            $query->where('peserta_id', $pesertaId);
+        }
+
+        return $query->get();
+    }
 }

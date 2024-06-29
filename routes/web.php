@@ -6,7 +6,8 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\RegistrasiController;
 
 use App\Http\Controllers\Guest;
-Route::name('guest.')->group(function() {
+
+Route::name('guest.')->group(function () {
     Route::get('/', [Guest\DashboardController::class, 'index'])->name('dashboard');
 
     // program
@@ -21,10 +22,17 @@ Route::name('guest.')->group(function() {
     Route::get('/login-error', [Guest\LoginErrorController::class, 'index'])->name('login-error');
 });
 
+use App\Http\Controllers\AboutMbkmController;
+
 Route::middleware('auth')->group(function () {
     Route::get('/mbkm', function () {
         return view('applications/mbkm/dashboard');
     })->middleware(['auth'])->name('dashboard');
+
+
+    Route::resource('mbkm/about-mbkms', AboutMbkmController::class);
+    Route::resource('mbkm/batch-mbkms', \App\Http\Controllers\BatchMbkmController::class);
+    Route::post('mbkm/batch-mbkms/json', [\App\Http\Controllers\BatchMbkmController::class, 'json'])->name('batch-mbkms.json');
 
     Route::get('mbkm/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('mbkm/profile', [ProfileController::class, 'update'])->name('profile.update');
@@ -65,7 +73,9 @@ Route::middleware('auth')->group(function () {
     Route::get('/peserta/registrasi', [RegistrasiController::class, 'showPesertaRegistrasiForm'])->name('peserta.registrasiForm');
     Route::post('/peserta/registrasi', [RegistrasiController::class, 'store'])->name('peserta.registrasi');
     Route::post('/peserta/registrasi/{id}/accept', [RegistrasiController::class, 'acceptOffer'])->name('peserta.acceptOffer');
+    Route::post('/peserta/registrasi/{id}/reject', [RegistrasiController::class, 'rejectOffer'])->name('peserta.rejectOffer');
     Route::get('/registrasi/{id}/registrations-and-accept-offer', [RegistrasiController::class, 'showRegistrationsAndAcceptOffer'])->name('registrasi.registrations-and-accept-offer');
+
     // Rute untuk staff
     Route::get('/staff/registrasi', [RegistrasiController::class, 'index'])->name('staff.registrasiIndex');
     Route::put('/staff/registrasi/{id}', [RegistrasiController::class, 'update'])->name('staff.updateRegistrasi');
@@ -99,7 +109,8 @@ Route::middleware('auth')->group(function () {
 
 
     Route::middleware(['auth'])->group(function () {
-        // Rute untuk membuat laporan
+        // Rute untuk laporan harian
+        Route::get('/laporan-harian', [\App\Http\Controllers\AktivitasMbkmController::class, 'createLaporanHarian'])->name('laporan.harian');
         Route::get('/laporan-harian/create', [\App\Http\Controllers\AktivitasMbkmController::class, 'createLaporanHarian'])->name('laporan.harian.create');
         Route::post('/laporan-harian/store', [\App\Http\Controllers\AktivitasMbkmController::class, 'storeLaporanHarian'])->name('laporan.harian.store');
 
@@ -117,6 +128,7 @@ Route::middleware('auth')->group(function () {
         // Rute untuk melihat daftar laporan
         Route::get('/laporan', [\App\Http\Controllers\AktivitasMbkmController::class, 'index'])->name('laporan.index');
     });
+
 
 });
 require __DIR__ . '/auth.php';

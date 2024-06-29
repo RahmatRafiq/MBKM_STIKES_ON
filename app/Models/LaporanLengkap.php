@@ -37,4 +37,17 @@ class LaporanLengkap extends Model
     {
         return $this->belongsTo(Lowongan::class);
     }
+    public static function getByUser($user, $pesertaId = null)
+    {
+        $query = self::with(['peserta', 'dospem'])
+            ->whereHas('dospem', function ($query) use ($user) {
+                $query->where('user_id', $user->id);
+            });
+
+        if ($pesertaId) {
+            $query->where('peserta_id', $pesertaId);
+        }
+
+        return $query->get();
+    }
 }
