@@ -2,7 +2,7 @@
   <div class="flex-1">
     <a class="btn btn-ghost text-xl">STIKES MBKM</a>
   </div>
-  <div class="flex-none">
+  <div class="flex-none hidden lg:flex">
     <a href="{{ route('guest.dashboard') }}" class="btn btn-ghost">Beranda</a>
     <a href="{{ route('guest.program') }}" class="btn btn-ghost">Program</a>
     <a href="{{ route('guest.pengumuman') }}" class="btn btn-ghost">Pengumuman</a>
@@ -96,68 +96,67 @@
           </div>
         </div>
       </div>
-      <div class="hidden sm:dropdown dropdown-end">
-        <div tabindex="0" role="button" class="btn btn-ghost btn-circle avatar">
-          <div class="w-10 rounded-full">
-            <img alt="Tailwind CSS Navbar component"
-              src="https://img.daisyui.com/images/stock/photo-1534528741775-53994a69daeb.jpg" />
-          </div>
+      <div class="dropdown dropdown-bottom dropdown-end">
+        <div tabindex="0" role="button" class="m-1 rounded-full inline-flex items-center gap-3">
+          <img alt="Tailwind CSS Navbar component"
+            src="https://img.daisyui.com/images/stock/photo-1534528741775-53994a69daeb.jpg"
+            class="w-12 h-12 aspect-square overflow-hidden" />
+          <span>{{ auth()->user()->name }}</span>
         </div>
+        <ul tabindex="0" class="dropdown-content menu bg-base-100 rounded-box z-[1] w-52 p-2 shadow-md">
+          <li>
+            <a class="justify-between">
+              Profile
+              <span class="badge">New</span>
+            </a>
+          </li>
+          <li><a>Settings</a></li>
+          {{-- logout laravel --}}
+          <li>
+            <form action="{{ route('logout') }}" method="post" class="py-0">
+              @csrf
+              <button type="submit" class="w-full py-2">Logout</button>
+            </form>
+          </li>
+        </ul>
       </div>
-      <ul tabindex="0" class="menu menu-sm dropdown-content mt-3 z-[1] p-2 shadow bg-base-100 rounded-box w-52">
-        <li>
-          <a class="justify-between">
-            Profile
-            <span class="badge">New</span>
-          </a>
-        </li>
-        <li><a>Settings</a></li>
-        {{-- logout laravel --}}
-        <li>
-          <form action="{{ route('logout') }}" method="post">
-            @csrf
-            <button type="submit" class="btn btn-ghost">Logout</button>
-          </form>
-        </li>
-      </ul>
-    @endguest
-  </div>
-  <div class="drawer w-max drawer-end">
-    <input id="my-drawer-2" type="checkbox" class="drawer-toggle" />
-    <div class="drawer-content flex flex-col items-center justify-center w-max">
-      <!-- Page content here -->
-      <label for="my-drawer-2" class="btn btn-ghost drawer-button lg:hidden">
-        <i class="fa fa-bars fa-lg" aria-hidden="true"></i>
-      </label>
+  @endguest
+</div>
+<div class="drawer w-max drawer-end">
+  <input id="my-drawer-2" type="checkbox" class="drawer-toggle" />
+  <div class="drawer-content flex flex-col items-center justify-center w-max">
+    <!-- Page content here -->
+    <label for="my-drawer-2" class="btn btn-ghost drawer-button lg:hidden">
+      <i class="fa fa-bars fa-lg" aria-hidden="true"></i>
+    </label>
 
-    </div>
-    <div class="drawer-side fixed z-50">
-      <label for="my-drawer-2" aria-label="close sidebar" class="drawer-overlay"></label>
-      <ul class="menu p-4 w-80 min-h-full bg-base-200 text-base-content">
-        {{-- close --}}
-        <li class="ml-auto">
-          <label for="my-drawer-2" class="btn btn-ghost drawer-button">
-            <i class="fa fa-times fa-lg" aria-hidden="true"></i>
-          </label>
-        </li>
-        <!-- Sidebar content here -->
-        <li><a>Beranda</a></li>
-        <li><a>Program</a></li>
-        <li><a>Pengumuman</a></li>
-        <li>
-          <details>
-            <summary class="flex justify-between">
-              <div></div>
-              <i class="fa fa-user-circle-o fa-3x" aria-hidden="true"></i>
-            </summary>
-            <ul>
-              <li><a>Profil</a></li>
-              <li><a>Aktifitas</a></li>
-            </ul>
-          </details>
-        </li>
-      </ul>
-
-    </div>
   </div>
+  <div class="drawer-side fixed z-50">
+    <label for="my-drawer-2" aria-label="close sidebar" class="drawer-overlay"></label>
+    <ul class="menu p-4 w-80 min-h-full bg-base-200 text-base-content">
+      {{-- close --}}
+      <li class="ml-auto">
+        <label for="my-drawer-2" class="btn btn-ghost drawer-button">
+          <i class="fa fa-times fa-lg" aria-hidden="true"></i>
+        </label>
+      </li>
+      <!-- Sidebar content here -->
+      <li><a>Beranda</a></li>
+      <li><a>Program</a></li>
+      <li><a>Pengumuman</a></li>
+      <li>
+        <details>
+          <summary class="flex justify-between">
+            <div></div>
+            <i class="fa fa-user-circle-o fa-3x" aria-hidden="true"></i>
+          </summary>
+          <ul>
+            <li><a>Profil</a></li>
+            <li><a>Aktifitas</a></li>
+          </ul>
+        </details>
+      </li>
+    </ul>
+  </div>
+</div>
 </div>
