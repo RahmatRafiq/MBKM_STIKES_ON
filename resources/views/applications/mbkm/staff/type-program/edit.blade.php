@@ -1,26 +1,32 @@
 @extends('layouts.app')
 
 @section('content')
-<div class="card mb-3">
-    <div class="card-body">
-        <div class="card-header">
-            <h5 class="card-title">Edit Type Program</h5>
-        </div>
+<form method="POST" action="{{ route('type-programs.update', $typeProgram->id) }}">
+    @csrf
+    @method('PUT')
+    <div class="card mb-3">
         <div class="card-body">
-            <form method="POST" action="{{ route('type-programs.update', $typeProgram->id) }}">
-                @csrf
-                @method('PUT')
+            <div class="card-header">
+                <h5 class="card-title">Edit Type Program</h5>
+            </div>
+            <div class="card-body">
                 <div class="mb-3">
                     <label for="name" class="form-label">Name</label>
-                    <input type="text" class="form-control" id="name" name="name" required placeholder="Name" value="{{ old('name', $typeProgram->name) }}">
+                    <input type="text" class="form-control @error('name') is-invalid @enderror" id="name" name="name" value="{{ old('name', $typeProgram->name) }}" required>
+                    @error('name')
+                        <span class="invalid-feedback" role="alert"><strong>{{ $message }}</strong></span>
+                    @enderror
                 </div>
                 <div class="mb-3">
                     <label for="description" class="form-label">Description</label>
-                    <textarea class="form-control" id="description" name="description" required placeholder="Description">{{ old('description', $typeProgram->description) }}</textarea>
+                    <textarea class="form-control @error('description') is-invalid @enderror" id="description" name="description" required>{{ old('description', $typeProgram->description) }}</textarea>
+                    @error('description')
+                        <span class="invalid-feedback" role="alert"><strong>{{ $message }}</strong></span>
+                    @enderror
                 </div>
-                <button type="submit" class="btn btn-primary">Update Type Program</button>
-            </form>
+            </div>
+            <button type="submit" class="btn btn-primary">Update</button>
         </div>
     </div>
-</div>
+</form>
 @endsection
