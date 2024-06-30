@@ -6,10 +6,9 @@ use App\Helpers\DataTable;
 use App\Helpers\MediaLibrary;
 use App\Models\MitraProfile;
 use App\Models\Role;
+use App\Models\TypeProgram;
 use App\Models\User;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Storage;
 
 class MitraProfileController extends Controller
 {
@@ -62,57 +61,10 @@ class MitraProfileController extends Controller
 
     public function create()
     {
+        $types = TypeProgram::all();
         $roles = Role::all();
-        return view('applications.mbkm.staff.mitra.create', compact('roles'));
+        return view('applications.mbkm.staff.mitra.create', compact('roles', 'types'));
     }
-
-    // public function store(Request $request)
-    // {
-    //     $request->validate([
-    //         'mitra_name' => 'required|string|max:255',
-    //         'mitra_address' => 'required|string|max:255',
-    //         'mitra_phone' => 'required|string|max:15',
-    //         'mitra_email' => 'required|email|max:255',
-    //         'mitra_website' => 'nullable|url|max:255',
-    //         'mitra_type' => 'required|string|max:255',
-    //         'mitra_description' => 'required|string',
-    //         'images' => 'array|max:3',
-    //         'user_name' => 'required|string|max:255',
-    //         'user_email' => 'required|string|email|max:255|unique:users,email',
-    //         'user_password' => 'required|string|min:8|confirmed',
-    //     ]);
-
-    //     $mitraProfile = MitraProfile::create([
-    //         'name' => $request->mitra_name,
-    //         'address' => $request->mitra_address,
-    //         'phone' => $request->mitra_phone,
-    //         'email' => $request->mitra_email,
-    //         'website' => $request->mitra_website,
-    //         'type' => $request->mitra_type,
-    //         'description' => $request->mitra_description,
-    //     ]);
-
-    //     $media = MediaLibrary::put(
-    //         $mitraProfile,
-    //         'images',
-    //         $request
-    //     );
-
-    //     $user = User::create([
-    //         'name' => $request->user_name,
-    //         'email' => $request->user_email,
-    //         'password' => bcrypt($request->user_password),
-    //     ]);
-
-    //     // Assign role after creating the user
-    //     $role = Role::findByName('mitra');
-    //     $user->assignRole($role);
-
-    //     return redirect()->route('mitra.index')->with([
-    //         'success' => 'Mitra created successfully.',
-    //         'media' => $media,
-    //     ]);
-    // }
 
     public function store(Request $request)
     {
@@ -122,7 +74,7 @@ class MitraProfileController extends Controller
             'mitra_phone' => 'required|string|max:15',
             'mitra_email' => 'required|email|max:255',
             'mitra_website' => 'nullable|url|max:255',
-            'mitra_type' => 'required|string|max:255',
+            'mitra_type' => 'required|exists:type_programs,id', // Validasi harus ada di tabel type_programs
             'mitra_description' => 'required|string',
             'images' => 'array|max:3',
             'user_name' => 'required|string|max:255',
@@ -138,6 +90,7 @@ class MitraProfileController extends Controller
 
         $role = Role::findByName('mitra');
         $user->assignRole($role);
+        $typeProgram = TypeProgram::findOrFail($request->mitra_type);
 
         $mitraProfile = MitraProfile::create([
             'user_id' => $user->id,
@@ -146,7 +99,7 @@ class MitraProfileController extends Controller
             'phone' => $request->mitra_phone,
             'email' => $request->mitra_email,
             'website' => $request->mitra_website,
-            'type' => $request->mitra_type,
+            'type' => $typeProgram->name, // Simpan nama type
             'description' => $request->mitra_description,
         ]);
 
@@ -155,8 +108,9 @@ class MitraProfileController extends Controller
 
     public function edit($id)
     {
+        $types = TypeProgram::all();
         $item = MitraProfile::findOrFail($id);
-        return view('applications.mbkm.staff.mitra.edit', compact('item'));
+        return view('applications.mbkm.staff.mitra.edit', compact('item', 'types'));
     }
 
     public function update(Request $request, $id)
@@ -167,12 +121,13 @@ class MitraProfileController extends Controller
             'phone' => 'required|string|max:15',
             'email' => 'required|email|max:255',
             'website' => 'nullable|url|max:255',
-            'type' => 'required|string|max:255',
+            'type_id' => 'required|exists:type_programs,id',
             'description' => 'required|string',
             'images' => 'array|max:3',
         ]);
 
         $mitraProfile = MitraProfile::findOrFail($id);
+        $typeProgram = TypeProgram::findOrFail($request->type_id);
 
         $media = MediaLibrary::put(
             $mitraProfile,
@@ -186,7 +141,7 @@ class MitraProfileController extends Controller
             'phone' => $request->phone,
             'email' => $request->email,
             'website' => $request->website,
-            'type' => $request->type,
+            'type' => $typeProgram->name, // Simpan nama type
             'description' => $request->description,
         ]);
 
