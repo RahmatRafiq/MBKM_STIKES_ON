@@ -54,14 +54,13 @@
                     </div>
                     <div class="col-md-6">
                         <div class="mb-3">
-                            <label for="type" class="form-label">Type</label>
-                            <select class="form-select" id="type" name="type" required>
-                                <option value="Magang Merdeka" {{ $item->type == 'Magang Merdeka' ? 'selected' : ''
-                                    }}>Magang Merdeka</option>
-                                <option value="Kampus Mengajar" {{ $item->type == 'Kampus Mengajar' ? 'selected' : ''
-                                    }}>Kampus Mengajar</option>
-                                <option value="Pertukaran Mahasiswa" {{ $item->type == 'Pertukaran Mahasiswa' ?
-                                    'selected' : '' }}>Pertukaran Mahasiswa</option>
+                            <label for="type_id" class="form-label">Type</label>
+                            <select class="form-select" id="type_id" name="type_id" required>
+                                @foreach ($types as $type)
+                                    <option value="{{ $type->id }}" {{ $item->type == $type->name ? 'selected' : '' }}>
+                                        {{ $type->name }}
+                                    </option>
+                                @endforeach
                             </select>
                         </div>
                     </div>
