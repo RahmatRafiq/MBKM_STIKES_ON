@@ -21,6 +21,12 @@
                         <span class="menu-text">Dashboard</span>
                     </a>
                 </li>
+                {{-- //admindashboard --}}
+                <li class="{{ request()->routeIs('dashboard.admin') ? 'active current-page' : '' }}">
+                    <a href="{{ route('dashboard.admin') }}">
+                        <i class="bi bi-box"></i>
+                        <span class="menu-text">Admin Dashboard</span>
+                    </a>
                 <li
                     class="treeview {{ request()->is('mbkm/admin/role-permissions*') ? 'active current-page open' : '' }}">
                     <a href="#" class="treeview-toggle">
