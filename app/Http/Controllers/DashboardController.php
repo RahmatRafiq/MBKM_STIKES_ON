@@ -3,7 +3,6 @@
 namespace App\Http\Controllers;
 
 use App\Models\Dashboard;
-use App\Models\LaporanHarian;
 
 class DashboardController extends Controller
 {
@@ -12,6 +11,7 @@ class DashboardController extends Controller
         // Mengambil counts dari model Dashboard dan LaporanHarian
         $counts = Dashboard::getCounts();
         $laporanHarianCounts = Dashboard::getLaporanHarianStatusCounts();
+        $laporanMingguanCounts = Dashboard::getLaporanMingguanStatusCounts();
         // dd([
         //     'counts' => $counts,
         //     'laporanHarianCounts' => $laporanHarianCounts,
@@ -29,6 +29,9 @@ class DashboardController extends Controller
             'validasiCount' => $laporanHarianCounts['validasi'] ?? 0,
             'pendingCount' => $laporanHarianCounts['pending'] ?? 0,
             'revisiCount' => $laporanHarianCounts['revisi'] ?? 0,
+            'validasiCountMingguan' => $laporanMingguanCounts['validasi'] ?? 0,
+            'pendingCountMingguan' => $laporanMingguanCounts['pending'] ?? 0,
+            'revisiCountMingguan' => $laporanMingguanCounts['revisi'] ?? 0,
         ]);
     }
 }
