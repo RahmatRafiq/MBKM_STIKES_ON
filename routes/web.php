@@ -10,13 +10,15 @@ Route::middleware('auth')->group(function () {
         return view('applications/mbkm/dashboard');
     })->middleware(['auth'])->name('dashboard');
 
+    Route::get('/admin', [\App\Http\Controllers\DashboardController::class, 'dashboardAdmin'])->name('dashboard.admin');
+
     Route::resource('mbkm/about-mbkms', \App\Http\Controllers\AboutMbkmController::class);
     Route::resource('mbkm/batch-mbkms', \App\Http\Controllers\BatchMbkmController::class);
     Route::post('mbkm/batch-mbkms/json', [\App\Http\Controllers\BatchMbkmController::class, 'json'])->name('batch-mbkms.json');
 
     Route::resource('mbkm/type-programs', \App\Http\Controllers\TypeProgramController::class);
     Route::post('mbkm/type-programs/json', [\App\Http\Controllers\TypeProgramController::class, 'json'])->name('type-programs.json');
-    
+
     Route::get('mbkm/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('mbkm/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('mbkm/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
