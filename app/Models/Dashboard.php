@@ -7,7 +7,9 @@ use Illuminate\Database\Eloquent\Model;
 
 class Dashboard extends Model
 {
-   public static function getCounts()
+    use HasFactory;
+
+    public static function getCounts()
     {
         return [
             'peserta' => Peserta::count(),
@@ -18,5 +20,14 @@ class Dashboard extends Model
             'laporanMingguan' => LaporanMingguan::count(),
             'laporanLengkap' => LaporanLengkap::count(),
         ];
+    }
+
+    public static function getLaporanHarianStatusCounts()
+    {
+        return LaporanHarian::selectRaw('status, count(*) as count')
+            ->groupBy('status')
+            ->get()
+            ->pluck('count', 'status')
+            ->toArray();
     }
 }
