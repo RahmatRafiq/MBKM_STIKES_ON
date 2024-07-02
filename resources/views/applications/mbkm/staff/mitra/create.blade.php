@@ -51,17 +51,15 @@
                             </div>
                         </div>
                     </div>
-
                     <div class="col-md-6">
                         <div class="mb-3">
                             <label for="mitra_type" class="form-label">Type</label>
                             <select class="form-select" id="mitra_type" name="mitra_type" required>
-                                <option value="Magang Merdeka" {{ old('mitra_type')=='Magang Merdeka' ? 'selected' : ''
-                                    }}>Magang Merdeka</option>
-                                <option value="Kampus Mengajar" {{ old('mitra_type')=='Kampus Mengajar' ? 'selected'
-                                    : '' }}>Kampus Mengajar</option>
-                                <option value="Pertukaran Mahasiswa" {{ old('mitra_type')=='Pertukaran Mahasiswa'
-                                    ? 'selected' : '' }}>Pertukaran Mahasiswa</option>
+                                @foreach ($types as $type)
+                                <option value="{{ $type->id }}" {{ old('mitra_type')==$type->id ? 'selected' : '' }}>
+                                    {{ $type->name }}
+                                </option>
+                                @endforeach
                             </select>
                         </div>
                     </div>
@@ -110,13 +108,13 @@
                                 <span class="input-group-text">@</span>
                                 <input type="email" class="form-control" id="user_email" name="user_email" required
                                     placeholder="User Email" value="{{ old('user_email') }}">
-                                </div>
-                                <div class="form-check">
-                                    <input class="form-check-input" type="checkbox" id="same_email">
-                                    <label class="form-check-label" for="same_email">
-                                        Same as Mitra Email
-                                    </label>
-                                </div>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" id="same_email">
+                                <label class="form-check-label" for="same_email">
+                                    Same as Mitra Email
+                                </label>
+                            </div>
                         </div>
                     </div>
                     <div class="col-md-6">
