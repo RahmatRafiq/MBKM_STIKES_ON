@@ -30,4 +30,13 @@ class Dashboard extends Model
             ->pluck('count', 'status')
             ->toArray();
     }
+
+    public static function getLaporanMingguanStatusCounts()
+    {
+        return LaporanMingguan::selectRaw('status, count(*) as count')
+            ->groupBy('status')
+            ->get()
+            ->pluck('count', 'status')
+            ->toArray();
+    }
 }
