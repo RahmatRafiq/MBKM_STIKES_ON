@@ -3,7 +3,6 @@
 @section('content')
 <!-- App body starts -->
 <div class="app-body">
-
     <!-- Row start -->
     <div class="row gx-3">
         <div class="col-xl-3 col-sm-6 col-12">
@@ -97,9 +96,65 @@
                 </div>
             </div>
         </div>
+        <div class="col-xl-6">
+            <div class="card mb-3">
+                <div class="card-header">
+                    <h5 class="card-title">Laporan Harian Berdasarkan Status</h5>
+                </div>
+                <div class="card-body">
+                    <div id="donutChart"></div>
+                </div>
+            </div>
+        </div>
     </div>
     <!-- Row end -->
-
 </div>
 <!-- App body ends -->
 @endsection
+
+
+
+@push('javascript')
+<script src="{{ asset('assets/js/apexcharts.min.js') }}"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        var validasiCount = {{ $validasiCount }};
+        var pendingCount = {{ $pendingCount }};
+        var revisiCount = {{ $revisiCount }};
+        console.log(validasiCount, pendingCount, revisiCount); // Debug data
+
+        var options = {
+            series: [validasiCount, pendingCount, revisiCount],
+            labels: ['Validasi', 'Pending', 'Revisi'],
+            colors: ['#28a745', '#ffc107', '#dc3545'],
+            chart: {
+                type: 'donut',
+                height: 350,
+            },
+            plotOptions: {
+                pie: {
+                    donut: {
+                        size: '70%'
+                    }
+                }
+            },
+            responsive: [{
+                breakpoint: 480,
+                options: {
+                    chart: {
+                        width: 200
+                    },
+                    legend: {
+                        position: 'bottom'
+                    }
+                }
+            }]
+        };
+
+        var donutChart = new ApexCharts(document.querySelector("#donutChart"), options);
+
+        donutChart.render();
+    });
+</script>
+@endpush
+
