@@ -85,7 +85,11 @@ class DashboardController extends Controller
     
         // Logika untuk mengambil data laporan mingguan
         $laporanMingguan = LaporanMingguan::where('peserta_id', $user->peserta->id)->get()->keyBy('minggu_ke');
-    
+        $totalLaporanMingguan = $laporanMingguan->count();
+        $validasiLaporanMingguan = $laporanMingguan->where('status', 'validasi')->count();
+        $revisiLaporanMingguan = $laporanMingguan->where('status', 'revisi')->count();
+        $pendingLaporanMingguan = $laporanMingguan->where('status', 'pending')->count();
+
         // Logika untuk mengambil data registrasi
         $registrasi = Registrasi::where('peserta_id', $user->peserta->id)->get();
         $totalLowongan = $registrasi->count();
@@ -96,6 +100,10 @@ class DashboardController extends Controller
             'validasiLaporan',
             'revisiLaporan',
             'pendingLaporan',
+            'totalLaporanMingguan',
+            'validasiLaporanMingguan',
+            'revisiLaporanMingguan',
+            'pendingLaporanMingguan',
             'totalLowongan',
             'lowonganStatus'
         ));
