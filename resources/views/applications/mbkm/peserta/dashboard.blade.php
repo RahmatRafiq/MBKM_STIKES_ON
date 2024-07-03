@@ -152,7 +152,7 @@
 
         // Data untuk Laporan Mingguan
         var optionsMingguan = {
-            series: [{{ $validasiLaporan }}, {{ $pendingLaporan }}, {{ $revisiLaporan }}],
+            series: [{{ $validasiLaporanMingguan }}, {{ $pendingLaporanMingguan }}, {{ $revisiLaporanMingguan }}],
             labels: ['Validasi', 'Pending', 'Revisi'],
             colors: ['#28a745', '#ffc107', '#dc3545'],
             chart: {
