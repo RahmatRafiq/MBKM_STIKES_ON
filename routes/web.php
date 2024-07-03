@@ -3,14 +3,13 @@
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\RegistrasiController;
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\DashboardController;
 use Illuminate\Support\Facades\Route;
 
 Route::middleware('auth')->group(function () {
-    Route::get('/', function () {
-        return view('applications/mbkm/dashboard');
-    })->middleware(['auth'])->name('dashboard');
+    Route::get('/', [DashboardController::class, 'index'])->name('dashboard');
 
-    Route::get('/admin', [\App\Http\Controllers\DashboardController::class, 'dashboardAdmin'])->name('dashboard.admin');
+    Route::get('/admin', [DashboardController::class, 'dashboardAdmin'])->name('dashboard.admin');
 
     Route::resource('mbkm/about-mbkms', \App\Http\Controllers\AboutMbkmController::class);
     Route::resource('mbkm/batch-mbkms', \App\Http\Controllers\BatchMbkmController::class);
@@ -111,6 +110,7 @@ Route::middleware('auth')->group(function () {
     });
 
 });
+
 require __DIR__ . '/auth.php';
 
 Route::resource('mahasiswa', \App\Http\Controllers\sisfo\MahasiswaController::class);
