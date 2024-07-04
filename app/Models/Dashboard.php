@@ -2,13 +2,13 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Model;
-use App\Models\Peserta;
-use App\Models\MitraProfile;
-use App\Models\Lowongan;
 use App\Models\LaporanHarian;
 use App\Models\LaporanMingguan;
+use App\Models\Lowongan;
+use App\Models\MitraProfile;
+use App\Models\Peserta;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
 
 class Dashboard extends Model
 {
@@ -57,5 +57,16 @@ class Dashboard extends Model
             ->get()
             ->pluck('count', 'status')
             ->toArray();
+    }
+
+    public static function getStaffDashboardData()
+    {
+        // $jumlahPesertaAktif = Peserta::where('status', 'aktif')->count();
+        $laporanHarian = LaporanHarian::count();
+        $laporanMingguan = LaporanMingguan::count();
+        $lowonganTersedia = Lowongan::where('is_open', true)->count();
+        $pesertaTerbaru = Peserta::orderBy('created_at', 'desc')->take(5)->get();
+
+        return compact( 'laporanHarian', 'laporanMingguan', 'lowonganTersedia', 'pesertaTerbaru');
     }
 }
