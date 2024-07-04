@@ -41,27 +41,5 @@ class Dashboard extends Model
             ->toArray();
     }
 
-    // public static function getCountsByPeserta($pesertaId)
-    // {
-    //     $laporanHarianCounts = LaporanHarian::where('peserta_id', $pesertaId)
-    //         ->selectRaw('status, count(*) as count')
-    //         ->groupBy('status')
-    //         ->get()
-    //         ->pluck('count', 'status')
-    //         ->toArray();
-
-    //     $laporanMingguanCounts = LaporanMingguan::where('peserta_id', $pesertaId)
-    //         ->selectRaw('status, count(*) as count')
-    //         ->groupBy('status')
-    //         ->get()
-    //         ->pluck('count', 'status')
-    //         ->toArray();
-
-    //     return [
-    //         'laporanHarianCount' => LaporanHarian::where('peserta_id', $pesertaId)->count(),
-    //         'laporanMingguanCount' => LaporanMingguan::where('peserta_id', $pesertaId)->count(),
-    //         'laporanHarianStatusCounts' => $laporanHarianCounts,
-    //         'laporanMingguanStatusCounts' => $laporanMingguanCounts,
-    //     ];
-    // }
+    
 }
