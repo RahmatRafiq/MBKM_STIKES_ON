@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\AktivitasMbkm;
 use App\Models\BatchMbkm;
 use App\Models\Dashboard;
 use App\Models\LaporanHarian;
@@ -110,59 +111,15 @@ class DashboardController extends Controller
     }
 
     public function dashboardDospem()
-{
-    $user = Auth::user();
-
-    // Mengambil data peserta yang dibimbing oleh dosen pembimbing (dospem) tersebut
-    $daftarPeserta = Peserta::whereHas('registrationPlacement.dospem', function ($query) use ($user) {
-        $query->where('user_id', $user->id);
-    })->get();
-
-    $jumlahPeserta = $daftarPeserta->count();
-
-    // Mengirim data ke view
-    return view('applications.mbkm.dospem.dashboard', [
-        'jumlahPesertaBimbingan' => $jumlahPeserta,
-        'pesertaBimbingan' => $daftarPeserta,
-
-    ]);
-}
-
-
-    public function dashboarStaff()
-    {
-        $dashboardData = Dashboard::getStaffDashboardData();
-
-        return view('applications.mbkm.staff.dashboard', $dashboardData);
-    }
-
-    public function dashboardPeserta(Request $request)
     {
         $user = Auth::user();
-        $peserta = Peserta::with('registrationPlacement')->where('user_id', $user->id)->first();
 
-        if (!$peserta) {
-            return response()->view('applications.mbkm.error-page.not-registered', ['message' => 'Anda tidak terdaftar sebagai peserta.'], 403);
-        }
+        // Mengambil data aktivitas peserta yang dibimbing oleh dosen pembimbing (dospem) tersebut
+        $daftarAktivitas = AktivitasMbkm::whereHas('dospem', function ($query) use ($user) {
+            $query->where('user_id', $user->id);
+        })->with(['laporanHarian', 'laporanMingguan', 'laporanLengkap'])->get();
 
-        // Logika untuk mengambil data laporan harian
-        $laporanHarian = LaporanHarian::where('peserta_id', $user->peserta->id)->get()->keyBy('tanggal');
-        $totalLaporan = $laporanHarian->count();
-        $validasiLaporan = $laporanHarian->where('status', 'validasi')->count();
-        $revisiLaporan = $laporanHarian->where('status', 'revisi')->count();
-        $pendingLaporan = $laporanHarian->where('status', 'pending')->count();
-
-        // Logika untuk mengambil data laporan mingguan
-        $laporanMingguan = LaporanMingguan::where('peserta_id', $user->peserta->id)->get()->keyBy('minggu_ke');
-        $totalLaporanMingguan = $laporanMingguan->count();
-        $validasiLaporanMingguan = $laporanMingguan->where('status', 'validasi')->count();
-        $revisiLaporanMingguan = $laporanMingguan->where('status', 'revisi')->count();
-        $pendingLaporanMingguan = $laporanMingguan->where('status', 'pending')->count();
-
-        // Logika untuk mengambil data registrasi
-        $registrasi = Registrasi::where('peserta_id', $user->peserta->id)->get();
-        $totalLowongan = $registrasi->count();
-        $lowonganStatus = $registrasi->groupBy('status')->map->count();
+        dd($daftarAktivitas);
 
         return view('applications.mbkm.peserta.dashboard', compact(
             'totalLaporan',
