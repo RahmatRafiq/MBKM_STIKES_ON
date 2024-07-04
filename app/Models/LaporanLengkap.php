@@ -12,10 +12,12 @@ class LaporanLengkap extends Model
     protected $table = 'laporan_lengkap';
     protected $fillable = [
         'peserta_id',
+        'mitra_id', // Tambahkan mitra_id di sini
         'dospem_id',
         'mitra_id', // Tambahkan mitra_id di sini
         'isi_laporan',
         'status',
+        'feedback'
     ];
 
     public function peserta()

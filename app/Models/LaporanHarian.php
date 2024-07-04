@@ -11,11 +11,13 @@ class LaporanHarian extends Model
     protected $table = 'laporan_harian';
     protected $fillable = [
         'peserta_id',
-        'mitra_id', // Tambahkan mitra_id di sini
+        'mitra_id',
+        'dospem_id',
         'tanggal',
         'isi_laporan',
         'status',
         'kehadiran',
+        'feedback',
     ];
 
     public function peserta()

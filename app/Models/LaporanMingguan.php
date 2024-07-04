@@ -13,11 +13,13 @@ class LaporanMingguan extends Model
     protected $fillable = [
         'peserta_id',
         'mitra_id',
+        'dospem_id',
         'lowongan_id',
         'minggu_ke',
         'isi_laporan',
         'status',
         'kehadiran',
+        'feedback',
     ];
 
     public function peserta()
