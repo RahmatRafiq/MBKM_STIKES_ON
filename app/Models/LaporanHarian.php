@@ -30,6 +30,11 @@ class LaporanHarian extends Model
         return $this->belongsTo(MitraProfile::class);
     }
 
+    public function dospem()
+    {
+        return $this->belongsTo(DosenPembimbingLapangan::class, 'dospem_id', 'id');
+    }
+
     public function lowongan()
     {
         return $this->belongsTo(Lowongan::class);
