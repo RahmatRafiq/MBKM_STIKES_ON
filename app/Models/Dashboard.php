@@ -4,14 +4,32 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use App\Models\Peserta;
+use App\Models\MitraProfile;
+use App\Models\Lowongan;
+use App\Models\LaporanHarian;
+use App\Models\LaporanMingguan;
 
 class Dashboard extends Model
 {
     use HasFactory;
 
+    public static function getPesertaCount($user)
+    {
+        return Peserta::whereHas('registrationPlacement.lowongan.mitra', function ($query) use ($user) {
+            $query->where('user_id', $user->id);
+        })->count();
+    }
+
+    public static function getLowonganData($user)
+    {
+        return Lowongan::whereHas('mitra', function ($query) use ($user) {
+            $query->where('user_id', $user->id);
+        })->withCount('registrations')->get();
+    }
+
     public static function getCounts()
     {
-        
         return [
             'peserta' => Peserta::count(),
             'dosen' => DosenPembimbingLapangan::count(),
@@ -40,6 +58,4 @@ class Dashboard extends Model
             ->pluck('count', 'status')
             ->toArray();
     }
-
-    
 }
