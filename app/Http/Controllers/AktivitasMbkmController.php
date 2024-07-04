@@ -170,6 +170,7 @@ class AktivitasMbkmController extends Controller
             [
                 'peserta_id' => $user->peserta->id,
                 'mitra_id' => $user->peserta->registrationPlacement->lowongan->mitra_id,
+                'dospem_id' => $user->peserta->registrationPlacement->dospem_id,
                 'tanggal' => $request->tanggal,
             ],
             [
@@ -198,7 +199,9 @@ class AktivitasMbkmController extends Controller
             [
                 'peserta_id' => $user->peserta->id,
                 'mitra_id' => $user->peserta->registrationPlacement->lowongan->mitra_id,
+                'dospem_id' => $user->peserta->registrationPlacement->dospem_id,
                 'minggu_ke' => $request->minggu_ke,
+
             ],
             [
                 'isi_laporan' => $request->isi_laporan,
@@ -223,7 +226,8 @@ class AktivitasMbkmController extends Controller
         $laporanLengkap = LaporanLengkap::updateOrCreate(
             [
                 'peserta_id' => $aktivitas->peserta_id,
-                'mitra_id' => $aktivitas->mitra_id,
+                'mitra_id' => $user->peserta->registrationPlacement->lowongan->mitra_id,
+                'dospem_id' => $user->peserta->registrationPlacement->dospem_id,
                 'tanggal' => $request->tanggal,
             ],
             [
@@ -290,7 +294,6 @@ class AktivitasMbkmController extends Controller
         return back()->with('success', 'Laporan lengkap berhasil divalidasi.');
     }
 }
-
 
 // namespace App\Http\Controllers;
 
