@@ -30,7 +30,7 @@ class DashboardController extends Controller
         if ($user->hasRole('super admin')) {
             return $this->dashboardAdmin();
         } elseif ($user->hasRole('dosen')) {
-            return $this->dashboardDosen();
+            return $this->dashboardDospem();
         } elseif ($user->hasRole('peserta')) {
             return $this->dashboardPeserta(app('request'));
         } else {
@@ -61,12 +61,12 @@ class DashboardController extends Controller
         ]);
     }
 
-    public function dashboardDosen()
+    public function dashboardDospem()
     {
-        return view('dashboard.dosen');
+        return view('applications.mbkm.dospem.dashboard');
     }
 
-
+ 
     public function dashboardPeserta(Request $request)
     {
         $user = Auth::user();
