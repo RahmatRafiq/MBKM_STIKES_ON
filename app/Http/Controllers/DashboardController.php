@@ -6,6 +6,7 @@ use App\Models\BatchMbkm;
 use App\Models\Dashboard;
 use App\Models\LaporanHarian;
 use App\Models\LaporanMingguan;
+use App\Models\MitraProfile;
 use App\Models\Peserta;
 use App\Models\Registrasi;
 use Illuminate\Http\Request;
@@ -29,6 +30,8 @@ class DashboardController extends Controller
 
         if ($user->hasRole('super admin')) {
             return $this->dashboardAdmin();
+        } elseif ($user->hasRole('mitra')) {
+            return $this->dashboardMitra();
         } elseif ($user->hasRole('dosen')) {
             return $this->dashboardDospem();
         } elseif ($user->hasRole('peserta')) {
@@ -60,6 +63,48 @@ class DashboardController extends Controller
             'revisiCountMingguan' => $laporanMingguanCounts['revisi'] ?? 0,
         ]);
     }
+
+    public function dashboardMitra()
+    {
+        $user = Auth::user();
+
+        // Mengambil data peserta yang ditempatkan di mitra tersebut
+        $daftarPeserta = Peserta::whereHas('registrationPlacement.lowongan.mitra', function ($query) use ($user) {
+            $query->where('user_id', $user->id);
+        })->get();
+        $jumlahPeserta = $daftarPeserta->count();
+
+        // Mengambil data lowongan yang dibuat oleh mitra tersebut dan jumlah pendaftarnya
+        $lowongan = MitraProfile::where('user_id', $user->id)->first()->getLowongan()->withCount('registrations')->get();
+
+        // Mengambil laporan harian dan mingguan untuk peserta yang ditempatkan di mitra tersebut
+        $laporanHarian = LaporanHarian::whereIn('peserta_id', $daftarPeserta->pluck('id'))->get();
+        $laporanMingguan = LaporanMingguan::whereIn('peserta_id', $daftarPeserta->pluck('id'))->get();
+
+        // Menghitung status laporan harian
+        $validasiHarian = $laporanHarian->where('status', 'validasi')->count();
+        $revisiHarian = $laporanHarian->where('status', 'revisi')->count();
+        $pendingHarian = $laporanHarian->where('status', 'pending')->count();
+
+        // Menghitung status laporan mingguan
+        $validasiMingguan = $laporanMingguan->where('status', 'validasi')->count();
+        $revisiMingguan = $laporanMingguan->where('status', 'revisi')->count();
+        $pendingMingguan = $laporanMingguan->where('status', 'pending')->count();
+
+        return view('applications.mbkm.mitra.dashboard', [
+            'jumlahPeserta' => $jumlahPeserta,
+            'lowongan' => $lowongan,
+            'laporanHarian' => $laporanHarian->count(),
+            'laporanMingguan' => $laporanMingguan->count(),
+            'validasiHarian' => $validasiHarian,
+            'revisiHarian' => $revisiHarian,
+            'pendingHarian' => $pendingHarian,
+            'validasiMingguan' => $validasiMingguan,
+            'revisiMingguan' => $revisiMingguan,
+            'pendingMingguan' => $pendingMingguan,
+        ]);
+    }
+
 
     public function dashboardDospem()
     {
