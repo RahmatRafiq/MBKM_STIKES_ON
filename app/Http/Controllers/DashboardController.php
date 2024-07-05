@@ -14,18 +14,23 @@ use Illuminate\Support\Facades\Auth;
 
 class DashboardController extends Controller
 {
-    protected $activeBatch;
+    private $activeBatch;
+    private $batchActive;
 
     public function __construct()
     {
         $this->activeBatch = BatchMbkm::getActiveBatch();
-        if (!$this->activeBatch) {
-            abort(403, 'Tidak ada batch aktif yang sedang berjalan.');
-        }
+        $this->batchActive = $this->activeBatch !== null;
     }
 
     public function index()
     {
+        if (!$this->batchActive) {
+            return response()->view('applications.mbkm.error-page.batch-no-active', [
+                'message' => 'Tidak ada batch aktif yang sedang berjalan.',
+            ], 403);
+        }
+
         $user = Auth::user();
 
         if ($user->hasRole('super admin')) {
@@ -39,12 +44,20 @@ class DashboardController extends Controller
         } elseif ($user->hasRole('peserta')) {
             return $this->dashboardPeserta(app('request'));
         } else {
-            abort(403, 'Unauthorized action.');
+            return response()->view('applications.mbkm.error-page.batch-no-active', [
+                'message' => 'Unauthorized action.',
+            ], 403);
         }
     }
 
     public function dashboardAdmin()
     {
+        if (!$this->batchActive) {
+            return response()->view('applications.mbkm.error-page.batch-no-active', [
+                'message' => 'Tidak ada batch aktif yang sedang berjalan.',
+            ], 403);
+        }
+
         $counts = Dashboard::getCounts();
         $laporanHarianCounts = Dashboard::getLaporanHarianStatusCounts();
         $laporanMingguanCounts = Dashboard::getLaporanMingguanStatusCounts();
@@ -68,6 +81,12 @@ class DashboardController extends Controller
 
     public function dashboardMitra()
     {
+        if (!$this->batchActive) {
+            return response()->view('applications.mbkm.error-page.batch-no-active', [
+                'message' => 'Tidak ada batch aktif yang sedang berjalan.',
+            ], 403);
+        }
+
         $user = Auth::user();
 
         // Mengambil data peserta yang ditempatkan di mitra tersebut
@@ -111,6 +130,12 @@ class DashboardController extends Controller
 
     public function dashboardDospem()
     {
+        if (!$this->batchActive) {
+            return response()->view('applications.mbkm.error-page.batch-no-active', [
+                'message' => 'Tidak ada batch aktif yang sedang berjalan.',
+            ], 403);
+        }
+
         $user = Auth::user();
 
         // Mengambil data peserta yang ditempatkan di dospem tersebut
@@ -175,6 +200,12 @@ class DashboardController extends Controller
 
     public function dashboarStaff()
     {
+        if (!$this->batchActive) {
+            return response()->view('applications.mbkm.error-page.batch-no-active', [
+                'message' => 'Tidak ada batch aktif yang sedang berjalan.',
+            ], 403);
+        }
+
         $dashboardData = Dashboard::getStaffDashboardData();
 
         return view('applications.mbkm.staff.dashboard', $dashboardData);
@@ -182,11 +213,19 @@ class DashboardController extends Controller
 
     public function dashboardPeserta(Request $request)
     {
+        if (!$this->batchActive) {
+            return response()->view('applications.mbkm.error-page.batch-no-active', [
+                'message' => 'Tidak ada batch aktif yang sedang berjalan.',
+            ], 403);
+        }
+
         $user = Auth::user();
         $peserta = Peserta::with('registrationPlacement')->where('user_id', $user->id)->first();
 
         if (!$peserta) {
-            return response()->view('applications.mbkm.error-page.not-registered', ['message' => 'Anda tidak terdaftar sebagai peserta.'], 403);
+            return response()->view('applications.mbkm.error-page.batch-no-active', [
+                'message' => 'Anda tidak terdaftar sebagai peserta.',
+            ], 403);
         }
 
         // Logika untuk mengambil data laporan harian
