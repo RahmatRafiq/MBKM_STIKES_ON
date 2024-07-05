@@ -2,11 +2,9 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\AktivitasMbkm;
 use App\Models\BatchMbkm;
 use App\Models\Dashboard;
 use App\Models\LaporanHarian;
-use App\Models\LaporanLengkap;
 use App\Models\LaporanMingguan;
 use App\Models\Lowongan;
 use App\Models\Peserta;
@@ -115,40 +113,63 @@ class DashboardController extends Controller
     {
         $user = Auth::user();
 
-        // Mengambil peserta bimbingan berdasarkan dospem_id
-        $aktivitas = AktivitasMbkm::where('dospem_id', $user->id)
-            ->with('peserta', 'laporanHarian', 'laporanMingguan', 'laporanLengkap')
+        // Mengambil data peserta yang ditempatkan di dospem tersebut
+        $daftarPeserta = Peserta::whereHas('registrationPlacement.dospem', function ($query) use ($user) {
+            $query->where('user_id', $user->id);
+        })->get();
+
+        // Mengambil laporan harian dan mingguan untuk peserta yang ditempatkan di dospem tersebut
+        $laporanHarian = LaporanHarian::whereIn('peserta_id', $daftarPeserta->pluck('id'))
+            ->with(['lowongan', 'lowongan.mitra', 'peserta'])
             ->get();
-        $jumlahPesertaBimbingan = $aktivitas->count();
-        dd($aktivitas);
 
-        // Menghitung jumlah laporan harian, mingguan, dan lengkap
-        $laporanHarian = LaporanHarian::whereIn('peserta_id', $aktivitas->pluck('peserta_id'))->count();
-        $laporanMingguan = LaporanMingguan::whereIn('peserta_id', $aktivitas->pluck('peserta_id'))->count();
-        $laporanLengkap = LaporanLengkap::whereIn('peserta_id', $aktivitas->pluck('peserta_id'))->count();
+        $laporanMingguan = LaporanMingguan::whereIn('peserta_id', $daftarPeserta->pluck('id'))->get();
 
-        // Menghitung status laporan harian
-        $validasiHarian = LaporanHarian::whereIn('peserta_id', $aktivitas->pluck('peserta_id'))->where('status', 'validasi')->count();
-        $revisiHarian = LaporanHarian::whereIn('peserta_id', $aktivitas->pluck('peserta_id'))->where('status', 'revisi')->count();
-        $pendingHarian = LaporanHarian::whereIn('peserta_id', $aktivitas->pluck('peserta_id'))->where('status', 'pending')->count();
+        // Menyiapkan data untuk view
+        $dataPeserta = $daftarPeserta->map(function ($peserta) use ($laporanHarian, $laporanMingguan) {
+            $jumlahLaporanHarian = $laporanHarian->where('peserta_id', $peserta->id)->count();
+            $jumlahLaporanMingguan = $laporanMingguan->where('peserta_id', $peserta->id)->count();
 
-        // Menghitung status laporan mingguan
-        $validasiMingguan = LaporanMingguan::whereIn('peserta_id', $aktivitas->pluck('peserta_id'))->where('status', 'validasi')->count();
-        $revisiMingguan = LaporanMingguan::whereIn('peserta_id', $aktivitas->pluck('peserta_id'))->where('status', 'revisi')->count();
-        $pendingMingguan = LaporanMingguan::whereIn('peserta_id', $aktivitas->pluck('peserta_id'))->where('status', 'pending')->count();
+            $firstLaporanHarian = $laporanHarian->where('peserta_id', $peserta->id)->first();
+            $lowongan = optional($firstLaporanHarian)->lowongan;
+            $mitra = optional($lowongan)->mitra;
+
+            return [
+                'peserta' => $peserta,
+                'jumlah_laporan_harian' => $jumlahLaporanHarian,
+                'jumlah_laporan_mingguan' => $jumlahLaporanMingguan,
+                'lowongan' => optional($lowongan)->name,
+                'mitra' => optional($mitra)->name,
+            ];
+        });
+
+        // Menghitung statistik laporan
+        $totalLaporanHarian = $laporanHarian->count();
+        $validasiLaporanHarian = $laporanHarian->where('status', 'validasi')->count();
+        $pendingLaporanHarian = $laporanHarian->where('status', 'pending')->count();
+        $revisiLaporanHarian = $laporanHarian->where('status', 'revisi')->count();
+
+        $totalLaporanMingguan = $laporanMingguan->count();
+        $validasiLaporanMingguan = $laporanMingguan->where('status', 'validasi')->count();
+        $pendingLaporanMingguan = $laporanMingguan->where('status', 'pending')->count();
+        $revisiLaporanMingguan = $laporanMingguan->where('status', 'revisi')->count();
+
+        // Menghitung jumlah peserta bimbingan
+        $jumlahPesertaBimbingan = $daftarPeserta->count();
 
         return view('applications.mbkm.dospem.dashboard', [
+            'dataPeserta' => $dataPeserta,
             'jumlahPesertaBimbingan' => $jumlahPesertaBimbingan,
-            'pesertaBimbingan' => $aktivitas->pluck('peserta'),
-            'laporanHarian' => $laporanHarian,
-            'laporanMingguan' => $laporanMingguan,
-            'laporanLengkap' => $laporanLengkap,
-            'validasiHarian' => $validasiHarian,
-            'revisiHarian' => $revisiHarian,
-            'pendingHarian' => $pendingHarian,
-            'validasiMingguan' => $validasiMingguan,
-            'revisiMingguan' => $revisiMingguan,
-            'pendingMingguan' => $pendingMingguan,
+            'statistikLaporan' => [
+                'total_harian' => $totalLaporanHarian,
+                'validasi_harian' => $validasiLaporanHarian,
+                'pending_harian' => $pendingLaporanHarian,
+                'revisi_harian' => $revisiLaporanHarian,
+                'total_mingguan' => $totalLaporanMingguan,
+                'validasi_mingguan' => $validasiLaporanMingguan,
+                'pending_mingguan' => $pendingLaporanMingguan,
+                'revisi_mingguan' => $revisiLaporanMingguan,
+            ],
         ]);
     }
 
@@ -200,5 +221,4 @@ class DashboardController extends Controller
             'lowonganStatus'
         ));
     }
-
 }
