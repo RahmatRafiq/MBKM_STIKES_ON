@@ -3,12 +3,13 @@
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\RegistrasiController;
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\DashboardController;
 use Illuminate\Support\Facades\Route;
 
 Route::middleware('auth')->group(function () {
-    Route::get('/', function () {
-        return view('applications/mbkm/dashboard');
-    })->middleware(['auth'])->name('dashboard');
+    Route::get('/', [DashboardController::class, 'index'])->name('dashboard');
+
+    Route::get('/admin', [DashboardController::class, 'dashboardAdmin'])->name('dashboard.admin');
 
     Route::resource('mbkm/about-mbkms', \App\Http\Controllers\AboutMbkmController::class);
     Route::resource('mbkm/batch-mbkms', \App\Http\Controllers\BatchMbkmController::class);
@@ -16,7 +17,7 @@ Route::middleware('auth')->group(function () {
 
     Route::resource('mbkm/type-programs', \App\Http\Controllers\TypeProgramController::class);
     Route::post('mbkm/type-programs/json', [\App\Http\Controllers\TypeProgramController::class, 'json'])->name('type-programs.json');
-    
+
     Route::get('mbkm/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('mbkm/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('mbkm/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
@@ -109,6 +110,7 @@ Route::middleware('auth')->group(function () {
     });
 
 });
+
 require __DIR__ . '/auth.php';
 
 Route::resource('mahasiswa', \App\Http\Controllers\sisfo\MahasiswaController::class);
