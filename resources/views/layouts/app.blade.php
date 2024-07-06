@@ -16,7 +16,8 @@
   ************* -->
   <link rel="stylesheet" href="{{ asset('assets/fonts/bootstrap/bootstrap-icons.css') }}" />
   <link rel="stylesheet" href="{{ asset('assets/css/main.min.css') }}" />
-
+  {{-- <link rel="stylesheet" href="{{ asset('assets/css/dark-theme.css') }}" /> --}}
+<link rel="stylesheet" href="{{ asset('assets/css/customcard.css') }}" />
   <!-- *************
    ************ Vendor Css Files *************
   ************ -->
