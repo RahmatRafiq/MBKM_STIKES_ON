@@ -1,18 +1,4 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <style>
-        .custom-scrollbar {
-            height: calc(100vh - 20px);
-            /* Sesuaikan jika diperlukan */
-            overflow-y: auto;
-            padding-top: 10px;
-            padding-bottom: 10px;
-        }
-    </style>
-</head>
 
-<body>
     <nav id="sidebar" class="sidebar-wrapper">
         <!-- Sidebar menu starts -->
         <div class="sidebarMenuScroll custom-scrollbar">
@@ -24,26 +10,33 @@
                     </a>
                 </li>
                 {{-- Admin dashboard --}}
-                <li class="treeview {{ request()->is('mbkm/admin/role-permissions*') ? 'active current-page open' : '' }}">
+                <li
+                    class="treeview {{ request()->is('mbkm/admin/role-permissions*') ? 'active current-page open' : '' }}">
                     <a href="#" class="treeview-toggle">
                         <i class="bi bi-stickies"></i>
                         <span class="menu-text">Manajemen Pengguna</span>
                     </a>
-                    <ul class="treeview-menu" style="{{ request()->is('mbkm/admin/role-permissions*') ? 'display: block;' : 'display: none;' }}">
+                    <ul class="treeview-menu"
+                        style="{{ request()->is('mbkm/admin/role-permissions*') ? 'display: block;' : 'display: none;' }}">
                         <li>
-                            <a href="{{ route('permission.index') }}" class="{{ request()->routeIs('permission.index') ? 'active-sub' : '' }}">Permissions</a>
+                            <a href="{{ route('permission.index') }}"
+                                class="{{ request()->routeIs('permission.index') ? 'active-sub' : '' }}">Permissions</a>
                         </li>
                         <li>
-                            <a href="{{ route('role.index') }}" class="{{ request()->routeIs('role.index') ? 'active-sub' : '' }}">Role</a>
+                            <a href="{{ route('role.index') }}"
+                                class="{{ request()->routeIs('role.index') ? 'active-sub' : '' }}">Role</a>
                         </li>
                         <li>
-                            <a href="{{ route('user.index') }}" class="{{ request()->routeIs('user.index') ? 'active-sub' : '' }}">Users</a>
+                            <a href="{{ route('user.index') }}"
+                                class="{{ request()->routeIs('user.index') ? 'active-sub' : '' }}">Users</a>
                         </li>
                         <li>
-                            <a href="{{ route('about-mbkms.index') }}" class="{{ request()->routeIs('about-mbkms.index') ? 'active-sub' : '' }}">About MBKM</a>
+                            <a href="{{ route('about-mbkms.index') }}"
+                                class="{{ request()->routeIs('about-mbkms.index') ? 'active-sub' : '' }}">About MBKM</a>
                         </li>
                         <li>
-                            <a href="{{ route('batch-mbkms.index') }}" class="{{ request()->routeIs('batch-mbkms.index') ? 'active-sub' : '' }}">Batch MBKM</a>
+                            <a href="{{ route('batch-mbkms.index') }}"
+                                class="{{ request()->routeIs('batch-mbkms.index') ? 'active-sub' : '' }}">Batch MBKM</a>
                         </li>
                     </ul>
                 </li>
@@ -94,23 +87,29 @@
                         <i class="bi bi-file-earmark-text"></i>
                         <span class="menu-text">Laporan</span>
                     </a>
-                    <ul class="treeview-menu" style="{{ request()->is('laporan*') ? 'display: block;' : 'display: none;' }}">
+                    <ul class="treeview-menu"
+                        style="{{ request()->is('laporan*') ? 'display: block;' : 'display: none;' }}">
                         <li>
-                            <a href="{{ route('laporan.index') }}" class="{{ request()->routeIs('laporan.index') ? 'active-sub' : '' }}">Semua Laporan</a>
+                            <a href="{{ route('laporan.index') }}"
+                                class="{{ request()->routeIs('laporan.index') ? 'active-sub' : '' }}">Semua Laporan</a>
                         </li>
                         <li>
-                            <a href="{{ route('laporan.harian.create') }}" class="{{ request()->routeIs('laporan.harian.create') ? 'active-sub' : '' }}">Laporan Harian</a>
+                            <a href="{{ route('laporan.harian.create') }}"
+                                class="{{ request()->routeIs('laporan.harian.create') ? 'active-sub' : '' }}">Laporan
+                                Harian</a>
                         </li>
                         <li>
-                            <a href="{{ route('laporan.mingguan.create') }}" class="{{ request()->routeIs('laporan.mingguan.create') ? 'active-sub' : '' }}">Laporan Mingguan</a>
+                            <a href="{{ route('laporan.mingguan.create') }}"
+                                class="{{ request()->routeIs('laporan.mingguan.create') ? 'active-sub' : '' }}">Laporan
+                                Mingguan</a>
                         </li>
                         <li>
-                            <a href="{{ route('laporan.lengkap.create') }}" class="{{ request()->routeIs('laporan.lengkap.create') ? 'active-sub' : '' }}">Laporan Lengkap</a>
+                            <a href="{{ route('laporan.lengkap.create') }}"
+                                class="{{ request()->routeIs('laporan.lengkap.create') ? 'active-sub' : '' }}">Laporan
+                                Lengkap</a>
                         </li>
                     </ul>
                 </li>
             </ul>
         </div>
     </nav>
-</body>
-</html>
