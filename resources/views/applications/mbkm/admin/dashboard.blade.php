@@ -239,8 +239,7 @@
         var optionsHarian = {
             series: [validasiCount, pendingCount, revisiCount],
             labels: ['Validasi', 'Pending', 'Revisi'],
-            colors: ['#28a745', '#ffc107', '#dc3545'],
-            chart: {
+            colors: ['#96e6a1','#ffd200', '#FF5E62', ],            chart: {
                 type: 'donut',
                 height: 350,
             },
@@ -256,7 +255,7 @@
                 gradient: {
                     shade: 'dark',
                     type: 'vertical',
-                    gradientToColors: ['#00b09b', '#f7b733', '#ee0979'],
+                    gradientToColors: ['#96e6a1', '#ffd200', '#FF5E62'], // Warna akhir dari gradient-1, gradient-2, gradient-3
                     stops: [0, 100]
                 }
             },
@@ -285,7 +284,7 @@
         var optionsMingguan = {
             series: [validasiCountMingguan, pendingCountMingguan, revisiCountMingguan],
             labels: ['Validasi', 'Pending', 'Revisi'],
-            colors: ['#28a745', '#ffc107', '#dc3545'],
+            colors: ['#96e6a1','#ffd200', '#FF5E62', ], // Menggunakan warna dari gradient-4, gradient-5, gradient-6
             chart: {
                 type: 'donut',
                 height: 350,
@@ -302,7 +301,7 @@
                 gradient: {
                     shade: 'dark',
                     type: 'vertical',
-                    gradientToColors: ['#00b09b', '#f7b733', '#ee0979'],
+                    gradientToColors: ['#96e6a1', '#ffd200', '#FF5E62'], // Warna akhir dari gradient-4, gradient-5, gradient-6
                     stops: [0, 100]
                 }
             },
@@ -323,5 +322,4 @@
         donutChartMingguan.render();
     });
 </script>
-
 @endpush
