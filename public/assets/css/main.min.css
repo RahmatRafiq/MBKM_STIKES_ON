@@ -15754,8 +15754,8 @@ a:hover {
 }
 
 .sidebar-menu>li.active>a {
-    color: #4d4d4d;
-    background: #e6e8ef
+    color: #fff;
+    background: linear-gradient(135deg, #36D1DC, #5B86E5)
 }
 
 .sidebar-menu>li.active>a:after {
@@ -15780,12 +15780,12 @@ a:hover {
 /* rahmat custom */
 .sidebar-menu>li.current-page>a {
     color: #fff;
-    background: linear-gradient(135deg, #FF5F6D, #FFC371)
+    background: linear-gradient(135deg, #36D1DC, #5B86E5)
 }
 
 .sidebar-menu>li.current-page>a:hover {
     color: #fff;
-    background: linear-gradient(135deg, #FF5F6D, #FFC371)
+    background: linear-gradient(135deg, #00C9FF, #92FE9D)
 }
 
 .sidebar-menu>li.current-page>a i {
