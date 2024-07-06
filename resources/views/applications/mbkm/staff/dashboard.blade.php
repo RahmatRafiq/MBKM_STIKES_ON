@@ -55,7 +55,7 @@
             <div class="card-header">
                 <h5 class="card-title text-white">Peserta Terbaru</h5>
             </div>
-            <div class="card-body">
+            {{-- <div class="card-body">
                 <div class="bg-light px-3 py-2 d-flex justify-content-between align-items-center">
                     <div id="todays-date" class="fw-semibold"></div>
                     <div class="badge rounded-pill bg-primary fs-6 text-white">
@@ -70,7 +70,28 @@
                         </div>
                     @endforeach
                 </div>
+            </div> --}}
+
+            <div class="card-body">
+                <div class="bg-light px-3 py-2 d-flex justify-content-between align-items-center rounded shadow-sm mb-3">
+                    <div id="todays-date" class="fw-semibold"></div>
+                    <div class="badge rounded-pill bg-primary fs-6 text-white">
+                        <span>{{ $pesertaTerbaru->count() }}</span> peserta
+                    </div>
+                </div>
+                <div class="peserta-list mt-3">
+                    @foreach($pesertaTerbaru as $peserta)
+                        <div class="peserta-item bg-white rounded shadow-sm p-3 mb-2 w-100 d-flex justify-content-between align-items-center">
+                            <div>
+                                <h6 class="text-primary mb-1 fw-bold">{{ $peserta->nama }}</h6>
+                                <p class="m-0 text-secondary">{{ $peserta->created_at->format('d M Y') }}</p>
+                            </div>
+                            <div class="badge bg-info text-dark">{{ $peserta->status }}</div>
+                        </div>
+                    @endforeach
+                </div>
             </div>
+            
         </div>
     </div>
 </div>
