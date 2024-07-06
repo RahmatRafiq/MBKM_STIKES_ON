@@ -32,7 +32,6 @@
     --gradient-9: linear-gradient(135deg, #36D1DC, #d4fc79);
     --gradient-10: linear-gradient(135deg, #FF5F6D, #36D1DC); */
 }
-
 .card-custom {
     position: relative;
     overflow: hidden;
@@ -113,13 +112,13 @@
 .custom-scrollbar {
     height: calc(100vh - 20px);
     overflow-y: auto;
-    /* scrollbar-width: none; 
-    -ms-overflow-style: none;   */
 }
+
 ::-webkit-scrollbar {
     width: 0px;
     background: transparent;
 }
+
 .sidebar-wrapper a {
     color: #333;
     text-decoration: none;
@@ -144,4 +143,55 @@
 
 .sidebar-wrapper .treeview-menu a {
     padding: 5px 15px;
+}
+
+/* Additional CSS for status details and participant list */
+
+.status-details {
+    margin-top: 20px;
+}
+
+.status-item {
+    margin-bottom: 10px;
+}
+
+.status-item span {
+    display: flex;
+    align-items: center;
+}
+
+.status-item .badge {
+    padding: 0.5em 0.75em;
+    font-size: 0.85em;
+    border-radius: 12px;
+}
+
+.peserta-list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.peserta-item {
+    padding: 1em;
+    border-radius: 0.5em;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.peserta-item h6 {
+    margin: 0;
+}
+
+.peserta-item p {
+    margin: 0;
+    color: #6c757d;
+}
+
+.peserta-item .badge {
+    padding: 0.5em 1em;
+    font-size: 0.85em;
+    border-radius: 12px;
 }
