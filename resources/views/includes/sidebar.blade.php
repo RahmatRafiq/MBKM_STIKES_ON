@@ -4,14 +4,14 @@
         <ul class="sidebar-menu">
             <li class="{{ request()->routeIs('dashboard') ? 'active current-page' : '' }}">
                 <a href="{{ route('dashboard') }}">
-                    <i class="bi bi-box"></i>
+                    <i class="bi bi-speedometer2"></i> <!-- Ikon baru untuk Dashboard -->
                     <span class="menu-text">Dashboard</span>
                 </a>
             </li>
             {{-- Admin dashboard --}}
             <li class="treeview {{ request()->is('mbkm/admin/role-permissions*') ? 'active current-page open' : '' }}">
                 <a href="#" class="treeview-toggle">
-                    <i class="bi bi-stickies"></i>
+                    <i class="bi bi-person-gear"></i> <!-- Ikon baru untuk Manajemen Pengguna -->
                     <span class="menu-text">Manajemen Pengguna</span>
                 </a>
                 <ul class="treeview-menu"
@@ -35,49 +35,49 @@
             </li>
             <li class="{{ request()->routeIs('profile.edit') ? 'active current-page' : '' }}">
                 <a href="{{ route('profile.edit') }}">
-                    <i class="bi bi-box"></i>
+                    <i class="bi bi-person"></i> <!-- Ikon baru untuk Profil -->
                     <span class="menu-text">Profil (All User)</span>
                 </a>
             </li>
             <li class="{{ request()->routeIs('mitra.index') ? 'active current-page' : '' }}">
                 <a href="{{ route('mitra.index') }}">
-                    <i class="bi bi-box"></i>
+                    <i class="bi bi-briefcase"></i> <!-- Ikon baru untuk Mitra -->
                     <span class="menu-text">Mitra (Staff)</span>
                 </a>
             </li>
             <li class="{{ request()->routeIs('dospem.index') ? 'active current-page' : '' }}">
                 <a href="{{ route('dospem.index') }}">
-                    <i class="bi bi-box"></i>
+                    <i class="bi bi-person-check"></i> <!-- Ikon baru untuk Dosen Pembimbing -->
                     <span class="menu-text">Dosen Pembimbing (Staff)</span>
                 </a>
             </li>
             <li class="{{ request()->routeIs('lowongan.index') ? 'active current-page' : '' }}">
                 <a href="{{ route('lowongan.index') }}">
-                    <i class="bi bi-box"></i>
+                    <i class="bi bi-clipboard-data"></i> <!-- Ikon baru untuk Lowongan -->
                     <span class="menu-text">Lowongan (Mitra)</span>
                 </a>
             </li>
             <li class="{{ request()->routeIs('peserta.index') ? 'active current-page' : '' }}">
                 <a href="{{ route('peserta.index') }}">
-                    <i class="bi bi-box"></i>
+                    <i class="bi bi-people"></i> <!-- Ikon baru untuk Peserta -->
                     <span class="menu-text">Peserta (Staff)</span>
                 </a>
             </li>
             <li class="{{ request()->routeIs('peserta.registrasiForm') ? 'active current-page' : '' }}">
                 <a href="{{ route('peserta.registrasiForm') }}">
-                    <i class="bi bi-box"></i>
+                    <i class="bi bi-file-earmark-plus"></i> <!-- Ikon baru untuk Registrasi Peserta -->
                     <span class="menu-text">Registrasi Peserta (Peserta)</span>
                 </a>
             </li>
             <li class="{{ request()->routeIs('staff.registrasiIndex') ? 'active current-page' : '' }}">
                 <a href="{{ route('staff.registrasiIndex') }}">
-                    <i class="bi bi-box"></i>
+                    <i class="bi bi-card-checklist"></i> <!-- Ikon baru untuk Daftar Registrasi Peserta -->
                     <span class="menu-text">Daftar Registrasi Peserta (Staff)</span>
                 </a>
             </li>
             <li class="treeview {{ request()->is('laporan*') ? 'active current-page open' : '' }}">
                 <a href="#" class="treeview-toggle">
-                    <i class="bi bi-file-earmark-text"></i>
+                    <i class="bi bi-journal-text"></i> <!-- Ikon baru untuk Laporan -->
                     <span class="menu-text">Laporan</span>
                 </a>
                 <ul class="treeview-menu"
@@ -98,5 +98,4 @@
             </li>
         </ul>
     </div>
-    
 </nav>
