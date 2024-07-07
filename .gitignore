@@ -5,6 +5,7 @@
 /public/storage
 /storage/*.key
 /vendor
+prompLapran.txt
 .env
 .env.backup
 .env.production
