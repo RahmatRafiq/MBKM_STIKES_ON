@@ -864,3 +864,31 @@ class RegistrasiController extends Controller
 
 jadi apakah kau punya solusi? anggaplah kau seorang ahli struktur data dan juga seorang programmer laravel 11 yang handal untuk menangani masalah ini dan memberikan saya solusi hingga kode untuk merealisasikannya, berikan juga saya solusi terbaik dan penjelasannya
 
+//////////////////////////////////////////////////////////
+
+Baik, berikut adalah flow yang lebih aman dan efisien di mana ketua tim melakukan registrasi awal dan hanya setelah statusnya mencapai placement, anggota tim ditambahkan dan mereka kemudian dapat mengisi laporan harian mereka sendiri.
+
+Flow Detail dari Awal hingga Akhir
+1. Registrasi Tim oleh Ketua Tim
+Ketua tim membuka form registrasi tim.
+Ketua tim mengisi detail anggota tim dan lowongan yang dipilih.
+Data tim disimpan dalam tabel teams.
+Sistem membuat entri registrasi untuk ketua tim dalam tabel registrations dengan status awal registered.
+2. Proses Seleksi oleh Admin/Staff
+Admin atau staff memverifikasi registrasi ketua tim.
+Admin atau staff memperbarui status registrasi ketua tim menjadi processed.
+Admin atau staff melakukan seleksi dan memperbarui status registrasi ketua tim menjadi accepted atau rejected.
+Jika diterima (accepted), admin atau staff memberikan tawaran kepada ketua tim untuk memilih dosen pembimbing.
+3. Penerimaan Tawaran oleh Ketua Tim
+Ketua tim menerima tawaran dan memilih dosen pembimbing (status berubah menjadi accepted_offer).
+Admin atau staff memperbarui status registrasi menjadi placement setelah ketua tim ditugaskan.
+4. Penambahan Anggota Tim
+Setelah status registrasi ketua tim berubah menjadi placement, ketua tim menambahkan anggota tim melalui form khusus.
+Sistem membuat entri registrasi untuk setiap anggota tim dalam tabel registrations dengan status placement.
+5. Pelaksanaan Program dan Pelaporan
+Setiap anggota tim melakukan aktivitas program sesuai dengan job desk masing-masing.
+Setiap anggota tim mengisi laporan harian mereka sendiri melalui sistem.
+Laporan harian dikumpulkan dan diverifikasi oleh admin atau dosen pembimbing.
+6. Validasi dan Penyelesaian
+Admin atau dosen pembimbing memvalidasi laporan harian.
+Setelah semua laporan divalidasi dan program selesai, program dianggap selesai.
