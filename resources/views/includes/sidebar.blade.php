@@ -25,12 +25,23 @@
                     <li class="{{ request()->routeIs('user.index') ? 'active-sub' : '' }}">
                         <a href="{{ route('user.index') }}">Users</a>
                     </li>
+                </ul>
+            </li>
+            <li class="treeview {{ request()->is('mbkm/manajemen-aplikasi*') ? 'active current-page open' : '' }}">
+                <a href="#" class="treeview-toggle">
+                    <i class="bi bi-tools"></i>
+                    <span class="menu-text">Manajemen Aplkasi</span>
+                </a>
+                <ul class="treeview-menu"
+                    style="{{ request()->is('mbkm/manajemen-aplikasi*') ? 'display: block;' : 'display: none;' }}">
                     <li class="{{ request()->routeIs('about-mbkms.index') ? 'active-sub' : '' }}">
-                        <a href="{{ route('about-mbkms.index') }}">About MBKM</a>
+                        <a href="{{ route('about-mbkms.index') }}">Tentang MBKM</a>
+                    </li>
+                    <li class="{{ request()->routeIs('type-programs.index') ? 'active-sub' : '' }}">
+                        <a href="{{ route('type-programs.index') }}">Type Program</a>
                     </li>
                     <li class="{{ request()->routeIs('batch-mbkms.index') ? 'active-sub' : '' }}">
                         <a href="{{ route('batch-mbkms.index') }}">Batch MBKM</a>
-                    </li>
                 </ul>
             </li>
             <li class="{{ request()->routeIs('profile.edit') ? 'active current-page' : '' }}">
