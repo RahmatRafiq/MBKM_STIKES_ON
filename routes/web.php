@@ -1,9 +1,9 @@
 <?php
 
+use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\RegistrasiController;
 use App\Http\Controllers\UserController;
-use App\Http\Controllers\DashboardController;
 use Illuminate\Support\Facades\Route;
 
 Route::middleware('auth')->group(function () {
@@ -11,12 +11,14 @@ Route::middleware('auth')->group(function () {
 
     Route::get('/admin', [DashboardController::class, 'dashboardAdmin'])->name('dashboard.admin');
 
-    Route::resource('mbkm/about-mbkms', \App\Http\Controllers\AboutMbkmController::class);
-    Route::resource('mbkm/batch-mbkms', \App\Http\Controllers\BatchMbkmController::class);
-    Route::post('mbkm/batch-mbkms/json', [\App\Http\Controllers\BatchMbkmController::class, 'json'])->name('batch-mbkms.json');
+    Route::get('mbkm/manajemen-aplikasi//about-mbkm', [\App\Http\Controllers\AboutMbkmController::class, 'index'])->name('about-mbkms.index');
+    Route::post('mbkm/manajemen-aplikasi//about-mbkm', [\App\Http\Controllers\AboutMbkmController::class, 'update'])->name('about-mbkms.update');
 
-    Route::resource('mbkm/type-programs', \App\Http\Controllers\TypeProgramController::class);
-    Route::post('mbkm/type-programs/json', [\App\Http\Controllers\TypeProgramController::class, 'json'])->name('type-programs.json');
+    Route::resource('mbkm/manajemen-aplikasi/batch-mbkms', \App\Http\Controllers\BatchMbkmController::class);
+    Route::post('mbkm/manajemen-aplikasi/batch-mbkms/json', [\App\Http\Controllers\BatchMbkmController::class, 'json'])->name('batch-mbkms.json');
+
+    Route::resource('mbkm/manajemen-aplikasi/type-programs', \App\Http\Controllers\TypeProgramController::class);
+    Route::post('mbkm/manajemen-aplikasi/type-programs/json', [\App\Http\Controllers\TypeProgramController::class, 'json'])->name('type-programs.json');
 
     Route::get('mbkm/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('mbkm/profile', [ProfileController::class, 'update'])->name('profile.update');
