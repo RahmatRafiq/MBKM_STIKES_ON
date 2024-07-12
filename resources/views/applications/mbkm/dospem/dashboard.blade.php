@@ -6,40 +6,49 @@
     <!-- Row start -->
     <div class="row gx-3">
         <div class="col-xl-3 col-sm-6 col-12">
-            <div class="card mb-3">
+            <div class="card mb-3 card-custom background-gradient-1">
                 <div class="card-body">
+                    <div class="circle-shape shape-1"></div>
+                    <div class="circle-shape shape-2"></div>
+                    <div class="circle-shape shape-3"></div>
                     <div class="mb-2">
-                        <i class="bi bi-people fs-1 text-primary lh-1"></i>
+                        <i class="bi bi-people fs-1 text-white lh-1"></i>
                     </div>
                     <div class="d-flex align-items-center justify-content-between">
-                        <h5 class="m-0 text-secondary fw-normal">Peserta Bimbingan</h5>
-                        <h3 class="m-0 text-primary">{{ $jumlahPesertaBimbingan }}</h3>
+                        <h5 class="m-0 text-white fw-normal">Peserta Bimbingan</h5>
+                        <h3 class="m-0 text-white">{{ $jumlahPesertaBimbingan }}</h3>
                     </div>
                 </div>
             </div>
         </div>
         <div class="col-xl-3 col-sm-6 col-12">
-            <div class="card mb-3">
+            <div class="card mb-3 card-custom background-gradient-2">
                 <div class="card-body">
+                    <div class="circle-shape shape-1"></div>
+                    <div class="circle-shape shape-2"></div>
+                    <div class="circle-shape shape-3"></div>
                     <div class="mb-2">
-                        <i class="bi bi-file-earmark-text fs-1 text-primary lh-1"></i>
+                        <i class="bi bi-file-earmark-text fs-1 text-white lh-1"></i>
                     </div>
                     <div class="d-flex align-items-center justify-content-between">
-                        <h5 class="m-0 text-secondary fw-normal">Laporan Harian</h5>
-                        <h3 class="m-0 text-primary">{{ $statistikLaporan['total_harian'] }}</h3>
+                        <h5 class="m-0 text-white fw-normal">Laporan Harian</h5>
+                        <h3 class="m-0 text-white">{{ $statistikLaporan['total_harian'] }}</h3>
                     </div>
                 </div>
             </div>
         </div>
         <div class="col-xl-3 col-sm-6 col-12">
-            <div class="card mb-3">
+            <div class="card mb-3 card-custom background-gradient-3">
                 <div class="card-body">
+                    <div class="circle-shape shape-1"></div>
+                    <div class="circle-shape shape-2"></div>
+                    <div class="circle-shape shape-3"></div>
                     <div class="mb-2">
-                        <i class="bi bi-calendar-week fs-1 text-primary lh-1"></i>
+                        <i class="bi bi-calendar-week fs-1 text-white lh-1"></i>
                     </div>
                     <div class="d-flex align-items-center justify-content-between">
-                        <h5 class="m-0 text-secondary fw-normal">Laporan Mingguan</h5>
-                        <h3 class="m-0 text-primary">{{ $statistikLaporan['total_mingguan'] }}</h3>
+                        <h5 class="m-0 text-white fw-normal">Laporan Mingguan</h5>
+                        <h3 class="m-0 text-white">{{ $statistikLaporan['total_mingguan'] }}</h3>
                     </div>
                 </div>
             </div>
@@ -132,7 +141,6 @@
                         </table>
                     </div>
                 </div>
-
             </div>
         </div>
     </div>
@@ -140,6 +148,10 @@
 </div>
 <!-- App body ends -->
 @endsection
+
+@push('css')
+<link rel="stylesheet" href="{{ asset('assets/css/customcard.css') }}">
+@endpush
 
 @push('javascript')
 <script src="{{ asset('assets/js/apexcharts.min.js') }}"></script>
@@ -154,7 +166,7 @@
         var optionsHarian = {
             series: [validasiCount, pendingCount, revisiCount],
             labels: ['Validasi', 'Pending', 'Revisi'],
-            colors: ['#28a745', '#ffc107', '#dc3545'],
+            colors: ['#96e6a1', '#ffd200', '#FF5E62'],
             chart: {
                 type: 'donut',
                 height: 350,
@@ -164,6 +176,15 @@
                     donut: {
                         size: '70%'
                     }
+                }
+            },
+            fill: {
+                type: 'gradient',
+                gradient: {
+                    shade: 'dark',
+                    type: 'vertical',
+                    gradientToColors: ['#96e6a1', '#ffd200', '#FF5E62'],
+                    stops: [0, 100]
                 }
             },
             responsive: [{
@@ -191,7 +212,7 @@
         var optionsMingguan = {
             series: [validasiCountMingguan, pendingCountMingguan, revisiCountMingguan],
             labels: ['Validasi', 'Pending', 'Revisi'],
-            colors: ['#28a745', '#ffc107', '#dc3545'],
+            colors: ['#96e6a1', '#ffd200', '#FF5E62'],
             chart: {
                 type: 'donut',
                 height: 350,
@@ -201,6 +222,15 @@
                     donut: {
                         size: '70%'
                     }
+                }
+            },
+            fill: {
+                type: 'gradient',
+                gradient: {
+                    shade: 'dark',
+                    type: 'vertical',
+                    gradientToColors: ['#96e6a1', '#ffd200', '#FF5E62'],
+                    stops: [0, 100]
                 }
             },
             responsive: [{
