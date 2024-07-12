@@ -1,9 +1,9 @@
 <?php
 
+use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\RegistrasiController;
 use App\Http\Controllers\UserController;
-use App\Http\Controllers\DashboardController;
 use Illuminate\Support\Facades\Route;
 
 Route::middleware('auth')->group(function () {
@@ -11,7 +11,9 @@ Route::middleware('auth')->group(function () {
 
     Route::get('/admin', [DashboardController::class, 'dashboardAdmin'])->name('dashboard.admin');
 
-    Route::resource('mbkm/manajemen-aplikasi/about-mbkms', \App\Http\Controllers\AboutMbkmController::class);
+    Route::get('mbkm/manajemen-aplikasi//about-mbkm', [\App\Http\Controllers\AboutMbkmController::class, 'index'])->name('about-mbkms.index');
+    Route::post('mbkm/manajemen-aplikasi//about-mbkm', [\App\Http\Controllers\AboutMbkmController::class, 'update'])->name('about-mbkms.update');
+
     Route::resource('mbkm/manajemen-aplikasi/batch-mbkms', \App\Http\Controllers\BatchMbkmController::class);
     Route::post('mbkm/manajemen-aplikasi/batch-mbkms/json', [\App\Http\Controllers\BatchMbkmController::class, 'json'])->name('batch-mbkms.json');
 
