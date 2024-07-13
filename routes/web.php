@@ -35,7 +35,7 @@ Route::middleware('auth')->group(function () {
         Route::post('mbkm/admin/role-permissions/user/json', [UserController::class, 'json'])->name('user.json');
     });
 
-    Route::middleware(['role:peserta'])->group(function () {
+    Route::middleware(['role:peserta|super admin'])->group(function () {
 
         Route::get('/peserta/registrasi', [RegistrasiController::class, 'showPesertaRegistrasiForm'])->name('peserta.registrasiForm');
         Route::post('/peserta/registrasi', [RegistrasiController::class, 'store'])->name('peserta.registrasi');
@@ -55,7 +55,7 @@ Route::middleware('auth')->group(function () {
 
     });
 
-    Route::middleware(['role:mitra|dosen'])->group(function () {
+    Route::middleware(['role:mitra|dosen|super admin'])->group(function () {
 
         Route::get('/laporan', [\App\Http\Controllers\AktivitasMbkmController::class, 'index'])->name('laporan.index');
         Route::post('/laporan-harian/validate/{id}', [\App\Http\Controllers\AktivitasMbkmController::class, 'validateLaporanHarian'])->name('laporan.harian.validate');
@@ -63,7 +63,7 @@ Route::middleware('auth')->group(function () {
 
     });
 
-    Route::middleware(['role:staff'])->group(function () {
+    Route::middleware(['role:staff|super admin'])->group(function () {
 
         Route::resource('mbkm/staff/mitra', \App\Http\Controllers\MitraProfileController::class);
         Route::post('mbkm/staff/mitra/json', [\App\Http\Controllers\MitraProfileController::class, 'json'])->name('mitra.json');
@@ -94,12 +94,11 @@ Route::middleware('auth')->group(function () {
 
     });
 
-    Route::middleware(['role:dosen'])->group(function () {
+    Route::middleware(['role:dosen|super admin'])->group(function () {
 
         Route::post('/laporan-lengkap/validate/{id}', [\App\Http\Controllers\AktivitasMbkmController::class, 'validateLaporanLengkap'])->name('laporan.lengkap.validate');
 
     });
-
 });
 
 require __DIR__ . '/auth.php';
