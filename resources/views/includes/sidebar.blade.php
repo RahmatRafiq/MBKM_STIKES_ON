@@ -8,7 +8,7 @@
                     <span class="menu-text">Dashboard</span>
                 </a>
             </li>
-            {{-- Admin dashboard --}}
+            @can ('manajemen_pengguna')
             <li class="treeview {{ request()->is('mbkm/admin/role-permissions*') ? 'active current-page open' : '' }}">
                 <a href="#" class="treeview-toggle">
                     <i class="bi bi-person-gear"></i> <!-- Ikon baru untuk Manajemen Pengguna -->
@@ -27,6 +27,7 @@
                     </li>
                 </ul>
             </li>
+            @endcan
             @can('manajemen_aplikasi')
 
             <li class="treeview {{ request()->is('mbkm/manajemen-aplikasi*') ? 'active current-page open' : '' }}">
@@ -99,9 +100,13 @@
                 </a>
                 <ul class="treeview-menu"
                     style="{{ request()->is('laporan*') ? 'display: block;' : 'display: none;' }}">
+
+                    @can ('validasi_laporan')
                     <li class="{{ request()->routeIs('laporan.index') ? 'active-sub' : '' }}">
                         <a href="{{ route('laporan.index') }}">Semua Laporan</a>
                     </li>
+                    @endcan
+
                     @can('laporan_page')
                     <li class="{{ request()->routeIs('laporan.harian.create') ? 'active-sub' : '' }}">
                         <a href="{{ route('laporan.harian.create') }}">Laporan Harian</a>
@@ -112,8 +117,9 @@
                     <li class="{{ request()->routeIs('laporan.lengkap.create') ? 'active-sub' : '' }}">
                         <a href="{{ route('laporan.lengkap.create') }}">Laporan Lengkap</a>
                     </li>
+                    @endcan
+                    
                 </ul>
-                @endcan
 
             </li>
         </ul>
