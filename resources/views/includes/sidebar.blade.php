@@ -27,6 +27,8 @@
                     </li>
                 </ul>
             </li>
+            @can('manajemen_aplikasi')
+
             <li class="treeview {{ request()->is('mbkm/manajemen-aplikasi*') ? 'active current-page open' : '' }}">
                 <a href="#" class="treeview-toggle">
                     <i class="bi bi-tools"></i>
@@ -44,6 +46,7 @@
                         <a href="{{ route('batch-mbkms.index') }}">Batch MBKM</a>
                 </ul>
             </li>
+            @endcan
             <li class="{{ request()->routeIs('profile.edit') ? 'active current-page' : '' }}">
                 <a href="{{ route('profile.edit') }}">
                     <i class="bi bi-person"></i> <!-- Ikon baru untuk Profil -->
@@ -74,12 +77,15 @@
                     <span class="menu-text">Peserta (Staff)</span>
                 </a>
             </li>
+
+            @can('registrasi_program_mbkm')
             <li class="{{ request()->routeIs('peserta.registrasiForm') ? 'active current-page' : '' }}">
                 <a href="{{ route('peserta.registrasiForm') }}">
-                    <i class="bi bi-file-earmark-plus"></i> <!-- Ikon baru untuk Registrasi Peserta -->
+                    <i class="bi bi-file-earmark-plus"></i>
                     <span class="menu-text">Registrasi Peserta (Peserta)</span>
                 </a>
             </li>
+            @endcan
             <li class="{{ request()->routeIs('staff.registrasiIndex') ? 'active current-page' : '' }}">
                 <a href="{{ route('staff.registrasiIndex') }}">
                     <i class="bi bi-card-checklist"></i> <!-- Ikon baru untuk Daftar Registrasi Peserta -->
@@ -96,6 +102,7 @@
                     <li class="{{ request()->routeIs('laporan.index') ? 'active-sub' : '' }}">
                         <a href="{{ route('laporan.index') }}">Semua Laporan</a>
                     </li>
+                    @can('laporan_page')
                     <li class="{{ request()->routeIs('laporan.harian.create') ? 'active-sub' : '' }}">
                         <a href="{{ route('laporan.harian.create') }}">Laporan Harian</a>
                     </li>
@@ -106,6 +113,8 @@
                         <a href="{{ route('laporan.lengkap.create') }}">Laporan Lengkap</a>
                     </li>
                 </ul>
+                @endcan
+
             </li>
         </ul>
     </div>
