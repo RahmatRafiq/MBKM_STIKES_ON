@@ -87,12 +87,15 @@
                 </a>
             </li>
             @endcan
+            
+            @can('registrasi_program')
             <li class="{{ request()->routeIs('staff.registrasiIndex') ? 'active current-page' : '' }}">
                 <a href="{{ route('staff.registrasiIndex') }}">
                     <i class="bi bi-card-checklist"></i> <!-- Ikon baru untuk Daftar Registrasi Peserta -->
                     <span class="menu-text">Daftar Registrasi Peserta (Staff)</span>
                 </a>
             </li>
+            @endcan
             <li class="treeview {{ request()->is('laporan*') ? 'active current-page open' : '' }}">
                 <a href="#" class="treeview-toggle">
                     <i class="bi bi-journal-text"></i> <!-- Ikon baru untuk Laporan -->
@@ -101,7 +104,7 @@
                 <ul class="treeview-menu"
                     style="{{ request()->is('laporan*') ? 'display: block;' : 'display: none;' }}">
 
-                    @can ('validasi_laporan')
+                    @can ('view_laporan')
                     <li class="{{ request()->routeIs('laporan.index') ? 'active-sub' : '' }}">
                         <a href="{{ route('laporan.index') }}">Semua Laporan</a>
                     </li>
@@ -118,7 +121,7 @@
                         <a href="{{ route('laporan.lengkap.create') }}">Laporan Lengkap</a>
                     </li>
                     @endcan
-                    
+
                 </ul>
 
             </li>
