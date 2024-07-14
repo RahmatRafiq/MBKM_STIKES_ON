@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\DB;
 
 class LaporanMingguan extends Model
 {
@@ -57,6 +58,15 @@ class LaporanMingguan extends Model
             $query->where('peserta_id', $pesertaId);
         }
 
+        $query->orderBy(
+            DB::raw('CASE
+            WHEN laporan_mingguan.status = "pending" THEN 1
+            WHEN laporan_mingguan.status = "revisi" THEN 2
+            WHEN laporan_mingguan.status = "validasi" THEN 3
+            ELSE 0 END'),
+            'asc'
+        );
+        $query->orderBy('updated_at', 'desc');
         return $query->get();
     }
 }
