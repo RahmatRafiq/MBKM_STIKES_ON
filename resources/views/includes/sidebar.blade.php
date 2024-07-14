@@ -114,14 +114,13 @@
             </li>
             @endcan
 
+            @can('manajemen_laporan')
             <li class="treeview {{ request()->is('laporan*') ? 'active current-page open' : '' }}">
 
-                @can('manajemen_laporan')
                 <a href="#" class="treeview-toggle">
                     <i class="bi bi-journal-text"></i> <!-- Ikon baru untuk Laporan -->
                     <span class="menu-text">Laporan</span>
                 </a>
-                @endcan
 
                 <ul class="treeview-menu"
                     style="{{ request()->is('laporan*') ? 'display: block;' : 'display: none;' }}">
@@ -143,10 +142,9 @@
                         <a href="{{ route('laporan.lengkap.create') }}">Laporan Lengkap</a>
                     </li>
                     @endcan
-
                 </ul>
-
             </li>
+            @endcan
         </ul>
     </div>
 </nav>
