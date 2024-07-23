@@ -1,14 +1,13 @@
 @extends('layouts.app')
 
 @section('content')
-<div class="container-fluid">
-    <div class="row">
+{{-- <div class="container-fluid"> --}}
+    <div class="row gx-3">
         <!-- Daftar Lowongan -->
-        <div class="col-md-4 border-end">
+        <div class="col-xl-4 col-lg-12 border-end">
             <div class="list-group" id="lowonganList">
                 @foreach ($lowongans as $lowongan)
-                <a href="{{ route('peserta.registrasiForm', ['lowongan_id' => $lowongan->id]) }}" 
-                   class="list-group-item list-group-item-action d-flex align-items-center
+                <a href="{{ route('peserta.registrasiForm', ['lowongan_id' => $lowongan->id]) }}" class="list-group-item list-group-item-action d-flex align-items-center
                    @if(request('lowongan_id') == $lowongan->id) active @endif">
                     <img src="{{ $lowongan->mitra->getFirstMediaUrl('images') }}" alt="{{ $lowongan->name }}"
                         class="img-thumbnail me-3" style="width: 60px; height: 60px;">
@@ -20,22 +19,25 @@
                 @endforeach
             </div>
         </div>
-
         <!-- Detail Lowongan -->
-        <div class="col-md-8">
+        <div class="col-xl-8 col-lg-12">
             @if($selectedLowongan = $lowongans->where('id', request('lowongan_id'))->first())
             <div id="lowonganDetail" class="p-3">
                 <div class="card mb-3">
                     <div class="card-body">
                         <div class="d-flex">
-                            <img src="{{ $selectedLowongan->mitra->getFirstMediaUrl('images') }}" 
-                                 id="mitraImage" class="rounded-circle me-3 img-4x" alt="Mitra Image"
+                            <img src="{{ $selectedLowongan->mitra->getFirstMediaUrl('images') }}" id="mitraImage"
+                                class="rounded-circle me-3 img-4x" alt="Mitra Image"
                                 style="width: 60px; height: 60px;" />
                             <div class="flex-grow-1">
-                                <p id="lowonganCreate" class="float-end text-info">{{ $selectedLowongan->created_at->diffForHumans() }}</p>
-                                <h6 id="mitraName" class="fw-bold">{{ $selectedLowongan->mitra->name }}</h6>
-                                <p id="postTime" class="text-muted">{{ $selectedLowongan->created_at->diffForHumans() }}</p>
-                                <p id="lowonganDescription">{{ $selectedLowongan->description }}</p>
+                                <p id="lowonganCreate" class="float-end text-info mb-1">{{
+                                    $selectedLowongan->created_at->diffForHumans() }}</p>
+                                <h6 id="mitraName" class="fw-bold mb-2">{{ $selectedLowongan->mitra->name }}</h6>
+                                <h6 id="mitraName" class="fw-bold mb-2">{{ $selectedLowongan->name }}</h6>
+                                <p>
+                                    <i class="bi bi-file-text fs-5 me-2"></i> Deskripsi:
+                                    <span id="lowonganDescription">{{ $selectedLowongan->description }}</span>
+                                </p>
                             </div>
                         </div>
                     </div>
@@ -46,15 +48,16 @@
                 <div id="carouselExampleIndicators" class="carousel slide mb-3" data-bs-ride="carousel">
                     <div class="carousel-indicators">
                         @foreach ($selectedLowongan->mitra->getMedia('images') as $index => $image)
-                        <button type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="{{ $index }}"
-                            @if ($index == 0) class="active" aria-current="true" @endif
+                        <button type="button" data-bs-target="#carouselExampleIndicators"
+                            data-bs-slide-to="{{ $index }}" @if ($index==0) class="active" aria-current="true" @endif
                             aria-label="Slide {{ $index + 1 }}"></button>
                         @endforeach
                     </div>
                     <div class="carousel-inner">
                         @foreach ($selectedLowongan->mitra->getMedia('images') as $index => $image)
                         <div class="carousel-item @if ($index == 0) active @endif">
-                            <img src="{{ $image->getUrl() }}" class="d-block w-100 carousel-image" alt="{{ $selectedLowongan->mitra->name }}">
+                            <img src="{{ $image->getUrl() }}" class="d-block w-100 carousel-image"
+                                alt="{{ $selectedLowongan->mitra->name }}">
                         </div>
                         @endforeach
                     </div>
@@ -87,7 +90,8 @@
                         <h6 class="d-flex align-items-center mb-3">
                             <i class="bi bi-globe-americas fs-2 me-2"></i> Website:
                             <span id="mitraWebsite" class="text-primary ms-2">
-                                <a href="{{ $selectedLowongan->mitra->website }}" target="_blank">{{ $selectedLowongan->mitra->website }}</a>
+                                <a href="{{ $selectedLowongan->mitra->website }}" target="_blank">{{
+                                    $selectedLowongan->mitra->website }}</a>
                             </span>
                         </h6>
                         <p id="mitraDescription">{{ $selectedLowongan->mitra->description }}</p>
@@ -108,11 +112,11 @@
 <!-- Add Bootstrap CSS for Carousel -->
 <link href="https://stackpath.bootstrapcdn.com/bootstrap/5.1.3/css/bootstrap.min.css" rel="stylesheet">
 <style>
-.carousel-image {
-    width: 100%;
-    height: 300px;
-    object-fit: cover;
-}
+    .carousel-image {
+        width: 100%;
+        height: 300px;
+        object-fit: cover;
+    }
 </style>
 @endpush
 
