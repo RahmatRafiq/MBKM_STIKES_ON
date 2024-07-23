@@ -32,7 +32,7 @@
                                  id="mitraImage" class="rounded-circle me-3 img-4x" alt="Mitra Image"
                                 style="width: 60px; height: 60px;" />
                             <div class="flex-grow-1">
-                                <p id="lastUpdate" class="float-end text-info">{{ $selectedLowongan->updated_at->diffForHumans() }}</p>
+                                <p id="lowonganCreate" class="float-end text-info">{{ $selectedLowongan->created_at->diffForHumans() }}</p>
                                 <h6 id="mitraName" class="fw-bold">{{ $selectedLowongan->mitra->name }}</h6>
                                 <p id="postTime" class="text-muted">{{ $selectedLowongan->created_at->diffForHumans() }}</p>
                                 <p id="lowonganDescription">{{ $selectedLowongan->description }}</p>
@@ -40,6 +40,37 @@
                         </div>
                     </div>
                 </div>
+
+                <!-- Slider Gambar -->
+                @if ($selectedLowongan->mitra->getMedia('images')->isNotEmpty())
+                <div id="carouselExampleIndicators" class="carousel slide mb-3" data-bs-ride="carousel">
+                    <div class="carousel-indicators">
+                        @foreach ($selectedLowongan->mitra->getMedia('images') as $index => $image)
+                        <button type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="{{ $index }}"
+                            @if ($index == 0) class="active" aria-current="true" @endif
+                            aria-label="Slide {{ $index + 1 }}"></button>
+                        @endforeach
+                    </div>
+                    <div class="carousel-inner">
+                        @foreach ($selectedLowongan->mitra->getMedia('images') as $index => $image)
+                        <div class="carousel-item @if ($index == 0) active @endif">
+                            <img src="{{ $image->getUrl() }}" class="d-block w-100 carousel-image" alt="{{ $selectedLowongan->mitra->name }}">
+                        </div>
+                        @endforeach
+                    </div>
+                    <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleIndicators"
+                        data-bs-slide="prev">
+                        <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                        <span class="visually-hidden">Previous</span>
+                    </button>
+                    <button class="carousel-control-next" type="button" data-bs-target="#carouselExampleIndicators"
+                        data-bs-slide="next">
+                        <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                        <span class="visually-hidden">Next</span>
+                    </button>
+                </div>
+                @endif
+
                 <div class="card mb-3">
                     <div class="card-header">
                         <h5 class="card-title">About</h5>
@@ -59,6 +90,7 @@
                                 <a href="{{ $selectedLowongan->mitra->website }}" target="_blank">{{ $selectedLowongan->mitra->website }}</a>
                             </span>
                         </h6>
+                        <p id="mitraDescription">{{ $selectedLowongan->mitra->description }}</p>
                     </div>
                 </div>
             </div>
@@ -71,3 +103,20 @@
     </div>
 </div>
 @endsection
+
+@push('head')
+<!-- Add Bootstrap CSS for Carousel -->
+<link href="https://stackpath.bootstrapcdn.com/bootstrap/5.1.3/css/bootstrap.min.css" rel="stylesheet">
+<style>
+.carousel-image {
+    width: 100%;
+    height: 300px;
+    object-fit: cover;
+}
+</style>
+@endpush
+
+@push('javascript')
+<!-- Add Bootstrap JS for Carousel -->
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/5.1.3/js/bootstrap.bundle.min.js"></script>
+@endpush
