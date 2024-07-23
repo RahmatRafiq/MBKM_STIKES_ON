@@ -74,7 +74,7 @@ class MitraProfileController extends Controller
             'mitra_phone' => 'required|string|max:15',
             'mitra_email' => 'required|email|max:255',
             'mitra_website' => 'nullable|url|max:255',
-            'mitra_type' => 'required|exists:type_programs,id', // Validasi harus ada di tabel type_programs
+            'mitra_type' => 'required|exists:type_programs,id',
             'mitra_description' => 'required|string',
             'images' => 'array|max:3',
             'user_name' => 'required|string|max:255',
@@ -99,9 +99,16 @@ class MitraProfileController extends Controller
             'phone' => $request->mitra_phone,
             'email' => $request->mitra_email,
             'website' => $request->mitra_website,
-            'type' => $typeProgram->name, // Simpan nama type
+            'type' => $typeProgram->name,
             'description' => $request->mitra_description,
         ]);
+
+        // Upload and save images
+        $media = MediaLibrary::put(
+            $mitraProfile,
+            'images',
+            $request
+        );
 
         return redirect()->route('mitra.index')->with('success', 'Mitra created successfully.');
     }
@@ -141,7 +148,7 @@ class MitraProfileController extends Controller
             'phone' => $request->phone,
             'email' => $request->email,
             'website' => $request->website,
-            'type' => $typeProgram->name, // Simpan nama type
+            'type' => $typeProgram->name,
             'description' => $request->description,
         ]);
 
