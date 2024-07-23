@@ -19,6 +19,8 @@ class RegistrasiController extends Controller
         return view('applications.mbkm.staff.registrasi-program.peserta.registrasi', compact('lowongans'));
     }
 
+    
+
     public function index()
     {
         $registrations = Registrasi::with('dospem')->get();
