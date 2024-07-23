@@ -57,6 +57,8 @@ Route::middleware('auth')->group(function () {
     Route::post('mbkm/staff/peserta/json', [\App\Http\Controllers\PesertaController::class, 'json'])->name('peserta.json');
 
     Route::get('/peserta/registrasi', [RegistrasiController::class, 'showPesertaRegistrasiForm'])->name('peserta.registrasiForm');
+    Route::get('/lowongan/filter', [RegistrasiController::class, 'filter'])->name('lowongan.filter');
+
     Route::post('/peserta/registrasi', [RegistrasiController::class, 'store'])->name('peserta.registrasi');
     Route::post('/peserta/registrasi/{id}/accept', [RegistrasiController::class, 'acceptOffer'])->name('peserta.acceptOffer');
     Route::post('/peserta/registrasi/{id}/reject', [RegistrasiController::class, 'rejectOffer'])->name('peserta.rejectOffer');
