@@ -20,7 +20,7 @@
             @foreach ($lowongans as $lowongan)
             <a href="?lowongan_id={{ $lowongan->id }}&search={{ request('search') }}&sortByType={{ request('sortByType') }}"
                 class="list-group-item list-group-item-action d-flex align-items-center
-               @if(request('lowongan_id') == $lowongan->id) active @endif">
+               @if(request('lowongan_id') == $lowongan->id) active @endif" onclick="showDetail({{ $lowongan->id }})">
                 <img src="{{ $lowongan->mitra->getFirstMediaUrl('images') }}" alt="{{ $lowongan->name }}"
                     class="img-thumbnail me-3" style="width: 60px; height: 60px;">
                 <div>
@@ -33,7 +33,7 @@
     </div>
     <!-- Detail Lowongan -->
     <div class="col-md-8 col-sm-12" id="detailContainer">
-        <button id="backButton" class="btn btn-primary mb-3" onclick="showList()">Kembali</button>
+        <button id="backButton" class="btn btn-primary mb-3 d-none" onclick="showList()">Kembali</button>
         @if($selectedLowongan = $lowongans->where('id', request('lowongan_id'))->first())
         <div id="lowonganDetail" class="col-md-12">
             <div class="card mb-3">
@@ -128,17 +128,8 @@
 
     @media (max-width: 1024px) {
         #listContainer {
-            display: block;
             overflow-y: auto;
             max-height: 90vh;
-        }
-
-        #detailContainer {
-            display: block;
-        }
-
-        #backButton {
-            display: none;
         }
 
         #searchBar,
@@ -165,6 +156,17 @@
             width: 100%;
         }
     }
+
+    @media (max-width: 425px) {
+        #searchBar,
+        #typeFilter {
+            display: none;
+        }
+    }
+
+    .d-none {
+        display: none !important;
+    }
 </style>
 @endpush
 
@@ -175,28 +177,28 @@
     function showDetail(id) {
         const width = window.innerWidth;
         if (width < 768) {
-            document.getElementById('listContainer').style.display = 'none';
-            document.getElementById('detailContainer').style.display = 'block';
-            document.getElementById('backButton').style.display = 'block';
+            document.getElementById('listContainer').classList.add('d-none');
+            document.getElementById('detailContainer').classList.remove('d-none');
+            document.getElementById('backButton').classList.remove('d-none');
         }
     }
 
     function showList() {
-        document.getElementById('listContainer').style.display = 'block';
-        document.getElementById('detailContainer').style.display = 'block';
-        document.getElementById('backButton').style.display = 'none';
+        document.getElementById('listContainer').classList.remove('d-none');
+        document.getElementById('detailContainer').classList.add('d-none');
+        document.getElementById('backButton').classList.add('d-none');
     }
 
     window.addEventListener('resize', function () {
         const width = window.innerWidth;
         if (width >= 768) {
-            document.getElementById('listContainer').style.display = 'block';
-            document.getElementById('detailContainer').style.display = 'block';
-            document.getElementById('backButton').style.display = 'none';
+            document.getElementById('listContainer').classList.remove('d-none');
+            document.getElementById('detailContainer').classList.remove('d-none');
+            document.getElementById('backButton').classList.add('d-none');
         } else {
-            document.getElementById('listContainer').style.display = 'none';
-            document.getElementById('detailContainer').style.display = 'block';
-            document.getElementById('backButton').style.display = 'block';
+            document.getElementById('listContainer').classList.add('d-none');
+            document.getElementById('detailContainer').classList.remove('d-none');
+            document.getElementById('backButton').classList.remove('d-none');
         }
     });
 
@@ -217,7 +219,7 @@
                     data.forEach(function (lowongan) {
                         let activeClass = '{{ request('lowongan_id') }}' == lowongan.id ? 'active' : '';
                         $('#lowonganList').append(
-                            `<a href="?lowongan_id=${lowongan.id}&search=${search}&sortByType=${type}" class="list-group-item list-group-item-action d-flex align-items-center ${activeClass}">
+                            `<a href="?lowongan_id=${lowongan.id}&search=${search}&sortByType=${type}" class="list-group-item list-group-item-action d-flex align-items-center ${activeClass}" onclick="showDetail(${lowongan.id})">
                                 <img src="${lowongan.mitra.get_first_media_url}" alt="${lowongan.name}" class="img-thumbnail me-3" style="width: 60px; height: 60px;">
                                 <div>
                                     <h5 class="mb-1">${lowongan.name}</h5>
