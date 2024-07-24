@@ -2,12 +2,24 @@
 
 @section('content')
 <div class="row gx-3" id="appContainer">
+    <!-- Search and Filter -->
+    <div class="col-12 mb-3">
+        <div class="d-flex justify-content-between">
+            <input type="text" id="searchBar" class="form-control w-50" placeholder="Cari Lowongan...">
+            <select id="typeFilter" class="form-control w-25">
+                <option value="">Semua Tipe</option>
+                @foreach ($types as $type)
+                <option value="{{ $type }}">{{ $type }}</option>
+                @endforeach
+            </select>
+        </div>
+    </div>
     <!-- Daftar Lowongan -->
     <div class="col-xl-4 col-lg-12 border-end" id="listContainer">
         <div class="list-group" id="lowonganList">
             @foreach ($lowongans as $lowongan)
-            <a href="{{ route('peserta.registrasiForm', ['lowongan_id' => $lowongan->id]) }}" class="list-group-item list-group-item-action d-flex align-items-center
-               @if(request('lowongan_id') == $lowongan->id) active @endif" onclick="showDetail({{ $lowongan->id }})">
+            <a href="?lowongan_id={{ $lowongan->id }}&search={{ request('search') }}&sortByType={{ request('sortByType') }}" class="list-group-item list-group-item-action d-flex align-items-center
+               @if(request('lowongan_id') == $lowongan->id) active @endif">
                 <img src="{{ $lowongan->mitra->getFirstMediaUrl('images') }}" alt="{{ $lowongan->name }}"
                     class="img-thumbnail me-3" style="width: 60px; height: 60px;">
                 <div>
@@ -29,7 +41,8 @@
                         <img src="{{ $selectedLowongan->mitra->getFirstMediaUrl('images') }}" id="mitraImage"
                             class="rounded-circle me-3 img-4x" alt="Mitra Image" style="width: 60px; height: 60px;" />
                         <div class="flex-grow-1">
-                            <p id="lowonganCreate" class="float-end text-info mb-1">{{ $selectedLowongan->created_at->diffForHumans() }}</p>
+                            <p id="lowonganCreate" class="float-end text-info mb-1">{{
+                                $selectedLowongan->created_at->diffForHumans() }}</p>
                             <h6 id="mitraName" class="fw-bold mb-2">{{ $selectedLowongan->mitra->name }}</h6>
                             <h6 id="mitraName" class="fw-bold mb-2">{{ $selectedLowongan->name }}</h6>
                             <p>
@@ -46,7 +59,8 @@
                 <div class="carousel-indicators">
                     @foreach ($selectedLowongan->mitra->getMedia('images') as $index => $image)
                     <button type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="{{ $index }}"
-                        @if ($index==0) class="active" aria-current="true" @endif aria-label="Slide {{ $index + 1 }}"></button>
+                        @if ($index==0) class="active" aria-current="true" @endif
+                        aria-label="Slide {{ $index + 1 }}"></button>
                     @endforeach
                 </div>
                 <div class="carousel-inner">
@@ -85,7 +99,8 @@
                     <h6 class="d-flex align-items-center mb-3">
                         <i class="bi bi-globe-americas fs-2 me-2"></i> Website:
                         <span id="mitraWebsite" class="text-primary ms-2">
-                            <a href="{{ $selectedLowongan->mitra->website }}" target="_blank">{{ $selectedLowongan->mitra->website }}</a>
+                            <a href="{{ $selectedLowongan->mitra->website }}" target="_blank">{{
+                                $selectedLowongan->mitra->website }}</a>
                         </span>
                     </h6>
                     <p id="mitraDescription">{{ $selectedLowongan->mitra->description }}</p>
@@ -151,6 +166,7 @@
 @endpush
 
 @push('javascript')
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/5.1.3/js/bootstrap.bundle.min.js"></script>
 <script>
     function showDetail(id) {
@@ -179,6 +195,41 @@
             document.getElementById('detailContainer').style.display = 'block';
             document.getElementById('backButton').style.display = 'block';
         }
+    });
+
+    $(document).ready(function () {
+        $('#searchBar, #typeFilter').on('input change', function () {
+            let search = $('#searchBar').val();
+            let type = $('#typeFilter').val();
+
+            $.ajax({
+                url: "{{ route('peserta.filter') }}",
+                method: 'GET',
+                data: {
+                    search: search,
+                    sortByType: type
+                },
+                success: function (data) {
+                    $('#lowonganList').empty();
+                    data.forEach(function (lowongan) {
+                        let activeClass = '{{ request('lowongan_id') }}' == lowongan.id ? 'active' : '';
+                        $('#lowonganList').append(`
+                            <a href="?lowongan_id=${lowongan.id}&search=${search}&sortByType=${type}" class="list-group-item list-group-item-action d-flex align-items-center ${activeClass}">
+                                <img src="${lowongan.mitra.get_first_media_url}" alt="${lowongan.name}" class="img-thumbnail me-3" style="width: 60px; height: 60px;">
+                                <div>
+                                    <h5 class="mb-1">${lowongan.name}</h5>
+                                    <small>${lowongan.mitra.name}</small>
+                                </div>
+                            </a>
+                        `);
+                    });
+                }
+            });
+        });
+
+        // Set initial values of search bar and type filter based on URL parameters
+        $('#searchBar').val(new URLSearchParams(window.location.search).get('search') || '');
+        $('#typeFilter').val(new URLSearchParams(window.location.search).get('sortByType') || '');
     });
 </script>
 @endpush
