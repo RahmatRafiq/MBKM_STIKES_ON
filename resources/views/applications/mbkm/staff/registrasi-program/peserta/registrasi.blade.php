@@ -3,10 +3,10 @@
 @section('content')
 <div class="row gx-3" id="appContainer">
     <!-- Search and Filter -->
-    <div class="col-12 mb-3">
+    <div class="col-12 mb-3" id="searchContainer">
         <div class="d-flex justify-content-between">
-            <input type="text" id="searchBar" class="form-control w-50" placeholder="Cari Lowongan...">
-            <select id="typeFilter" class="form-control w-25">
+            <input type="text" id="searchBar" class="form-control" placeholder="Cari Lowongan...">
+            <select id="typeFilter" class="form-control">
                 <option value="">Semua Tipe</option>
                 @foreach ($types as $type)
                 <option value="{{ $type }}">{{ $type }}</option>
@@ -15,10 +15,11 @@
         </div>
     </div>
     <!-- Daftar Lowongan -->
-    <div class="col-xl-4 col-lg-12 border-end" id="listContainer">
+    <div class="col-md-4 col-sm-12 border-end" id="listContainer">
         <div class="list-group" id="lowonganList">
             @foreach ($lowongans as $lowongan)
-            <a href="?lowongan_id={{ $lowongan->id }}&search={{ request('search') }}&sortByType={{ request('sortByType') }}" class="list-group-item list-group-item-action d-flex align-items-center
+            <a href="?lowongan_id={{ $lowongan->id }}&search={{ request('search') }}&sortByType={{ request('sortByType') }}"
+                class="list-group-item list-group-item-action d-flex align-items-center
                @if(request('lowongan_id') == $lowongan->id) active @endif">
                 <img src="{{ $lowongan->mitra->getFirstMediaUrl('images') }}" alt="{{ $lowongan->name }}"
                     class="img-thumbnail me-3" style="width: 60px; height: 60px;">
@@ -31,10 +32,10 @@
         </div>
     </div>
     <!-- Detail Lowongan -->
-    <div class="col-xl-8 col-lg-12" id="detailContainer">
+    <div class="col-md-8 col-sm-12" id="detailContainer">
         <button id="backButton" class="btn btn-primary mb-3" onclick="showList()">Kembali</button>
         @if($selectedLowongan = $lowongans->where('id', request('lowongan_id'))->first())
-        <div id="lowonganDetail" class="p-3">
+        <div id="lowonganDetail" class="col-md-12">
             <div class="card mb-3">
                 <div class="card-body">
                     <div class="d-flex">
@@ -125,15 +126,7 @@
         object-fit: cover;
     }
 
-    #detailContainer {
-        display: none;
-    }
-
-    #backButton {
-        display: none;
-    }
-
-    @media (min-width: 1440px) {
+    @media (max-width: 1024px) {
         #listContainer {
             display: block;
             overflow-y: auto;
@@ -147,9 +140,14 @@
         #backButton {
             display: none;
         }
+
+        #searchBar,
+        #typeFilter {
+            width: 50%;
+        }
     }
 
-    @media (max-width: 1440px) {
+    @media (max-width: 768px) {
         #listContainer {
             display: none;
         }
@@ -161,6 +159,11 @@
         #backButton {
             display: block;
         }
+
+        #searchBar,
+        #typeFilter {
+            width: 100%;
+        }
     }
 </style>
 @endpush
@@ -171,7 +174,7 @@
 <script>
     function showDetail(id) {
         const width = window.innerWidth;
-        if (width < 1440) {
+        if (width < 768) {
             document.getElementById('listContainer').style.display = 'none';
             document.getElementById('detailContainer').style.display = 'block';
             document.getElementById('backButton').style.display = 'block';
@@ -180,13 +183,13 @@
 
     function showList() {
         document.getElementById('listContainer').style.display = 'block';
-        document.getElementById('detailContainer').style.display = 'none';
+        document.getElementById('detailContainer').style.display = 'block';
         document.getElementById('backButton').style.display = 'none';
     }
 
     window.addEventListener('resize', function () {
         const width = window.innerWidth;
-        if (width >= 1440) {
+        if (width >= 768) {
             document.getElementById('listContainer').style.display = 'block';
             document.getElementById('detailContainer').style.display = 'block';
             document.getElementById('backButton').style.display = 'none';
@@ -213,15 +216,15 @@
                     $('#lowonganList').empty();
                     data.forEach(function (lowongan) {
                         let activeClass = '{{ request('lowongan_id') }}' == lowongan.id ? 'active' : '';
-                        $('#lowonganList').append(`
-                            <a href="?lowongan_id=${lowongan.id}&search=${search}&sortByType=${type}" class="list-group-item list-group-item-action d-flex align-items-center ${activeClass}">
+                        $('#lowonganList').append(
+                            `<a href="?lowongan_id=${lowongan.id}&search=${search}&sortByType=${type}" class="list-group-item list-group-item-action d-flex align-items-center ${activeClass}">
                                 <img src="${lowongan.mitra.get_first_media_url}" alt="${lowongan.name}" class="img-thumbnail me-3" style="width: 60px; height: 60px;">
                                 <div>
                                     <h5 class="mb-1">${lowongan.name}</h5>
                                     <small>${lowongan.mitra.name}</small>
                                 </div>
-                            </a>
-                        `);
+                            </a>`
+                        );
                     });
                 }
             });
