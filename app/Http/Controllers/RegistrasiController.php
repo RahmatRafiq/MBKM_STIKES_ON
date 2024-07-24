@@ -14,10 +14,25 @@ use Illuminate\Support\Facades\Auth;
 
 class RegistrasiController extends Controller
 {
-    public function showPesertaRegistrasiForm()
+    public function showPesertaRegistrasiForm(Request $request)
     {
-        $lowongans = Lowongan::all();
-        $types = MitraProfile::distinct()->pluck('type'); // Ambil tipe-tipe mitra yang unik
+        $search = $request->query('search');
+        $type = $request->query('sortByType');
+
+        $query = Lowongan::query();
+
+        if ($search) {
+            $query->where('name', 'like', "%{$search}%");
+        }
+
+        if ($type) {
+            $query->whereHas('mitra', function ($q) use ($type) {
+                $q->where('type', $type);
+            });
+        }
+
+        $lowongans = $query->with('mitra')->get();
+        $types = MitraProfile::distinct()->pluck('type');
 
         return view('applications.mbkm.staff.registrasi-program.peserta.registrasi', compact('lowongans', 'types'));
     }
