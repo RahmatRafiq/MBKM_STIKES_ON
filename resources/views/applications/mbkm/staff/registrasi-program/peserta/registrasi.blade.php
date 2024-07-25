@@ -112,6 +112,7 @@
                 $('#selectPrompt').addClass('d-none');
                 loadImages();
                 if (width < 768) {
+                    $('#searchContainer').hide();
                     $('#listContainer').hide();
                     $('#detailContainer').show();
                     $('#backButton').removeClass('d-none');
@@ -121,6 +122,7 @@
     }
 
     function showList() {
+        $('#searchContainer').show();
         $('#listContainer').show();
         $('#detailContainer').hide();
         $('#backButton').addClass('d-none');
