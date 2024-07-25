@@ -35,7 +35,6 @@
         </div>
     </div>
     
-    
     <!-- Detail Lowongan -->
     <div class="col-md-8 col-sm-12" id="detailContainer">
         <div id="lowonganDetail" class="col-md-12">
@@ -148,6 +147,14 @@
         }
     }
 
+    function loadDetailFromURL() {
+        const urlParams = new URLSearchParams(window.location.search);
+        const lowonganId = urlParams.get('lowongan_id');
+        if (lowonganId) {
+            showDetail(lowonganId);
+        }
+    }
+
     $(document).ready(function () {
         handleResize();
         window.addEventListener('resize', handleResize);
@@ -204,6 +211,9 @@
         // Set initial values of search bar and type filter based on URL parameters
         $('#searchBar').val(new URLSearchParams(window.location.search).get('search') || '');
         $('#typeFilter button[data-type="' + new URLSearchParams(window.location.search).get('sortByType') + '"]').addClass('active');
+
+        // Load detail if lowongan_id is present in URL
+        loadDetailFromURL();
     });
 </script>
 @endpush

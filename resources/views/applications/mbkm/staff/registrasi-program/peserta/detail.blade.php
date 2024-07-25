@@ -78,13 +78,14 @@
     </div>
     <script>
         $('#shareButton').on('click', function () {
-            let lowonganId = '{{ request('lowongan_id') }}';
+            let lowonganId = '{{ $selectedLowongan->id }}';
             let currentUrl = `${window.location.origin}/peserta/registrasi?lowongan_id=${lowonganId}`;
 
             // Check if the Web Share API is supported
             if (navigator.share) {
                 navigator.share({
                     title: 'Bagikan Lowongan',
+                    text: `Ayo lihat lowongan ini: {{ $selectedLowongan->name }}`,
                     url: currentUrl
                 }).then(() => {
                     console.log('Berhasil dibagikan');
