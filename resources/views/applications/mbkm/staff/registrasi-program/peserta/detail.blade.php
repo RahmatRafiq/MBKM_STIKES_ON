@@ -9,9 +9,23 @@
                     <h6 id="mitraName" class="fw-bold mb-2">{{ $selectedLowongan->mitra->name }}</h6>
                     <h6 id="mitraName" class="fw-bold mb-2">{{ $selectedLowongan->name }}</h6>
                     <p><i class="bi bi-file-text fs-5 me-2"></i> Deskripsi: <span id="lowonganDescription">{{ $selectedLowongan->description }}</span></p>
+                    <div class="d-flex justify-content-between align-items-center">
+                        <form action="{{ route('peserta.registrasi') }}" method="POST" class="me-2">
+                            @csrf
+                            <input type="hidden" name="peserta_id"
+                                value="{{ auth()->user()->peserta->id }}">
+                            <input type="hidden" name="lowongan_id" value="{{ $selectedLowongan->id }}">
+                            <input type="hidden" name="nama_peserta" value="{{ auth()->user()->nama }}">
+                            <input type="hidden" name="nama_lowongan" value="{{ $selectedLowongan->name }}">
+                            <button type="submit" class="btn btn-primary">Daftar</button>
+                        </form>
+                        <!-- Share Button -->
+                        <button id="shareButton" class="btn btn-outline-primary">Share</button>
+                    </div>
                 </div>
             </div>
         </div>
+
     </div>
     <!-- Slider Gambar -->
     @if ($selectedLowongan->mitra->getMedia('images')->isNotEmpty())
@@ -62,4 +76,25 @@
             <p id="mitraDescription">{{ $selectedLowongan->mitra->description }}</p>
         </div>
     </div>
+    <script>
+        $('#shareButton').on('click', function () {
+            let lowonganId = '{{ request('lowongan_id') }}';
+            let currentUrl = `${window.location.origin}/peserta/registrasi?lowongan_id=${lowonganId}`;
+
+            // Check if the Web Share API is supported
+            if (navigator.share) {
+                navigator.share({
+                    title: 'Bagikan Lowongan',
+                    url: currentUrl
+                }).then(() => {
+                    console.log('Berhasil dibagikan');
+                }).catch((error) => {
+                    console.error('Gagal membagikan', error);
+                });
+            } else {
+                // Fallback for browsers that do not support the Web Share API
+                prompt('Salin dan bagikan link ini:', currentUrl);
+            }
+        });
+    </script>
 @endif
