@@ -14,11 +14,15 @@
             </select>
         </div>
     </div>
+    <!-- Tombol Kembali (di luar detail lowongan) -->
+    <div class="col-12 mb-3">
+        <button id="backButton" class="btn btn-primary d-none" onclick="showList()">Kembali</button>
+    </div>
     <!-- Daftar Lowongan -->
     <div class="col-md-4 col-sm-12 border-end" id="listContainer">
         <div class="list-group" id="lowonganList">
             @foreach ($lowongans as $lowongan)
-            <a href="?lowongan_id={{ $lowongan->id }}&search={{ request('search') }}&sortByType={{ request('sortByType') }}"
+            <a href="{{ route('peserta.registrasiForm', ['lowongan_id' => $lowongan->id, 'search' => request('search'), 'sortByType' => request('sortByType')]) }}"
                 class="list-group-item list-group-item-action d-flex align-items-center
                @if(request('lowongan_id') == $lowongan->id) active @endif" onclick="showDetail({{ $lowongan->id }})">
                 <img src="{{ $lowongan->mitra->getFirstMediaUrl('images') }}" alt="{{ $lowongan->name }}"
@@ -33,7 +37,6 @@
     </div>
     <!-- Detail Lowongan -->
     <div class="col-md-8 col-sm-12" id="detailContainer">
-        <button id="backButton" class="btn btn-primary mb-3 d-none" onclick="showList()">Kembali</button>
         @if($selectedLowongan = $lowongans->where('id', request('lowongan_id'))->first())
         <div id="lowonganDetail" class="col-md-12">
             <div class="card mb-3">
@@ -46,10 +49,8 @@
                                 $selectedLowongan->created_at->diffForHumans() }}</p>
                             <h6 id="mitraName" class="fw-bold mb-2">{{ $selectedLowongan->mitra->name }}</h6>
                             <h6 id="mitraName" class="fw-bold mb-2">{{ $selectedLowongan->name }}</h6>
-                            <p>
-                                <i class="bi bi-file-text fs-5 me-2"></i> Deskripsi:
-                                <span id="lowonganDescription">{{ $selectedLowongan->description }}</span>
-                            </p>
+                            <p><i class="bi bi-file-text fs-5 me-2"></i> Deskripsi: <span id="lowonganDescription">{{
+                                    $selectedLowongan->description }}</span></p>
                         </div>
                     </div>
                 </div>
@@ -99,10 +100,9 @@
                     </h6>
                     <h6 class="d-flex align-items-center mb-3">
                         <i class="bi bi-globe-americas fs-2 me-2"></i> Website:
-                        <span id="mitraWebsite" class="text-primary ms-2">
-                            <a href="{{ $selectedLowongan->mitra->website }}" target="_blank">{{
-                                $selectedLowongan->mitra->website }}</a>
-                        </span>
+                        <span id="mitraWebsite" class="text-primary ms-2"><a
+                                href="{{ $selectedLowongan->mitra->website }}" target="_blank">{{
+                                $selectedLowongan->mitra->website }}</a></span>
                     </h6>
                     <p id="mitraDescription">{{ $selectedLowongan->mitra->description }}</p>
                 </div>
@@ -118,26 +118,7 @@
 @endsection
 
 @push('head')
-<link href="https://stackpath.bootstrapcdn.com/bootstrap/5.1.3/css/bootstrap.min.css" rel="stylesheet">
 <style>
-    .carousel-image {
-        width: 100%;
-        height: 300px;
-        object-fit: cover;
-    }
-
-    @media (max-width: 1024px) {
-        #listContainer {
-            overflow-y: auto;
-            max-height: 90vh;
-        }
-
-        #searchBar,
-        #typeFilter {
-            width: 50%;
-        }
-    }
-
     @media (max-width: 768px) {
         #listContainer {
             display: none;
@@ -150,59 +131,53 @@
         #backButton {
             display: block;
         }
-
-        #searchBar,
-        #typeFilter {
-            width: 100%;
-        }
-    }
-
-    @media (max-width: 425px) {
-        #searchBar,
-        #typeFilter {
-            display: none;
-        }
-    }
-
-    .d-none {
-        display: none !important;
     }
 </style>
 @endpush
 
 @push('javascript')
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
-<script src="https://stackpath.bootstrapcdn.com/bootstrap/5.1.3/js/bootstrap.bundle.min.js"></script>
 <script>
     function showDetail(id) {
         const width = window.innerWidth;
         if (width < 768) {
-            document.getElementById('listContainer').classList.add('d-none');
-            document.getElementById('detailContainer').classList.remove('d-none');
+            document.getElementById('listContainer').style.display = 'none';
+            document.getElementById('detailContainer').style.display = 'block';
             document.getElementById('backButton').classList.remove('d-none');
         }
     }
 
     function showList() {
-        document.getElementById('listContainer').classList.remove('d-none');
-        document.getElementById('detailContainer').classList.add('d-none');
+        document.getElementById('listContainer').style.display = 'block';
+        document.getElementById('detailContainer').style.display = 'none';
         document.getElementById('backButton').classList.add('d-none');
     }
 
-    window.addEventListener('resize', function () {
+    function handleResize() {
         const width = window.innerWidth;
+        const hasLowonganId = '{{ request('lowongan_id') }}' !== '';
+
         if (width >= 768) {
-            document.getElementById('listContainer').classList.remove('d-none');
-            document.getElementById('detailContainer').classList.remove('d-none');
+            document.getElementById('listContainer').style.display = 'block';
+            document.getElementById('detailContainer').style.display = 'block';
             document.getElementById('backButton').classList.add('d-none');
         } else {
-            document.getElementById('listContainer').classList.add('d-none');
-            document.getElementById('detailContainer').classList.remove('d-none');
-            document.getElementById('backButton').classList.remove('d-none');
+            if (hasLowonganId) {
+                document.getElementById('listContainer').style.display = 'none';
+                document.getElementById('detailContainer').style.display = 'block';
+                document.getElementById('backButton').classList.remove('d-none');
+            } else {
+                document.getElementById('listContainer').style.display = 'block';
+                document.getElementById('detailContainer').style.display = 'none';
+                document.getElementById('backButton').classList.add('d-none');
+            }
         }
-    });
+    }
 
-    $(document).ready(function () {
+    window.addEventListener('resize', handleResize);
+    document.addEventListener('DOMContentLoaded', function () {
+        handleResize();
+
         $('#searchBar, #typeFilter').on('input change', function () {
             let search = $('#searchBar').val();
             let type = $('#typeFilter').val();
@@ -219,7 +194,7 @@
                     data.forEach(function (lowongan) {
                         let activeClass = '{{ request('lowongan_id') }}' == lowongan.id ? 'active' : '';
                         $('#lowonganList').append(
-                            `<a href="?lowongan_id=${lowongan.id}&search=${search}&sortByType=${type}" class="list-group-item list-group-item-action d-flex align-items-center ${activeClass}" onclick="showDetail(${lowongan.id})">
+                            `<a href="{{ route('peserta.registrasiForm') }}?lowongan_id=${lowongan.id}&search=${search}&sortByType=${type}" class="list-group-item list-group-item-action d-flex align-items-center ${activeClass}" onclick="showDetail(${lowongan.id})">
                                 <img src="${lowongan.mitra.get_first_media_url}" alt="${lowongan.name}" class="img-thumbnail me-3" style="width: 60px; height: 60px;">
                                 <div>
                                     <h5 class="mb-1">${lowongan.name}</h5>
