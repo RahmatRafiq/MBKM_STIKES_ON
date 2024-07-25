@@ -37,6 +37,7 @@ Route::middleware('auth')->group(function () {
 
     Route::middleware(['role:peserta|super admin'])->group(function () {
 
+        Route::get('/registrasi/filter', [RegistrasiController::class, 'filter'])->name('peserta.filter');
         Route::get('/peserta/registrasi', [RegistrasiController::class, 'showPesertaRegistrasiForm'])->name('peserta.registrasiForm');
         Route::post('/peserta/registrasi', [RegistrasiController::class, 'store'])->name('peserta.registrasi');
         Route::post('/peserta/registrasi/{id}/accept', [RegistrasiController::class, 'acceptOffer'])->name('peserta.acceptOffer');
@@ -57,14 +58,8 @@ Route::middleware('auth')->group(function () {
     });
 
     Route::middleware(['role:mitra|dosen|super admin'])->group(function () {
-    // Route::get('/peserta/registrasi', [RegistrasiController::class, 'showPesertaRegistrasiForm'])->name('peserta.registrasiForm');
-    Route::get('/lowongan/filter', [RegistrasiController::class, 'filter'])->name('lowongan.filter');
+    // Route::get('/lowongan/filter', [RegistrasiController::class, 'filter'])->name('lowongan.filter');
 
-    // Route::post('/peserta/registrasi', [RegistrasiController::class, 'store'])->name('peserta.registrasi');
-    // Route::post('/peserta/registrasi/{id}/accept', [RegistrasiController::class, 'acceptOffer'])->name('peserta.acceptOffer');
-    // Route::post('/peserta/registrasi/{id}/reject', [RegistrasiController::class, 'rejectOffer'])->name('peserta.rejectOffer');
-    Route::get('/registrasi/{id}/registrations-and-accept-offer', [RegistrasiController::class, 'showRegistrationsAndAcceptOffer'])->name('registrasi.registrations-and-accept-offer');
-    Route::get('/registrasi/filter', [RegistrasiController::class, 'filter'])->name('peserta.filter');
     
     // Rute untuk staff
     Route::get('/staff/registrasi', [RegistrasiController::class, 'index'])->name('staff.registrasiIndex');
