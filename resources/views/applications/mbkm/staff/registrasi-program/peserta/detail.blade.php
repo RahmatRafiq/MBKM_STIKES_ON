@@ -8,8 +8,8 @@
                     <p id="lowonganCreate" class="float-end text-info mb-1">{{ $selectedLowongan->created_at->diffForHumans() }}</p>
                     <h6 id="mitraName" class="fw-bold mb-2">{{ $selectedLowongan->mitra->name }}</h6>
                     <h6 id="mitraName" class="fw-bold mb-2">{{ $selectedLowongan->name }}</h6>
-                    <p><i class="bi bi-file-text fs-5 me-2"></i> Deskripsi: <span id="lowonganDescription">{{ $selectedLowongan->description }}</span></p>
-                    <div class="d-flex justify-content-between align-items-center">
+                    <p><i class="bi bi-file-text fs-5 mb-2"></i> Deskripsi: <span id="lowonganDescription">{{ $selectedLowongan->description }}</span></p>
+                    <div class="d-flex justify-content-between align-items-center mt-2">
                         <form action="{{ route('peserta.registrasi') }}" method="POST" class="me-2">
                             @csrf
                             <input type="hidden" name="peserta_id"
