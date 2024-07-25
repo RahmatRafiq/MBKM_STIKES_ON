@@ -53,9 +53,23 @@ Route::middleware('auth')->group(function () {
         Route::get('/laporan-lengkap/create', [\App\Http\Controllers\AktivitasMbkmController::class, 'createLaporanLengkap'])->name('laporan.lengkap.create');
         Route::post('/laporan-lengkap/store', [\App\Http\Controllers\AktivitasMbkmController::class, 'storeLaporanLengkap'])->name('laporan.lengkap.store');
 
+
     });
 
     Route::middleware(['role:mitra|dosen|super admin'])->group(function () {
+    Route::get('/peserta/registrasi', [RegistrasiController::class, 'showPesertaRegistrasiForm'])->name('peserta.registrasiForm');
+    Route::get('/lowongan/filter', [RegistrasiController::class, 'filter'])->name('lowongan.filter');
+
+    Route::post('/peserta/registrasi', [RegistrasiController::class, 'store'])->name('peserta.registrasi');
+    Route::post('/peserta/registrasi/{id}/accept', [RegistrasiController::class, 'acceptOffer'])->name('peserta.acceptOffer');
+    Route::post('/peserta/registrasi/{id}/reject', [RegistrasiController::class, 'rejectOffer'])->name('peserta.rejectOffer');
+    Route::get('/registrasi/{id}/registrations-and-accept-offer', [RegistrasiController::class, 'showRegistrationsAndAcceptOffer'])->name('registrasi.registrations-and-accept-offer');
+    Route::get('/registrasi/filter', [RegistrasiController::class, 'filter'])->name('peserta.filter');
+    
+    // Rute untuk staff
+    Route::get('/staff/registrasi', [RegistrasiController::class, 'index'])->name('staff.registrasiIndex');
+    Route::put('/staff/registrasi/{id}', [RegistrasiController::class, 'update'])->name('staff.updateRegistrasi');
+    Route::put('/staff/registrasi/{id}/dospem', [RegistrasiController::class, 'updateDospem'])->name('staff.updateDospem');
 
         Route::get('/laporan', [\App\Http\Controllers\AktivitasMbkmController::class, 'index'])->name('laporan.index');
         Route::post('/laporan-harian/validate/{id}', [\App\Http\Controllers\AktivitasMbkmController::class, 'validateLaporanHarian'])->name('laporan.harian.validate');

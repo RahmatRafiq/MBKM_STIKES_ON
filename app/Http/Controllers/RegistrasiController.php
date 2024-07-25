@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\AktivitasMbkm;
 use App\Models\DosenPembimbingLapangan;
 use App\Models\Lowongan;
+use App\Models\MitraProfile;
 use App\Models\Peserta;
 use App\Models\Registrasi;
 use Illuminate\Http\Request;
@@ -13,10 +14,93 @@ use Illuminate\Support\Facades\Auth;
 
 class RegistrasiController extends Controller
 {
-    public function showPesertaRegistrasiForm()
+    public function showPesertaRegistrasiForm(Request $request)
     {
-        $lowongans = Lowongan::all();
-        return view('applications.mbkm.staff.registrasi-program.peserta.registrasi', compact('lowongans'));
+        $search = $request->query('search');
+        $type = $request->query('sortByType');
+        $lowonganId = $request->query('lowongan_id');
+
+        $query = Lowongan::query();
+
+        if ($search) {
+            $query->where('name', 'like', "%{$search}%");
+        }
+
+        if ($type) {
+            $query->whereHas('mitra', function ($q) use ($type) {
+                $q->where('type', $type);
+            });
+        }
+
+        $lowongans = $query->with(['mitra' => function ($query) {
+            $query->select('id', 'name', 'type'); // Hanya ambil kolom yang diperlukan
+        }])->get(['id', 'name', 'mitra_id']); // Hanya ambil kolom yang diperlukan
+
+        $types = MitraProfile::distinct()->pluck('type');
+
+        if ($request->ajax()) {
+            $selectedLowongan = Lowongan::with('mitra:id,name,website')->find($lowonganId);
+            return response()->json([
+                'selectedLowongan' => $selectedLowongan,
+                'html' => view('applications.mbkm.staff.registrasi-program.peserta.detail', compact('selectedLowongan'))->render(),
+            ]);
+        }
+
+        // $selectedLowongan = Lowongan::with('mitra:id,name')->find($lowonganId);
+        return view('applications.mbkm.staff.registrasi-program.peserta.registrasi', compact('lowongans', 'types'));
+    }
+
+    // public function filter(Request $request)
+    // {
+    //     $search = $request->query('search');
+    //     $type = $request->query('sortByType');
+
+    //     $query = Lowongan::query();
+
+    //     if ($search) {
+    //         $query->where('name', 'like', "%{$search}%");
+    //     }
+
+    //     if ($type) {
+    //         $query->whereHas('mitra', function ($q) use ($type) {
+    //             $q->where('type', $type);
+    //         });
+    //     }
+
+    //     $lowongans = $query->with('mitra')->get();
+
+    //     return response()->json($lowongans);
+    // }
+
+    public function filter(Request $request)
+    {
+        $search = $request->query('search');
+        $type = $request->query('sortByType');
+
+        $query = Lowongan::query();
+
+        if ($search) {
+            $query->where('name', 'like', "%{$search}%");
+        }
+
+        if ($type) {
+            $query->whereHas('mitra', function ($q) use ($type) {
+                $q->where('type', $type);
+            });
+        }
+
+        $lowongans = $query->with('mitra')->get()->map(function ($lowongan) {
+            return [
+                'id' => $lowongan->id,
+                'name' => $lowongan->name,
+                'mitra' => [
+                    'name' => $lowongan->mitra->name,
+                    'get_first_media_url' => $lowongan->mitra->getFirstMediaUrl('images'),
+                ],
+            ];
+        });
+
+        return response()->json($lowongans);
     }
 
     public function index()

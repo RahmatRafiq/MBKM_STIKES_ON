@@ -4,6 +4,8 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\DB;
+
 class LaporanHarian extends Model
 {
     use HasFactory;
@@ -51,12 +53,12 @@ class LaporanHarian extends Model
             'id' // Local key on MitraProfile table
         );
     }
-    
+
     public function laporanMingguan()
     {
         $semesterStart = \Carbon\Carbon::parse(env('SEMESTER_START'));
         return $this->belongsTo(LaporanMingguan::class, 'peserta_id', 'peserta_id')
-                    ->whereRaw('WEEKOFYEAR(laporan_harian.tanggal) - WEEKOFYEAR(?) + 1 = laporan_mingguan.minggu_ke', [$semesterStart]);
+            ->whereRaw('WEEKOFYEAR(laporan_harian.tanggal) - WEEKOFYEAR(?) + 1 = laporan_mingguan.minggu_ke', [$semesterStart]);
     }
     public static function getByUser($user, $pesertaId = null)
     {
@@ -68,7 +70,17 @@ class LaporanHarian extends Model
         if ($pesertaId) {
             $query->where('peserta_id', $pesertaId);
         }
-
+        //if pending == 1, validasi == 2, revisi == 3, else == 4
+        $query->orderBy(
+            DB::raw('CASE
+            WHEN laporan_harian.status = "pending" THEN 1
+            WHEN laporan_harian.status = "revisi" THEN 2
+            WHEN laporan_harian.status = "validasi" THEN 3
+            ELSE 0 END'),
+            'asc'
+        );
+        $query->orderBy('updated_at', 'desc');
         return $query->get();
     }
+
 }
