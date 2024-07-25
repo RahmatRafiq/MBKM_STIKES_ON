@@ -18,6 +18,7 @@ class RegistrasiController extends Controller
     {
         $search = $request->query('search');
         $type = $request->query('sortByType');
+        $lowonganId = $request->query('lowongan_id');
 
         $query = Lowongan::query();
 
@@ -31,10 +32,22 @@ class RegistrasiController extends Controller
             });
         }
 
-        $lowongans = $query->with('mitra')->get();
+        $lowongans = $query->with(['mitra' => function ($query) {
+            $query->select('id', 'name'); // Hanya ambil kolom yang diperlukan
+        }])->get(['id', 'name', 'mitra_id']); // Hanya ambil kolom yang diperlukan
+
         $types = MitraProfile::distinct()->pluck('type');
 
-        return view('applications.mbkm.staff.registrasi-program.peserta.registrasi', compact('lowongans', 'types'));
+        if ($request->ajax()) {
+            $selectedLowongan = Lowongan::with('mitra:id,name')->find($lowonganId);
+            return response()->json([
+                'selectedLowongan' => $selectedLowongan,
+                'html' => view('applications.mbkm.staff.registrasi-program.peserta.detail', compact('selectedLowongan'))->render(),
+            ]);
+        }
+
+        $selectedLowongan = Lowongan::with('mitra:id,name')->find($lowonganId);
+        return view('applications.mbkm.staff.registrasi-program.peserta.registrasi', compact('lowongans', 'types', 'selectedLowongan'));
     }
 
     public function filter(Request $request)
