@@ -185,9 +185,10 @@
                     data.forEach(function (lowongan) {
                         $('#lowonganList').append(
                             `<a href="javascript:void(0);" class="list-group-item list-group-item-action d-flex align-items-center lowongan-item" data-id="${lowongan.id}">
-                                <div class="image-placeholder" data-src="${lowongan.mitra.get_first_media_url}" style="width: 60px; height: 60px; background: #f0f0f0;"></div>
+                                <div class="image-placeholder" data-src="${lowongan.mitra.get_first_media_url}" style="width: 60px; height: 60px; background: #f0f0f0; margin-right: 15px;"></div>
                                 <div>
-                                    <h5 class="mb-1">${lowongan.name}</h5>
+                                    <h5 class="mb-1" style="font-weight: bold;">${lowongan.name}</h5>
+                                    <h6 class="mb-1">${lowongan.mitra.type}</h6>
                                     <small>${lowongan.mitra.name}</small>
                                 </div>
                             </a>`
