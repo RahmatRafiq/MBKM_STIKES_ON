@@ -34,34 +34,11 @@
                     </div>
                     <div class="d-flex align-items-center justify-content-between">
                         <h5 class="m-0 text-white fw-normal">Laporan Mingguan</h5>
-                        <h3 class="m-0 text-white">{{ $totalLaporan }}</h3>
+                        <h3 class="m-0 text-white">{{ $totalLaporanMingguan }}</h3>
                     </div>
                 </div>
             </div>
         </div>
-        <!-- Kartu Lowongan yang Didaftarkan -->
-        {{-- <div class="col-xl-3 col-sm-6 col-12">
-            <div class="card mb-3 card-custom background-gradient-3">
-                <div class="card-body">
-                    <div class="circle-shape shape-1"></div>
-                    <div class="circle-shape shape-2"></div>
-                    <div class="circle-shape shape-3"></div>
-                    <div class="mb-2">
-                        <i class="bi bi-briefcase fs-1 text-white lh-1"></i>
-                    </div>
-                    <div class="d-flex align-items-center justify-content-between">
-                        <h5 class="m-0 text-white fw-normal">Total Lowongan</h5>
-                        <h3 class="m-0 text-white">{{ $totalLowongan }}</h3>
-                    </div>
-                    <div>
-                        <p class="m-0 text-success">Registered: {{ $lowonganStatus['registered'] ?? 0 }}</p>
-                        <p class="m-0 text-warning">Processed: {{ $lowonganStatus['processed'] ?? 0 }}</p>
-                        <p class="m-0 text-info">Accepted: {{ $lowonganStatus['accepted'] ?? 0 }}</p>
-                        <p class="m-0 text-danger">Rejected: {{ $lowonganStatus['rejected'] ?? 0 }}</p>
-                    </div>
-                </div>
-            </div>
-        </div> --}}
         <div class="col-xl-4 col-sm-6 col-12">
             <div class="card mb-3 card-custom background-gradient-3">
                 <div class="card-body">
