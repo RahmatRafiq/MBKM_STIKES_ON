@@ -33,8 +33,7 @@
                             </div>
                             @endif
                             <h5>Minggu Ke-{{ $weekNumber }}</h5>
-                            <p>{{ $week['startOfWeek']->format('d M Y') }} - {{ $week['endOfWeek']->format('d M Y') }}
-                            </p>
+                            <p>{{ $week['startOfWeek']->format('d M Y') }} - {{ $week['endOfWeek']->format('d M Y') }}</p>
                         </div>
                         <div class="card-body">
                             @if ($week['isCurrentOrPastWeek'])
@@ -67,6 +66,11 @@
                                     Laporan Harian</button>
                             </div>
                             @endif
+                            <!-- Tambahkan Tombol Lihat Laporan Harian -->
+                            <div class="text-center mt-2">
+                                <button class="btn btn-secondary"
+                                    onclick="window.location.href='{{ route('laporan.harian.create', ['week' => $weekNumber]) }}'">Lihat Laporan Harian</button>
+                            </div>
                             @else
                             <div class="text-center">
                                 <p class="text-muted">Belum Dapat mengisi laporan</p>
@@ -75,6 +79,7 @@
                         </div>
                     </div>
                 </div>
+                
 
                 <!-- Modal -->
                 @if (!$week['laporanMingguan'] || $week['laporanMingguan']->status == 'revisi')
