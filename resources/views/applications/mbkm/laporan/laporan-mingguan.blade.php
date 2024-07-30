@@ -10,10 +10,10 @@
                     <h5>Halo {{ $namaPeserta }} !</h5>
                 </div>
                 <div class="card-body text-center">
-                    <p>Total Laporan yang sudah kamu buat: {{ $totalLaporan }}</p>
-                    <p>Laporan kamu yang tervalidasi: {{ $validasiLaporan }}</p>
-                    <p>Laporan kamu yang harus direvisi: {{ $revisiLaporan }}</p>
-                    <p>Laporan kamu yang masih dalam review: {{ $pendingLaporan }}</p>
+                    <p>Total Laporan yang sudah kamu buat: {{ $totalLaporanMingguan }}</p>
+                    <p>Laporan kamu yang tervalidasi: {{ $validasiLaporanMingguan }}</p>
+                    <p>Laporan kamu yang harus direvisi: {{ $revisiLaporanMingguan }}</p>
+                    <p>Laporan kamu yang masih dalam review: {{ $pendingLaporanMingguan }}</p>
                 </div>
             </div>
         </div>
@@ -26,51 +26,46 @@
                         <div class="card-header">
                             @if ($week['laporanMingguan'])
                             <div class="d-flex justify-content-end">
-                                <span
-                                    class="badge bg-{{ $week['laporanMingguan']->status == 'pending' ? 'warning' : ($week['laporanMingguan']->status == 'validasi' ? 'success' : 'danger') }}">
+                                <span class="badge bg-{{ $week['laporanMingguan']->status == 'pending' ? 'warning' : ($week['laporanMingguan']->status == 'validasi' ? 'success' : 'danger') }}">
                                     {{ ucfirst($week['laporanMingguan']->status) }}
                                 </span>
                             </div>
                             @endif
                             <h5>Minggu Ke-{{ $weekNumber }}</h5>
-                            <p>{{ $week['startOfWeek']->format('d M Y') }} - {{ $week['endOfWeek']->format('d M Y') }}
-                            </p>
+                            <p>{{ $week['startOfWeek']->format('d M Y') }} - {{ $week['endOfWeek']->format('d M Y') }}</p>
                         </div>
                         <div class="card-body">
                             @if ($week['isCurrentOrPastWeek'])
-                            @if ($week['laporanMingguan'])
-                            <p>{{ $week['laporanMingguan']->isi_laporan }}</p>
-                            @if ($week['laporanMingguan']->status == 'revisi')
-                            <div class="text-center">
-                                <button class="btn btn-info" data-bs-toggle="modal"
-                                    data-bs-target="#modalForm_{{ $weekNumber }}">Submit Ulang</button>
-                            </div>
-                            @endif
-                            @endif
-                            @if ($week['canFill'] && !$week['laporanMingguan'])
-                            <div class="text-center">
-                                <button class="btn btn-primary" data-bs-toggle="modal"
-                                    data-bs-target="#modalForm_{{ $weekNumber }}">Isi Laporan Mingguan</button>
-                            </div>
-                            @endif
-                            @if ($week['hasRevisi'])
-                            <div class="text-center mt-2">
-                                <button class="btn btn-danger"
-                                    onclick="window.location.href='{{ route('laporan.harian.create', ['week' => $weekNumber]) }}'">Ada
-                                    Laporan Harian yang Revisi</button>
-                            </div>
-                            @endif
-                            @if (!$week['canFill'])
-                            <div class="text-center">
-                                <button class="btn btn-warning"
-                                    onclick="window.location.href='{{ route('laporan.harian.create', ['week' => $weekNumber]) }}'">Lengkapi
-                                    Laporan Harian</button>
-                            </div>
-                            @endif
+                                @if ($week['laporanMingguan'])
+                                    <p>{{ $week['laporanMingguan']->isi_laporan }}</p>
+                                    @if ($week['laporanMingguan']->status == 'revisi')
+                                        <div class="text-center mt-3">
+                                            <button class="btn btn-info" data-bs-toggle="modal" data-bs-target="#modalForm_{{ $weekNumber }}">Submit Ulang</button>
+                                        </div>
+                                    @endif
+                                @endif
+                                @if ($week['canFill'] && !$week['laporanMingguan'])
+                                    <div class="text-center mt-3">
+                                        <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modalForm_{{ $weekNumber }}">Isi Laporan Mingguan</button>
+                                    </div>
+                                @endif
+                                @if ($week['hasRevisi'])
+                                    <div class="text-center mt-3">
+                                        <button class="btn btn-danger" onclick="window.location.href='{{ route('laporan.harian.create', ['week' => $weekNumber]) }}'">Ada Laporan Harian yang Revisi</button>
+                                    </div>
+                                @endif
+                                @if (!$week['canFill'])
+                                    <div class="text-center mt-3">
+                                        <button class="btn btn-warning" onclick="window.location.href='{{ route('laporan.harian.create', ['week' => $weekNumber]) }}'">Lengkapi Laporan Harian</button>
+                                    </div>
+                                @endif
+                                <div class="text-center mt-3">
+                                    <button class="btn btn-secondary" onclick="window.location.href='{{ route('laporan.harian.create', ['week' => $weekNumber]) }}'">Lihat Laporan Harian</button>
+                                </div>
                             @else
-                            <div class="text-center">
-                                <p class="text-muted">Belum Dapat mengisi laporan</p>
-                            </div>
+                                <div class="text-center mt-3">
+                                    <p class="text-muted">Belum Dapat mengisi laporan</p>
+                                </div>
                             @endif
                         </div>
                     </div>
@@ -78,37 +73,26 @@
 
                 <!-- Modal -->
                 @if (!$week['laporanMingguan'] || $week['laporanMingguan']->status == 'revisi')
-                <div class="modal fade" id="modalForm_{{ $weekNumber }}" tabindex="-1"
-                    aria-labelledby="modalLabel_{{ $weekNumber }}" aria-hidden="true">
+                <div class="modal fade" id="modalForm_{{ $weekNumber }}" tabindex="-1" aria-labelledby="modalLabel_{{ $weekNumber }}" aria-hidden="true">
                     <div class="modal-dialog">
                         <div class="modal-content">
                             <div class="modal-header">
-                                <h5 class="modal-title" id="modalLabel_{{ $weekNumber }}">Isi Laporan Mingguan Ke-{{
-                                    $weekNumber }}</h5>
-                                <button type="button" class="btn-close" data-bs-dismiss="modal"
-                                    aria-label="Close"></button>
+                                <h5 class="modal-title" id="modalLabel_{{ $weekNumber }}">Isi Laporan Mingguan Ke-{{ $weekNumber }}</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                             </div>
                             <div class="modal-body">
                                 <form action="{{ route('laporan.mingguan.store') }}" method="POST">
                                     @csrf
                                     <input type="hidden" name="minggu_ke" value="{{ $weekNumber }}">
                                     <div class="form-group mb-3">
-                                        <label for="isi_laporan_{{ $weekNumber }}" class="form-label">Isi
-                                            Laporan</label>
-                                        <textarea name="isi_laporan" id="isi_laporan_{{ $weekNumber }}"
-                                            class="form-control auto-resize"
-                                            required>{{ $week['laporanMingguan'] ? $week['laporanMingguan']->isi_laporan : '' }}</textarea>
+                                        <label for="isi_laporan_{{ $weekNumber }}" class="form-label">Isi Laporan</label>
+                                        <textarea name="isi_laporan" id="isi_laporan_{{ $weekNumber }}" class="form-control auto-resize" required>{{ $week['laporanMingguan'] ? $week['laporanMingguan']->isi_laporan : '' }}</textarea>
                                     </div>
                                     <div class="form-group mb-3">
                                         <label for="kehadiran_{{ $weekNumber }}" class="form-label">Kehadiran</label>
-                                        <select name="kehadiran" id="kehadiran_{{ $weekNumber }}" class="form-control"
-                                            required>
-                                            <option value="hadir" {{ $week['laporanMingguan'] &&
-                                                $week['laporanMingguan']->kehadiran == 'hadir' ? 'selected' : ''
-                                                }}>Hadir</option>
-                                            <option value="tidak hadir" {{ $week['laporanMingguan'] &&
-                                                $week['laporanMingguan']->kehadiran == 'tidak hadir' ? 'selected' : ''
-                                                }}>Tidak Hadir</option>
+                                        <select name="kehadiran" id="kehadiran_{{ $weekNumber }}" class="form-control" required>
+                                            <option value="hadir" {{ $week['laporanMingguan'] && $week['laporanMingguan']->kehadiran == 'hadir' ? 'selected' : '' }}>Hadir</option>
+                                            <option value="tidak hadir" {{ $week['laporanMingguan'] && $week['laporanMingguan']->kehadiran == 'tidak hadir' ? 'selected' : '' }}>Tidak Hadir</option>
                                         </select>
                                     </div>
                                     <div class="text-center">
