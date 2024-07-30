@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\AktivitasMbkm;
 use App\Models\BatchMbkm;
+use App\Models\DosenPembimbingLapangan;
 use App\Models\LaporanHarian;
 use App\Models\LaporanLengkap;
 use App\Models\LaporanMingguan;
@@ -30,6 +31,8 @@ class AktivitasMbkmController extends Controller
 
         $daftarPeserta = Peserta::whereHas('registrationPlacement.lowongan.mitra', function ($query) use ($user) {
             $query->where('user_id', $user->id);
+        })->orWhereHas('registrationPlacement.dospem', function ($query) use ($user) {
+            $query->where('user_id', $user->id);
         })->get();
 
         $laporanHarian = $pesertaId ? LaporanHarian::getByUser($user, $pesertaId) : collect();
@@ -38,6 +41,8 @@ class AktivitasMbkmController extends Controller
 
         return view('applications.mbkm.laporan.index', compact('daftarPeserta', 'laporanHarian', 'laporanMingguan', 'laporanLengkap', 'pesertaId'));
     }
+
+    
 
     public function createLaporanHarian(Request $request)
     {
