@@ -37,11 +37,6 @@ class LaporanHarian extends Model
         return $this->belongsTo(DosenPembimbingLapangan::class, 'dospem_id', 'id');
     }
 
-    // public function lowongan()
-    // {
-    //     return $this->belongsTo(Lowongan::class);
-    // }
-
     public function lowongan()
     {
         return $this->hasOneThrough(
@@ -60,27 +55,32 @@ class LaporanHarian extends Model
         return $this->belongsTo(LaporanMingguan::class, 'peserta_id', 'peserta_id')
             ->whereRaw('WEEKOFYEAR(laporan_harian.tanggal) - WEEKOFYEAR(?) + 1 = laporan_mingguan.minggu_ke', [$semesterStart]);
     }
+
     public static function getByUser($user, $pesertaId = null)
     {
-        $query = self::with(['peserta', 'mitra'])
-            ->whereHas('mitra', function ($query) use ($user) {
-                $query->where('user_id', $user->id);
+        $query = self::with(['peserta', 'mitra', 'dospem'])
+            ->where(function ($query) use ($user) {
+                $query->whereHas('mitra', function ($query) use ($user) {
+                    $query->where('user_id', $user->id);
+                })->orWhereHas('dospem', function ($query) use ($user) {
+                    $query->where('user_id', $user->id);
+                });
             });
 
         if ($pesertaId) {
             $query->where('peserta_id', $pesertaId);
         }
-        //if pending == 1, validasi == 2, revisi == 3, else == 4
+
         $query->orderBy(
             DB::raw('CASE
-            WHEN laporan_harian.status = "pending" THEN 1
-            WHEN laporan_harian.status = "revisi" THEN 2
-            WHEN laporan_harian.status = "validasi" THEN 3
-            ELSE 0 END'),
+                WHEN laporan_harian.status = "pending" THEN 1
+                WHEN laporan_harian.status = "revisi" THEN 2
+                WHEN laporan_harian.status = "validasi" THEN 3
+                ELSE 4 END'),
             'asc'
         );
         $query->orderBy('updated_at', 'desc');
+
         return $query->get();
     }
-
 }
