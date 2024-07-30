@@ -10,10 +10,10 @@
                     <h5>Halo {{ $namaPeserta }} !</h5>
                 </div>
                 <div class="card-body text-center">
-                    <p>Total Laporan yang sudah kamu buat: {{ $totalLaporan }}</p>
-                    <p>Laporan kamu yang tervalidasi: {{ $validasiLaporan }}</p>
-                    <p>Laporan kamu yang harus direvisi: {{ $revisiLaporan }}</p>
-                    <p>Laporan kamu yang masih dalam review: {{ $pendingLaporan }}</p>
+                    <p>Total Laporan yang sudah kamu buat: {{ $totalLaporanMingguan }}</p>
+                    <p>Laporan kamu yang tervalidasi: {{ $validasiLaporanMingguan }}</p>
+                    <p>Laporan kamu yang harus direvisi: {{ $revisiLaporanMingguan }}</p>
+                    <p>Laporan kamu yang masih dalam review: {{ $pendingLaporanMingguan }}</p>
                 </div>
             </div>
         </div>
