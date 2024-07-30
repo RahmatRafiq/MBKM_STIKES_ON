@@ -4,7 +4,6 @@ namespace App\Http\Controllers;
 
 use App\Models\AktivitasMbkm;
 use App\Models\BatchMbkm;
-use App\Models\DosenPembimbingLapangan;
 use App\Models\LaporanHarian;
 use App\Models\LaporanLengkap;
 use App\Models\LaporanMingguan;
@@ -41,8 +40,6 @@ class AktivitasMbkmController extends Controller
 
         return view('applications.mbkm.laporan.index', compact('daftarPeserta', 'laporanHarian', 'laporanMingguan', 'laporanLengkap', 'pesertaId'));
     }
-
-    
 
     public function createLaporanHarian(Request $request)
     {
@@ -286,52 +283,59 @@ class AktivitasMbkmController extends Controller
     public function validateLaporanHarian(Request $request, $id)
     {
         $laporanHarian = LaporanHarian::findOrFail($id);
-
+    
         if ($laporanHarian->mitra->user_id != Auth::id() && $laporanHarian->dospem->user_id != Auth::id()) {
-            return back()->withErrors('Anda tidak memiliki izin untuk memvalidasi laporan ini.');
+            return response()->json(['errors' => 'Anda tidak memiliki izin untuk memvalidasi laporan ini.'], 403);
         }
-
+    
         if ($request->action == 'validasi') {
-            $laporanHarian->update(['status' => 'validasi']);
-            return back()->with('success', 'Laporan harian berhasil divalidasi.');
+            $laporanHarian->status = 'validasi';
         } elseif ($request->action == 'revisi') {
-            $laporanHarian->update(['status' => 'revisi']);
-            return back()->with('success', 'Laporan harian berhasil direvisi.');
+            $laporanHarian->status = 'revisi';
         }
-
-        return back()->with('success', 'Laporan harian berhasil divalidasi.');
+        
+        $laporanHarian->save();
+        
+        return response()->json(['success' => 'Laporan harian berhasil diperbarui.']);
     }
-
+    
     public function validateLaporanMingguan(Request $request, $id)
     {
         $laporanMingguan = LaporanMingguan::findOrFail($id);
-
+    
         if ($laporanMingguan->mitra->user_id != Auth::id() && $laporanMingguan->dospem->user_id != Auth::id()) {
-            return back()->withErrors('Anda tidak memiliki izin untuk memvalidasi laporan ini.');
+            return response()->json(['errors' => 'Anda tidak memiliki izin untuk memvalidasi laporan ini.'], 403);
         }
-
+    
         if ($request->action == 'validasi') {
-            $laporanMingguan->update(['status' => 'validasi']);
-            return back()->with('success', 'Laporan mingguan berhasil divalidasi.');
+            $laporanMingguan->status = 'validasi';
         } elseif ($request->action == 'revisi') {
-            $laporanMingguan->update(['status' => 'revisi']);
-            return back()->with('success', 'Laporan mingguan berhasil direvisi.');
+            $laporanMingguan->status = 'revisi';
         }
-
-        return back()->with('success', 'Laporan mingguan berhasil divalidasi.');
+    
+        $laporanMingguan->save();
+    
+        return response()->json(['success' => 'Laporan mingguan berhasil diperbarui.']);
     }
-
+    
     public function validateLaporanLengkap(Request $request, $id)
     {
         $laporanLengkap = LaporanLengkap::findOrFail($id);
-        $aktivitas = AktivitasMbkm::where('laporan_lengkap_id', $id)->firstOrFail();
-
+    
         if ($laporanLengkap->mitra->user_id != Auth::id() && $laporanLengkap->dospem->user_id != Auth::id()) {
-            return back()->withErrors('Anda tidak memiliki izin untuk memvalidasi laporan ini.');
+            return response()->json(['errors' => 'Anda tidak memiliki izin untuk memvalidasi laporan ini.'], 403);
         }
-
-        $laporanLengkap->update(['status' => 'validated']);
-
-        return back()->with('success', 'Laporan lengkap berhasil divalidasi.');
+    
+        if ($request->action == 'validasi') {
+            $laporanLengkap->status = 'validasi';
+        } elseif ($request->action == 'revisi') {
+            $laporanLengkap->status = 'revisi';
+        }
+        
+        $laporanLengkap->save();
+    
+        return response()->json(['success' => 'Laporan lengkap berhasil diperbarui.']);
     }
+    
+
 }
