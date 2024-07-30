@@ -151,6 +151,11 @@ class AktivitasMbkmController extends Controller
                 'hasRevisi' => $hasRevisi,
             ];
         }
+
+        $totalLaporanMingguan = $laporanMingguan->count();
+        $validasiLaporanMingguan = $laporanMingguan->where('status', 'validasi')->count();
+        $revisiLaporanMingguan = $laporanMingguan->where('status', 'revisi')->count();
+        $pendingLaporanMingguan = $laporanMingguan->where('status', 'pending')->count();
     
         return view('applications.mbkm.laporan.laporan-mingguan', compact(
             'namaPeserta',
@@ -159,7 +164,11 @@ class AktivitasMbkmController extends Controller
             'totalLaporan',
             'validasiLaporan',
             'revisiLaporan',
-            'pendingLaporan'
+            'pendingLaporan',
+            'totalLaporanMingguan',
+            'validasiLaporanMingguan',
+            'revisiLaporanMingguan',
+            'pendingLaporanMingguan',
         ));
     }
     
