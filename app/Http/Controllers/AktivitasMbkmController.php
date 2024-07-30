@@ -90,27 +90,27 @@ class AktivitasMbkmController extends Controller
     {
         $user = Auth::user();
         $peserta = Peserta::with('registrationPlacement')->where('user_id', $user->id)->first();
-    
+
         if (!$peserta) {
             return response()->view('applications.mbkm.error-page.not-registered', ['message' => 'Anda tidak terdaftar sebagai peserta.'], 403);
         }
-    
+
         $disabledPage = $peserta->registrationPlacement;
-    
+
         if (!$disabledPage) {
             return response()->view('applications.mbkm.error-page.not-registered', ['message' => 'Anda tidak terdaftar dalam kegiatan MBKM apapun.'], 403);
         }
-    
+
         $namaPeserta = $user->peserta->nama;
-    
+
         $semesterStart = \Carbon\Carbon::parse($this->activeBatch->semester_start)->startOfWeek();
         $semesterEnd = \Carbon\Carbon::parse($this->activeBatch->semester_end)->endOfWeek();
         $currentDate = \Carbon\Carbon::now();
         $currentWeek = $currentDate->diffInWeeks($semesterStart) + 1;
         $totalWeeks = $semesterStart->diffInWeeks($semesterEnd) + 1;
-    
+
         $laporanHarian = LaporanHarian::where('peserta_id', $user->peserta->id)->get();
-    
+
         $laporanHarian = $laporanHarian->map(function ($item) use ($semesterStart) {
             $tanggal = \Carbon\Carbon::parse($item->tanggal)->startOfWeek();
             $diffWeeks = $semesterStart->diffInWeeks($tanggal->startOfWeek()) + 1;
@@ -120,25 +120,25 @@ class AktivitasMbkmController extends Controller
                 'is_revisi' => $isRevisi,
             ]);
         });
-    
+
         $laporanHarianPerMinggu = $laporanHarian->groupBy('minggu_ke');
-    
+
         $totalLaporan = $laporanHarian->count();
         $validasiLaporan = $laporanHarian->where('status', 'validasi')->count();
         $revisiLaporan = $laporanHarian->where('status', 'revisi')->count();
         $pendingLaporan = $laporanHarian->where('status', 'pending')->count();
-    
+
         $laporanMingguan = LaporanMingguan::where('peserta_id', $user->peserta->id)->get()->keyBy('minggu_ke');
-    
+
         $weeks = [];
         for ($i = 0; $i < $totalWeeks; $i++) {
             $startOfWeek = $semesterStart->copy()->addWeeks($i)->startOfWeek();
             $endOfWeek = $startOfWeek->copy()->endOfWeek();
             $laporanHarianMingguIni = $laporanHarianPerMinggu->get($i + 1);
-    
+
             $isComplete = $laporanHarianMingguIni && $laporanHarianMingguIni->count() >= 5;
             $hasRevisi = $laporanHarianMingguIni && $laporanHarianMingguIni->contains('is_revisi', true);
-    
+
             $weeks[$i + 1] = [
                 'startOfWeek' => $startOfWeek,
                 'endOfWeek' => $endOfWeek,
@@ -156,7 +156,7 @@ class AktivitasMbkmController extends Controller
         $validasiLaporanMingguan = $laporanMingguan->where('status', 'validasi')->count();
         $revisiLaporanMingguan = $laporanMingguan->where('status', 'revisi')->count();
         $pendingLaporanMingguan = $laporanMingguan->where('status', 'pending')->count();
-    
+
         return view('applications.mbkm.laporan.laporan-mingguan', compact(
             'namaPeserta',
             'weeks',
@@ -171,8 +171,6 @@ class AktivitasMbkmController extends Controller
             'pendingLaporanMingguan',
         ));
     }
-    
-
 
     public function createLaporanLengkap()
     {
@@ -284,7 +282,7 @@ class AktivitasMbkmController extends Controller
     {
         $laporanHarian = LaporanHarian::findOrFail($id);
 
-        if ($laporanHarian->mitra->user_id != Auth::id()) {
+        if ($laporanHarian->mitra->user_id != Auth::id() && $laporanHarian->dospem->user_id != Auth::id()) {
             return back()->withErrors('Anda tidak memiliki izin untuk memvalidasi laporan ini.');
         }
 
@@ -303,7 +301,7 @@ class AktivitasMbkmController extends Controller
     {
         $laporanMingguan = LaporanMingguan::findOrFail($id);
 
-        if ($laporanMingguan->mitra->user_id != Auth::id()) {
+        if ($laporanMingguan->mitra->user_id != Auth::id() && $laporanMingguan->dospem->user_id != Auth::id()) {
             return back()->withErrors('Anda tidak memiliki izin untuk memvalidasi laporan ini.');
         }
 
@@ -323,7 +321,7 @@ class AktivitasMbkmController extends Controller
         $laporanLengkap = LaporanLengkap::findOrFail($id);
         $aktivitas = AktivitasMbkm::where('laporan_lengkap_id', $id)->firstOrFail();
 
-        if ($aktivitas->dospem->user_id != Auth::id()) {
+        if ($laporanLengkap->mitra->user_id != Auth::id() && $laporanLengkap->dospem->user_id != Auth::id()) {
             return back()->withErrors('Anda tidak memiliki izin untuk memvalidasi laporan ini.');
         }
 
