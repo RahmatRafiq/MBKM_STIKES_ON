@@ -19,6 +19,9 @@
         <button id="backButton" class="btn btn-primary d-none" onclick="showList()">Kembali</button>
     </div>
     <!-- Daftar Lowongan -->
+    <div class="col-12 mb-3">
+        <a href="{{ route('registrasi.registrations-and-accept-offer', ['id' => Auth::user()->id]) }}" class="btn btn-primary">Daftar Registrasi Anda</a>
+    </div>
     <div class="col-md-4 col-sm-12 border-end" id="listContainer">
         <div class="list-group" id="lowonganList">
             @foreach ($lowongans as $lowongan)
