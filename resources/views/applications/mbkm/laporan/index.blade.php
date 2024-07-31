@@ -34,19 +34,19 @@
 
             <!-- Tabs for Laporan -->
             <ul class="nav nav-tabs sticky-top bg-white" id="myTab" role="tablist" style="justify-content: center; border-bottom: none;">
-                <li class="nav-item" role="presentation">
+                <li class="mb-2 nav-item" role="presentation">
                     <button class="nav-link active" id="harian-tab" data-bs-toggle="tab" data-bs-target="#harian" type="button"
                         role="tab" aria-controls="harian" aria-selected="true" style="border: 1px solid #007bff; border-radius: 4px 4px 0 0; margin-right: 4px;">
                         Laporan Harian
                     </button>
                 </li>
-                <li class="nav-item" role="presentation">
+                <li class="mb-2 nav-item" role="presentation">
                     <button class="nav-link" id="mingguan-tab" data-bs-toggle="tab" data-bs-target="#mingguan" type="button"
                         role="tab" aria-controls="mingguan" aria-selected="false" style="border: 1px solid #007bff; border-radius: 4px 4px 0 0; margin-right: 4px;">
                         Laporan Mingguan
                     </button>
                 </li>
-                <li class="nav-item" role="presentation">
+                <li class="mb-2 nav-item" role="presentation">
                     <button class="nav-link" id="lengkap-tab" data-bs-toggle="tab" data-bs-target="#lengkap" type="button"
                         role="tab" aria-controls="lengkap" aria-selected="false" style="border: 1px solid #007bff; border-radius: 4px 4px 0 0;">
                         Laporan Lengkap
@@ -81,8 +81,8 @@
                                             </td>
                                             <td>
                                                 @if ($laporan->status == 'pending')
-                                                <button class="btn btn-outline-success validate-btn" data-id="{{ $laporan->id }}" data-type="harian" data-action="validasi">Validasi</button>
-                                                <button class="btn btn-outline-danger validate-btn" data-id="{{ $laporan->id }}" data-type="harian" data-action="revisi">Revisi</button>
+                                                <button class="btn btn-outline-success validate-btn mb-1" data-id="{{ $laporan->id }}" data-type="harian" data-action="validasi">Validasi</button>
+                                                <button class="btn btn-outline-danger validate-btn mb-1" data-id="{{ $laporan->id }}" data-type="harian" data-action="revisi">Revisi</button>
                                                 @endif
                                             </td>
                                         </tr>
@@ -120,8 +120,8 @@
                                             </td>
                                             <td>
                                                 @if ($laporan->status == 'pending')
-                                                <button class="btn btn-outline-success validate-btn" data-id="{{ $laporan->id }}" data-type="harian" data-action="validasi">Validasi</button>
-                                                <button class="btn btn-outline-danger validate-btn" data-id="{{ $laporan->id }}" data-type="harian" data-action="revisi">Revisi</button>
+                                                <button class="btn btn-outline-success validate-btn mb-1" data-id="{{ $laporan->id }}" data-type="harian" data-action="validasi">Validasi</button>
+                                                <button class="btn btn-outline-danger validate-btn mb-1" data-id="{{ $laporan->id }}" data-type="harian" data-action="revisi">Revisi</button>
                                                 @endif
                                             </td>
                                         </tr>
@@ -159,8 +159,8 @@
                                             </td>
                                             <td>
                                                 @if ($laporan->status == 'pending')
-                                                <button class="btn btn-outline-success validate-btn" data-id="{{ $laporan->id }}" data-type="harian" data-action="validasi">Validasi</button>
-                                                <button class="btn btn-outline-danger validate-btn" data-id="{{ $laporan->id }}" data-type="harian" data-action="revisi">Revisi</button>
+                                                <button class="btn btn-outline-success validate-btn mb-1" data-id="{{ $laporan->id }}" data-type="harian" data-action="validasi">Validasi</button>
+                                                <button class="btn btn-outline-danger validate-btn mb-1" data-id="{{ $laporan->id }}" data-type="harian" data-action="revisi">Revisi</button>
                                                 @endif
                                             </td>
                                         </tr>
