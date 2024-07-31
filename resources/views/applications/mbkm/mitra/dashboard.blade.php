@@ -5,7 +5,7 @@
 <div class="app-body">
     <!-- Row start -->
     <div class="row gx-3">
-        <div class="col-xl-3 col-sm-6 col-12">
+        <div class="col-md-4 col-sm-6 col-12">
             <div class="card mb-3 card-custom background-gradient-1">
                 <div class="card-body">
                     <div class="circle-shape shape-1"></div>
@@ -21,26 +21,8 @@
                 </div>
             </div>
         </div>
-        @foreach($lowongan as $l)
-        <div class="col-xl-3 col-sm-6 col-12">
+        <div class="col-md-4 col-sm-6 col-12">
             <div class="card mb-3 card-custom background-gradient-2">
-                <div class="card-body">
-                    <div class="circle-shape shape-1"></div>
-                    <div class="circle-shape shape-2"></div>
-                    <div class="circle-shape shape-3"></div>
-                    <div class="mb-2">
-                        <i class="bi bi-briefcase fs-1 text-white lh-1"></i>
-                    </div>
-                    <div class="d-flex align-items-center justify-content-between">
-                        <h5 class="m-0 text-white fw-normal">{{ $l->name }}</h5>
-                        <h3 class="m-0 text-white">{{ $l->registrations_count }}</h3>
-                    </div>
-                </div>
-            </div>
-        </div>
-        @endforeach
-        <div class="col-xl-3 col-sm-6 col-12">
-            <div class="card mb-3 card-custom background-gradient-3">
                 <div class="card-body">
                     <div class="circle-shape shape-1"></div>
                     <div class="circle-shape shape-2"></div>
@@ -55,8 +37,8 @@
                 </div>
             </div>
         </div>
-        <div class="col-xl-3 col-sm-6 col-12">
-            <div class="card mb-3 card-custom background-gradient-4">
+        <div class="col-md-4 col-sm-6 col-12">
+            <div class="card mb-3 card-custom background-gradient-3">
                 <div class="card-body">
                     <div class="circle-shape shape-1"></div>
                     <div class="circle-shape shape-2"></div>
@@ -126,6 +108,31 @@
             </div>
         </div>
     </div>
+    {{-- <div class="col-xl-9 col-12"> --}}
+        <div class="card mb-3">
+            <div class="card-header">
+                <h5 class="card-title">Jumlah Pendaftar Terhadap Lowongan</h5>
+            </div>
+            <div class="card-body table-responsive">
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>Nama Lowongan</th>
+                            <th>Jumlah Pendaftar</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach($lowongan as $l)
+                        <tr>
+                            <td>{{ $l->name }}</td>
+                            <td>{{ $l->registrations_count }}</td>
+                        </tr>
+                        @endforeach
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    {{-- </div> --}}
     <!-- Row end -->
 </div>
 <!-- App body ends -->
