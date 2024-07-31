@@ -41,8 +41,6 @@
             <table class="table mt-3">
                 <thead>
                     <tr>
-                        <th>Nama Peserta</th>
-                        <th>Mitra</th>
                         <th>Tanggal</th>
                         <th>Isi Laporan</th>
                         <th>Status</th>
@@ -52,8 +50,6 @@
                 <tbody id="laporan-harian-tbody">
                     @foreach ($laporanHarian as $laporan)
                     <tr id="laporan-harian-{{ $laporan->id }}">
-                        <td>{{ $laporan->peserta->nama }}</td>
-                        <td>{{ $laporan->mitra->name }}</td>
                         <td>{{ $laporan->tanggal }}</td>
                         <td>{{ $laporan->isi_laporan }}</td>
                         <td class="status">{{ $laporan->status }}</td>
@@ -74,8 +70,6 @@
             <table class="table mt-3">
                 <thead>
                     <tr>
-                        <th>Nama Peserta</th>
-                        <th>Mitra</th>
                         <th>Minggu Ke</th>
                         <th>Isi Laporan</th>
                         <th>Status</th>
@@ -85,8 +79,6 @@
                 <tbody id="laporan-mingguan-tbody">
                     @foreach ($laporanMingguan as $laporan)
                     <tr id="laporan-mingguan-{{ $laporan->id }}">
-                        <td>{{ $laporan->peserta->nama }}</td>
-                        <td>{{ $laporan->mitra->name }}</td>
                         <td>{{ $laporan->minggu_ke }}</td>
                         <td>{{ $laporan->isi_laporan }}</td>
                         <td class="status">{{ $laporan->status }}</td>
