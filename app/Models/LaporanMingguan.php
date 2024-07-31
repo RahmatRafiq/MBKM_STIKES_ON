@@ -47,11 +47,16 @@ class LaporanMingguan extends Model
     {
         return $this->hasMany(LaporanHarian::class, 'minggu_ke', 'minggu_ke');
     }
+
     public static function getByUser($user, $pesertaId = null)
     {
-        $query = self::with(['peserta', 'mitra'])
-            ->whereHas('mitra', function ($query) use ($user) {
-                $query->where('user_id', $user->id);
+        $query = self::with(['peserta', 'mitra', 'dospem'])
+            ->where(function ($query) use ($user) {
+                $query->whereHas('mitra', function ($query) use ($user) {
+                    $query->where('user_id', $user->id);
+                })->orWhereHas('dospem', function ($query) use ($user) {
+                    $query->where('user_id', $user->id);
+                });
             });
 
         if ($pesertaId) {

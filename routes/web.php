@@ -49,6 +49,7 @@ Route::middleware('auth')->group(function () {
 
         Route::get('/laporan-lengkap/create', [\App\Http\Controllers\AktivitasMbkmController::class, 'createLaporanLengkap'])->name('laporan.lengkap.create');
         Route::post('/laporan-lengkap/store', [\App\Http\Controllers\AktivitasMbkmController::class, 'storeLaporanLengkap'])->name('laporan.lengkap.store');
+
     });
 
     Route::middleware(['role:mitra|dosen|super admin'])->group(function () {
