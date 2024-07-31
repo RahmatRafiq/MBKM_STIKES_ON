@@ -50,27 +50,7 @@ class RegistrasiController extends Controller
         return view('applications.mbkm.staff.registrasi-program.peserta.registrasi', compact('lowongans', 'types'));
     }
 
-    // public function filter(Request $request)
-    // {
-    //     $search = $request->query('search');
-    //     $type = $request->query('sortByType');
 
-    //     $query = Lowongan::query();
-
-    //     if ($search) {
-    //         $query->where('name', 'like', "%{$search}%");
-    //     }
-
-    //     if ($type) {
-    //         $query->whereHas('mitra', function ($q) use ($type) {
-    //             $q->where('type', $type);
-    //         });
-    //     }
-
-    //     $lowongans = $query->with('mitra')->get();
-
-    //     return response()->json($lowongans);
-    // }
 
     public function filter(Request $request)
     {
