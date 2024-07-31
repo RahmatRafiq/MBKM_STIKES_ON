@@ -24,22 +24,25 @@ class AktivitasMbkmController extends Controller
     }
 
     public function index(Request $request)
-    {
-        $user = Auth::user();
-        $pesertaId = $request->input('peserta_id');
+{
+    $user = Auth::user();
+    $pesertaId = $request->input('peserta_id');
 
-        $daftarPeserta = Peserta::whereHas('registrationPlacement.lowongan.mitra', function ($query) use ($user) {
+    // Eager load the relationships to avoid N+1 problem
+    $daftarPeserta = Peserta::with(['registrationPlacement.lowongan.mitra'])
+        ->whereHas('registrationPlacement.lowongan.mitra', function ($query) use ($user) {
             $query->where('user_id', $user->id);
         })->orWhereHas('registrationPlacement.dospem', function ($query) use ($user) {
             $query->where('user_id', $user->id);
         })->get();
 
-        $laporanHarian = $pesertaId ? LaporanHarian::getByUser($user, $pesertaId) : collect();
-        $laporanMingguan = $pesertaId ? LaporanMingguan::getByUser($user, $pesertaId) : collect();
-        $laporanLengkap = $pesertaId ? LaporanLengkap::getByUser($user, $pesertaId) : collect();
+    $laporanHarian = $pesertaId ? LaporanHarian::getByUser($user, $pesertaId) : collect();
+    $laporanMingguan = $pesertaId ? LaporanMingguan::getByUser($user, $pesertaId) : collect();
+    $laporanLengkap = $pesertaId ? LaporanLengkap::getByUser($user, $pesertaId) : collect();
 
-        return view('applications.mbkm.laporan.index', compact('daftarPeserta', 'laporanHarian', 'laporanMingguan', 'laporanLengkap', 'pesertaId'));
-    }
+    return view('applications.mbkm.laporan.index', compact('daftarPeserta', 'laporanHarian', 'laporanMingguan', 'laporanLengkap', 'pesertaId'));
+}
+
 
     public function createLaporanHarian(Request $request)
     {
