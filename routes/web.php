@@ -7,15 +7,12 @@ use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
 
 Route::middleware('auth')->group(function () {
-
     Route::get('/', [DashboardController::class, 'index'])->name('dashboard');
+    Route::get('mbkm/profile', [ProfileController::class, 'edit'])->name('profile.edit');
+    Route::patch('mbkm/profile', [ProfileController::class, 'update'])->name('profile.update');
+    Route::delete('mbkm/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 
     Route::middleware(['role:super admin'])->group(function () {
-
-        Route::get('mbkm/profile', [ProfileController::class, 'edit'])->name('profile.edit');
-        Route::patch('mbkm/profile', [ProfileController::class, 'update'])->name('profile.update');
-        Route::delete('mbkm/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
-
         Route::get('mbkm/manajemen-aplikasi/about-mbkm', [\App\Http\Controllers\AboutMbkmController::class, 'index'])->name('about-mbkms.index');
         Route::post('mbkm/manajemen-aplikasi/about-mbkm', [\App\Http\Controllers\AboutMbkmController::class, 'update'])->name('about-mbkms.update');
 
@@ -36,7 +33,6 @@ Route::middleware('auth')->group(function () {
     });
 
     Route::middleware(['role:peserta|super admin'])->group(function () {
-
         Route::get('/registrasi/filter', [RegistrasiController::class, 'filter'])->name('peserta.filter');
         Route::get('/peserta/registrasi', [RegistrasiController::class, 'showPesertaRegistrasiForm'])->name('peserta.registrasiForm');
         Route::post('/peserta/registrasi', [RegistrasiController::class, 'store'])->name('peserta.registrasi');
@@ -54,26 +50,22 @@ Route::middleware('auth')->group(function () {
         Route::get('/laporan-lengkap/create', [\App\Http\Controllers\AktivitasMbkmController::class, 'createLaporanLengkap'])->name('laporan.lengkap.create');
         Route::post('/laporan-lengkap/store', [\App\Http\Controllers\AktivitasMbkmController::class, 'storeLaporanLengkap'])->name('laporan.lengkap.store');
 
-
     });
 
     Route::middleware(['role:mitra|dosen|super admin'])->group(function () {
-    // Route::get('/lowongan/filter', [RegistrasiController::class, 'filter'])->name('lowongan.filter');
+        // Route::get('/lowongan/filter', [RegistrasiController::class, 'filter'])->name('lowongan.filter');
 
-    
-    // Rute untuk staff
-    Route::get('/staff/registrasi', [RegistrasiController::class, 'index'])->name('staff.registrasiIndex');
-    Route::put('/staff/registrasi/{id}', [RegistrasiController::class, 'update'])->name('staff.updateRegistrasi');
-    Route::put('/staff/registrasi/{id}/dospem', [RegistrasiController::class, 'updateDospem'])->name('staff.updateDospem');
+        // Rute untuk staff
+        Route::get('/staff/registrasi', [RegistrasiController::class, 'index'])->name('staff.registrasiIndex');
+        Route::put('/staff/registrasi/{id}', [RegistrasiController::class, 'update'])->name('staff.updateRegistrasi');
+        Route::put('/staff/registrasi/{id}/dospem', [RegistrasiController::class, 'updateDospem'])->name('staff.updateDospem');
 
         Route::get('/laporan', [\App\Http\Controllers\AktivitasMbkmController::class, 'index'])->name('laporan.index');
         Route::post('/laporan-harian/validate/{id}', [\App\Http\Controllers\AktivitasMbkmController::class, 'validateLaporanHarian'])->name('laporan.harian.validate');
         Route::post('/laporan-mingguan/validate/{id}', [\App\Http\Controllers\AktivitasMbkmController::class, 'validateLaporanMingguan'])->name('laporan.mingguan.validate');
-
     });
 
     Route::middleware(['role:staff|super admin'])->group(function () {
-
         Route::resource('mbkm/staff/mitra', \App\Http\Controllers\MitraProfileController::class);
         Route::post('mbkm/staff/mitra/json', [\App\Http\Controllers\MitraProfileController::class, 'json'])->name('mitra.json');
         Route::post('mbkm/staff/mitra/create', [\App\Http\Controllers\MitraProfileController::class, 'storeMitraUser'])->name('mitra.user.store');
@@ -100,13 +92,10 @@ Route::middleware('auth')->group(function () {
         Route::get('/staff/registrasi', [RegistrasiController::class, 'index'])->name('staff.registrasiIndex');
         Route::put('/staff/registrasi/{id}', [RegistrasiController::class, 'update'])->name('staff.updateRegistrasi');
         Route::put('/staff/registrasi/{id}/dospem', [RegistrasiController::class, 'updateDospem'])->name('staff.updateDospem');
-
     });
 
     Route::middleware(['role:dosen|super admin'])->group(function () {
-
         Route::post('/laporan-lengkap/validate/{id}', [\App\Http\Controllers\AktivitasMbkmController::class, 'validateLaporanLengkap'])->name('laporan.lengkap.validate');
-
     });
 });
 
