@@ -34,7 +34,7 @@ class RegistrasiController extends Controller
 
         $lowongans = $query->with(['mitra' => function ($query) {
             $query->select('id', 'name', 'type'); // Hanya ambil kolom yang diperlukan
-        }])->get(['id', 'name', 'mitra_id']); // Hanya ambil kolom yang diperlukan
+        }])->paginate(10); // Gunakan paginate
 
         $types = MitraProfile::distinct()->pluck('type');
 
@@ -46,31 +46,8 @@ class RegistrasiController extends Controller
             ]);
         }
 
-        // $selectedLowongan = Lowongan::with('mitra:id,name')->find($lowonganId);
         return view('applications.mbkm.staff.registrasi-program.peserta.registrasi', compact('lowongans', 'types'));
     }
-
-    // public function filter(Request $request)
-    // {
-    //     $search = $request->query('search');
-    //     $type = $request->query('sortByType');
-
-    //     $query = Lowongan::query();
-
-    //     if ($search) {
-    //         $query->where('name', 'like', "%{$search}%");
-    //     }
-
-    //     if ($type) {
-    //         $query->whereHas('mitra', function ($q) use ($type) {
-    //             $q->where('type', $type);
-    //         });
-    //     }
-
-    //     $lowongans = $query->with('mitra')->get();
-
-    //     return response()->json($lowongans);
-    // }
 
     public function filter(Request $request)
     {
@@ -89,12 +66,16 @@ class RegistrasiController extends Controller
             });
         }
 
-        $lowongans = $query->with('mitra')->get()->map(function ($lowongan) {
+        $lowongans = $query->with('mitra')->paginate(10);
+
+        // Pastikan URL gambar dimasukkan ke dalam response JSON
+        $lowongans->getCollection()->transform(function ($lowongan) {
             return [
                 'id' => $lowongan->id,
                 'name' => $lowongan->name,
                 'mitra' => [
                     'name' => $lowongan->mitra->name,
+                    'type' => $lowongan->mitra->type,
                     'get_first_media_url' => $lowongan->mitra->getFirstMediaUrl('images'),
                 ],
             ];
