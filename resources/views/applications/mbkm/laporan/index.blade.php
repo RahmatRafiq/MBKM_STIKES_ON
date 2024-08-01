@@ -1,7 +1,7 @@
 @extends('layouts.app')
 
 @section('content')
-<div class="container">
+<div class="row gx-3">
     <h2 class="mb-4">Daftar Laporan</h2>
 
     <!-- Dropdown untuk memilih peserta -->
@@ -23,32 +23,32 @@
     <div class="card mb-4">
         <div class="card-body">
             <h5 class="card-title mb-3 mt-3">
-                <strong>Nama Peserta:</strong> <span>{{ $daftarPeserta->firstWhere('id', $pesertaId)->nama }}</span>
+                <span>Nama Peserta:</span>{{ $daftarPeserta->firstWhere('id', $pesertaId)->nama }}
             </h5>
             <h5 class="card-title mb-3">
-                <strong>Mitra Lowongan:</strong> <span>{{ $daftarPeserta->firstWhere('id', $pesertaId)->registrationPlacement->lowongan->mitra->name }}</span>
+                <span>Mitra Lowongan:</span>{{ $daftarPeserta->firstWhere('id', $pesertaId)->registrationPlacement->lowongan->mitra->name }}
             </h5>
             <h5 class="card-title mb-3">
-                <strong>Dosen Pembimbing:</strong> <span>{{ $daftarPeserta->firstWhere('id', $pesertaId)->registrationPlacement->dospem->name }}</span>
+                <span>Dosen Pembimbing:</span>{{ $daftarPeserta->firstWhere('id', $pesertaId)->registrationPlacement->dospem->name }}
             </h5>
 
             <!-- Tabs for Laporan -->
-            <ul class="nav nav-tabs sticky-top bg-white" id="myTab" role="tablist" style="justify-content: center; border-bottom: none;">
+            <ul class="nav nav-tabs" id="myTab" role="tablist" style="justify-content: center; border-bottom: none;">
                 <li class="mb-2 nav-item" role="presentation">
-                    <button class="nav-link active" id="harian-tab" data-bs-toggle="tab" data-bs-target="#harian" type="button"
-                        role="tab" aria-controls="harian" aria-selected="true" style="border: 1px solid #007bff; border-radius: 4px 4px 0 0; margin-right: 4px;">
+                    <button class="btn btn-outline-primary mb-1 ml-2" id="harian-tab" data-bs-toggle="tab" data-bs-target="#harian" type="button"
+                        role="tab" aria-controls="harian" aria-selected="true">
                         Laporan Harian
                     </button>
                 </li>
                 <li class="mb-2 nav-item" role="presentation">
-                    <button class="nav-link" id="mingguan-tab" data-bs-toggle="tab" data-bs-target="#mingguan" type="button"
-                        role="tab" aria-controls="mingguan" aria-selected="false" style="border: 1px solid #007bff; border-radius: 4px 4px 0 0; margin-right: 4px;">
+                    <button class="btn btn-outline-primary mb-1 ml-2" id="mingguan-tab" data-bs-toggle="tab" data-bs-target="#mingguan" type="button"
+                        role="tab" aria-controls="mingguan" aria-selected="false">
                         Laporan Mingguan
                     </button>
                 </li>
                 <li class="mb-2 nav-item" role="presentation">
-                    <button class="nav-link" id="lengkap-tab" data-bs-toggle="tab" data-bs-target="#lengkap" type="button"
-                        role="tab" aria-controls="lengkap" aria-selected="false" style="border: 1px solid #007bff; border-radius: 4px 4px 0 0;">
+                    <button class="btn btn-outline-primary mb-1 ml-2" id="lengkap-tab" data-bs-toggle="tab" data-bs-target="#lengkap" type="button"
+                        role="tab" aria-controls="lengkap" aria-selected="false">
                         Laporan Lengkap
                     </button>
                 </li>
