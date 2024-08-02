@@ -16,9 +16,9 @@
                                         class="form-select @error('dosen_id') is-invalid @enderror" required>
                                         <option value="">Pilih Dosen</option>
                                         @foreach ($dosen as $item)
-                                            <option value="{{ $item->id }}"
-                                                {{ old('dosen_id') == $item->id ? 'selected' : '' }}>
-                                                {{ $item->nama }} - {{ $item->email }}
+                                            <option value="{{ $item->Login }}"
+                                                {{ old('dosen_id') == $item->Login ? 'selected' : '' }}>
+                                                {{ $item->Nama }} - {{ $item->Email }}
                                             </option>
                                         @endforeach
                                     </select>

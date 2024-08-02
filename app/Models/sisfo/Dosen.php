@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Models\sisfo;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -13,14 +12,15 @@ class Dosen extends Model
     protected $table = 'dosen';
 
     protected $fillable = [
-        'id',
-        'nip',
-        'nama',
-        'tanggal_lahir',
-        'alamat',
-        'departemen',
-        'tahun_mulai',
-        'email',
-        'phone',
+        'Login',         // Login
+        'KodeID',        // KodeID
+        'NIDN',          // NIDN
+        'HomebaseInduk', // HomebaseInduk
+        'NIPPNS',        // NIPPNS
+        'Nama',          // Nama
+        'TempatLahir',   // TempatLahir
+        'TanggalLahir',  // TanggalLahir
+        'LevelID',       // LevelID
+        'KTP',           // KTP
     ];
 }
