@@ -9,13 +9,13 @@ use App\Models\sisfo\Mahasiswa;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Hash;
 
 class PesertaController extends Controller
 {
     public function index()
     {
-        $pesertas = Peserta::all();
-        return view('applications.mbkm.peserta.index', compact('pesertas'));
+        return view('applications.mbkm.peserta.index');
     }
 
     public function json()
@@ -59,105 +59,81 @@ class PesertaController extends Controller
 
     public function create()
     {
-        $mahasiswa = Mahasiswa::all();
-
+        // Ambil mahasiswa yang memiliki email yang tidak null atau kosong
+        $mahasiswa = Mahasiswa::whereNotNull('Email')
+            ->where('Email', '!=', '')
+            ->get();
+    
         return view('applications.mbkm.peserta.create', compact('mahasiswa'));
     }
+    
 
-    // public function store(Request $request)
-    // {
-    //     // dd($request->all());
-    //     $request->validate([
-    //         'mahasiswa_id' => 'required|exists:mysql_second.mahasiswa,id',
-    //         'password' => 'required|confirmed|min:8',
-    //     ]);
-
-    //     $mahasiswa = Mahasiswa::findOrFail($request->mahasiswa_id);
-
-    //     if (Peserta::where('email', $mahasiswa->email)->exists()) {
-    //         return back()->withErrors(['email' => 'Email already exists in Peserta'])->withInput();
-    //     }
-
-    //     $user = User::create([
-    //         'name' => $mahasiswa->nama,
-    //         'email' => $mahasiswa->email,
-    //         'password' => bcrypt($request->password),
-    //     ]);
-
-    //     $role = Role::findByName('peserta');
-    //     $user->assignRole($role);
-
-    //     Peserta::create([
-    //         'user_id' => $user->id ?? null,
-    //         'nim' => $mahasiswa->nim ?? null,
-    //         'nama' => $mahasiswa->nama ?? null,
-    //         'alamat' => $mahasiswa->alamat ?? null,
-    //         'jurusan' => $mahasiswa->jurusan ?? null,
-    //         'email' => $mahasiswa->email ?? null,
-    //         'telepon' => $mahasiswa->telepon ?? null,
-    //         'jenis_kelamin' => $mahasiswa->jenis_kelamin ?? null,
-    //     ]);
-
-    //     return redirect()->route('peserta.index')->with('success', 'Peserta created successfully');
-    // }
     public function store(Request $request)
     {
         // Validasi input
         $request->validate([
-            'mahasiswa_id' => 'required|exists:mysql_second.mahasiswa,id',
+            'mahasiswa_id' => 'required|exists:mysql_second.mhsw,Login', // Menggunakan 'Login' sebagai primary key
             'password' => 'required|confirmed|min:8',
         ]);
-
+    
         // Mulai transaksi
         DB::beginTransaction();
-
+    
         try {
-            $mahasiswa = Mahasiswa::findOrFail($request->mahasiswa_id);
-
-            if (Peserta::where('email', $mahasiswa->email)->exists()) {
+            $mahasiswa = Mahasiswa::where('Login', $request->mahasiswa_id)->firstOrFail();
+    
+            if (Peserta::where('email', $mahasiswa->Email)->exists()) {
                 return back()->withErrors(['email' => 'Email already exists in Peserta'])->withInput();
             }
-
+    
+            if (Peserta::where('nama', $mahasiswa->Nama)->exists()) {
+                return back()->withErrors(['name' => 'Name already exists in Peserta'])->withInput();
+            }
+    
             $user = User::create([
-                'name' => $mahasiswa->nama,
-                'email' => $mahasiswa->email,
-                'password' => bcrypt($request->password),
+                'name' => $mahasiswa->Nama,
+                'email' => $mahasiswa->Email,
+                'password' => Hash::make($request->password),
             ]);
-
+    
             $role = Role::findByName('peserta');
             $user->assignRole($role);
-
+    
             Peserta::create([
                 'user_id' => $user->id ?? null,
-                'nim' => $mahasiswa->nim ?? null,
-                'nama' => $mahasiswa->nama ?? null,
-                'alamat' => $mahasiswa->alamat ?? null,
-                'jurusan' => $mahasiswa->jurusan ?? null,
-                'email' => $mahasiswa->email ?? null,
-                'telepon' => $mahasiswa->telepon ?? null,
-                'jenis_kelamin' => $mahasiswa->jenis_kelamin ?? null,
+                'nim' => $mahasiswa->MhswID ?? null,
+                'nama' => $mahasiswa->Nama ?? null,
+                'email' => $mahasiswa->Email ?? null,
+                'alamat' => $mahasiswa->NIMSementara ?? null,
+                'jurusan' => $mahasiswa->KDPIN ?? null,
+                'telepon' => $mahasiswa->PMBID ?? null,
+                'jenis_kelamin' => $mahasiswa->PMBFormJualID ?? null,
             ]);
-
+    
             // Commit transaksi jika semua operasi berhasil
             DB::commit();
-
+    
             return redirect()->route('peserta.index')->with('success', 'Peserta created successfully');
-
+    
         } catch (\Exception $e) {
             // Rollback transaksi jika terjadi kesalahan
             DB::rollBack();
-
+    
+            // Logging error
+            \log::error('Error creating Peserta: ' . $e->getMessage());
+    
             return back()->withErrors(['error' => 'An error occurred while creating Peserta: ' . $e->getMessage()])->withInput();
         }
     }
+    
 
-    public function edit(Peserta $peserta) // Pastikan parameter ini konsisten dengan route
+    public function edit(Peserta $peserta)
     {
         $mahasiswa = Mahasiswa::all();
         return view('applications.mbkm.peserta.edit', compact('peserta', 'mahasiswa'));
     }
 
-    public function update(Request $request, Peserta $peserta) // Gunakan model binding
+    public function update(Request $request, Peserta $peserta)
     {
         $request->validate([
             'nama' => 'required|string|max:255',
@@ -182,10 +158,9 @@ class PesertaController extends Controller
         return redirect()->route('peserta.index')->with('success', 'Peserta updated successfully');
     }
 
-    public function destroy(Peserta $peserta) // Gunakan model binding
+    public function destroy(Peserta $peserta)
     {
         $peserta->delete();
-
         return redirect()->route('peserta.index')->with('success', 'Peserta deleted successfully');
     }
 }
