@@ -11,14 +11,14 @@
                         <div class="card mb-3">
                             <div class="card-body">
                                 <div class="m-0">
-                                   <label for="mahasiswa_id" class="form-label">Mahasiswa</label>
+                                    <label for="mahasiswa_id" class="form-label">Mahasiswa</label>
                                     <select name="mahasiswa_id" id="mahasiswa_id"
                                         class="form-select @error('mahasiswa_id') is-invalid @enderror" required>
                                         <option value="">Pilih Mahasiswa</option>
                                         @foreach ($mahasiswa as $item)
-                                            <option value="{{ $item->id }}"
-                                                {{ old('mahasiswa_id') == $item->id ? 'selected' : '' }}>
-                                                {{ $item->nama }} - {{ $item->email }}
+                                            <option value="{{ $item->MhswID }}"
+                                                {{ old('mahasiswa_id') == $item->MhswID ? 'selected' : '' }}>
+                                                {{ $item->Nama }} - {{ $item->Email }}
                                             </option>
                                         @endforeach
                                     </select>

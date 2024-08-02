@@ -113,57 +113,60 @@ class DosenPembimbingLapanganController extends Controller
     {
         // Validasi request
         $request->validate([
-            'dosen_id' => 'required|exists:mysql_second.dosen,id',
+            'dosen_id' => 'required|exists:mysql_second.dosen,Login', // Menggunakan 'Login' sebagai primary key
             'password' => 'required|confirmed|min:8',
         ]);
-
+    
         // Mulai transaksi
         DB::beginTransaction();
-
+    
         try {
             // Mengambil data dosen dari database kedua
-            $dosen = Dosen::findOrFail($request->dosen_id);
-
+            $dosen = Dosen::where('Login', $request->dosen_id)->firstOrFail();
+    
             // Check for existing email or name in DosenPembimbingLapangan
-            if (DosenPembimbingLapangan::where('email', $dosen->email)->exists()) {
+            if (DosenPembimbingLapangan::where('email', $dosen->Email)->exists()) {
                 return back()->withErrors(['email' => 'Email already exists in Dosen Pembimbing Lapangan'])->withInput();
             }
-
-            if (DosenPembimbingLapangan::where('name', $dosen->nama)->exists()) {
+    
+            if (DosenPembimbingLapangan::where('name', $dosen->Nama)->exists()) {
                 return back()->withErrors(['name' => 'Name already exists in Dosen Pembimbing Lapangan'])->withInput();
             }
-
+    
+            // Membuat user baru
             $user = User::create([
-                'name' => $dosen->nama,
-                'email' => $dosen->email,
+                'name' => $dosen->Nama,
+                'email' => $dosen->Email,
                 'password' => Hash::make($request->password),
             ]);
-
+    
+            // Menetapkan role ke user baru
             $role = Role::findByName('dosen');
             $user->assignRole($role);
-
+    
+            // Membuat dosen pembimbing lapangan baru
             DosenPembimbingLapangan::create([
-                'user_id' => $user->id ?? null,
-                'name' => $dosen->nama ?? null,
-                'email' => $dosen->email ?? null,
-                'nip' => $dosen->nip ?? null,
-                'address' => $dosen->alamat ?? null,
-                'phone' => $dosen->phone ?? null,
-                'image' => 'default.jpg' ?? null,
-                // Tambahkan field lain sesuai kebutuhan
+                'user_id' => $user->id,
+                'name' => $dosen->Nama,
+                'email' => $dosen->Email,
+                'nip' => $dosen->NIPPNS,
+                'address' => $dosen->TempatLahir,
+                'phone' => $dosen->phone,
+                'image' => 'default.jpg',
             ]);
-
+    
             // Commit transaksi jika semua operasi berhasil
             DB::commit();
             return redirect()->route('dospem.index')->with('success', 'Dosen Pembimbing Lapangan created successfully.');
-
+    
         } catch (\Exception $e) {
             // Rollback transaksi jika terjadi kesalahan
             DB::rollBack();
-
+    
             return back()->withErrors(['error' => 'An error occurred while creating Dosen Pembimbing Lapangan: ' . $e->getMessage()])->withInput();
         }
     }
+    
 
 
     public function show($id)
