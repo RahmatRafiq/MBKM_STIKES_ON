@@ -10,16 +10,18 @@ class Mahasiswa extends Model
     use HasFactory;
 
     protected $connection = 'mysql_second';
+    protected $table = 'mhsw';
 
-    protected $table = 'mahasiswa';
     protected $fillable = [
-        'nim',
-        'nama',
-        'alamat',
-        'jurusan',
-        'tahun_masuk',
-        'email',
-        'telepon',
-        'jenis_kelamin',
+        'MhswID',       // ID Mahasiswa
+        'Nama',         // Nama
+        'Email',        // Email
+        'Login',        // Login
+        'LevelID',      // Level ID
+        'Password',     // Password
+        'NIMSementara', // NIM Sementara
+        'KDPIN',        // KDPIN
+        'PMBID',        // PMB ID
+        'PMBFormJualID' // PMB Form Jual ID
     ];
 }
