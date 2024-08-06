@@ -21,6 +21,7 @@ class LaporanMingguan extends Model
         'status',
         'kehadiran',
         'feedback',
+        'batch_id', // Tambahkan batch_id
     ];
 
     public function peserta()
@@ -48,7 +49,7 @@ class LaporanMingguan extends Model
         return $this->hasMany(LaporanHarian::class, 'minggu_ke', 'minggu_ke');
     }
 
-    public static function getByUser($user, $pesertaId = null)
+    public static function getByUser($user, $pesertaId = null, $batchId = null) // Tambahkan batchId
     {
         $query = self::with(['peserta', 'mitra', 'dospem'])
             ->where(function ($query) use ($user) {
@@ -61,6 +62,10 @@ class LaporanMingguan extends Model
 
         if ($pesertaId) {
             $query->where('peserta_id', $pesertaId);
+        }
+
+        if ($batchId) {
+            $query->where('batch_id', $batchId);
         }
 
         $query->orderBy(
