@@ -20,6 +20,7 @@ class LaporanHarian extends Model
         'status',
         'kehadiran',
         'feedback',
+        'batch_id', // Tambahkan batch_id
     ];
 
     public function peserta()
@@ -56,7 +57,7 @@ class LaporanHarian extends Model
             ->whereRaw('WEEKOFYEAR(laporan_harian.tanggal) - WEEKOFYEAR(?) + 1 = laporan_mingguan.minggu_ke', [$semesterStart]);
     }
 
-    public static function getByUser($user, $pesertaId = null)
+    public static function getByUser($user, $pesertaId = null, $batchId = null) // Tambahkan batchId
     {
         $query = self::with(['peserta', 'mitra', 'dospem'])
             ->where(function ($query) use ($user) {
@@ -69,6 +70,10 @@ class LaporanHarian extends Model
 
         if ($pesertaId) {
             $query->where('peserta_id', $pesertaId);
+        }
+
+        if ($batchId) {
+            $query->where('batch_id', $batchId);
         }
 
         $query->orderBy(
