@@ -8,19 +8,17 @@
           @csrf
           <div class="border rounded-2 p-4 mt-5">
             <div class="login-form">
-              <a href="index.html" class="mb-4 d-flex">
-                <img src="assets/images/logo.svg" class="img-fluid login-logo" alt="Earth Admin Dashboard" />
+              <a href="index.html" class="mb-4 d-flex justify-content-center">
+                <img src="{{ asset('assets/images/mbkm.png') }}" class="logo img-fluid" alt="Logo" />
               </a>
-              <h5 class="fw-light mb-5">Create your admin account.</h5>
+              <h5 class="fw-light mb-5 text-center">Create your account.</h5>
               <div class="mb-3">
                 <label class="form-label" for="name">Your Name</label>
-                <input type="text" name="name" id="name" class="form-control" placeholder="Enter your name"
-                  value="{{ old('name') }}" />
+                <input type="text" name="name" id="name" class="form-control" placeholder="Enter your name" value="{{ old('name') }}" />
               </div>
               <div class="mb-3">
                 <label class="form-label">Your Email</label>
-                <input type="text" name="email" id="email" class="form-control" placeholder="Enter your email"
-                  value="{{ old('email') }}" />
+                <input type="text" name="email" id="email" class="form-control" placeholder="Enter your email" value="{{ old('email') }}" />
               </div>
               <div class="mb-3">
                 <label class="form-label">Your Password</label>
@@ -28,8 +26,7 @@
               </div>
               <div class="mb-3">
                 <label class="form-label">Confirm Password</label>
-                <input type="password" name="password_confirmation" id="password_confirmation" class="form-control"
-                  placeholder="Re-enter password" />
+                <input type="password" name="password_confirmation" id="password_confirmation" class="form-control" placeholder="Re-enter password" />
               </div>
               <div class="d-flex align-items-center justify-content-between">
                 <div class="form-check m-0">
@@ -46,8 +43,7 @@
               </div>
               <div class="text-center pt-4">
                 <span>Already have an account?</span>
-                <a href="login.html" class="text-blue text-decoration-underline ms-2">
-                  Login</a>
+                <a href="login.html" class="text-blue text-decoration-underline ms-2">Login</a>
               </div>
             </div>
           </div>
