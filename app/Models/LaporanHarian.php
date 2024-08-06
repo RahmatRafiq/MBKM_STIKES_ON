@@ -57,13 +57,13 @@ class LaporanHarian extends Model
             ->whereRaw('WEEKOFYEAR(laporan_harian.tanggal) - WEEKOFYEAR(?) + 1 = laporan_mingguan.minggu_ke', [$semesterStart]);
     }
 
-    public static function getByUser($user, $pesertaId = null, $batchId = null) // Tambahkan batchId
+    public static function getByUser($user, $pesertaId = null, $batchId = null)
     {
-        $query = self::with(['peserta', 'mitra', 'dospem'])
+        $query = self::with(['peserta.registrationPlacement.mitra', 'peserta.registrationPlacement.dospem'])
             ->where(function ($query) use ($user) {
-                $query->whereHas('mitra', function ($query) use ($user) {
+                $query->whereHas('peserta.registrationPlacement.mitra', function ($query) use ($user) {
                     $query->where('user_id', $user->id);
-                })->orWhereHas('dospem', function ($query) use ($user) {
+                })->orWhereHas('peserta.registrationPlacement.dospem', function ($query) use ($user) {
                     $query->where('user_id', $user->id);
                 });
             });
@@ -73,7 +73,9 @@ class LaporanHarian extends Model
         }
 
         if ($batchId) {
-            $query->where('batch_id', $batchId);
+            $query->whereHas('peserta.registrationPlacement', function ($query) use ($batchId) {
+                $query->where('batch_id', $batchId);
+            });
         }
 
         $query->orderBy(
@@ -88,4 +90,5 @@ class LaporanHarian extends Model
 
         return $query->get();
     }
+
 }
