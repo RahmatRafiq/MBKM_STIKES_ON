@@ -51,11 +51,6 @@ class LaporanLengkap extends Model
         if ($pesertaId) {
             $query->where('peserta_id', $pesertaId);
         }
-
-        if ($batchId) {
-            $query->where('batch_id', $batchId);
-        }
-
         return $query->get();
     }
 }
