@@ -17,6 +17,7 @@
                         <input type="hidden" name="lowongan_id" value="{{ $selectedLowongan->id }}">
                         <input type="hidden" name="nama_peserta" value="{{ auth()->user()->nama }}">
                         <input type="hidden" name="nama_lowongan" value="{{ $selectedLowongan->name }}">
+                        <input type="hidden" name="batch_id" value="{{ $batchId }}"> <!-- Tambahkan batch_id -->
                         <button type="submit" class="btn btn-primary">Daftar</button>
                     </form>
                     <!-- Share Button -->
