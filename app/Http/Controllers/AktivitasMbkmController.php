@@ -24,40 +24,38 @@ class AktivitasMbkmController extends Controller
     }
 
     public function index(Request $request)
-{
-    $user = Auth::user();
-    $pesertaId = $request->input('peserta_id');
+    {
+        $user = Auth::user();
+        $pesertaId = $request->input('peserta_id');
+        $batchId = $this->activeBatch->id; // Pastikan menggunakan batch aktif
 
-    // Eager load the relationships to avoid N+1 problem
-    $daftarPeserta = Peserta::with(['registrationPlacement.lowongan.mitra'])
-        ->whereHas('registrationPlacement.lowongan.mitra', function ($query) use ($user) {
-            $query->where('user_id', $user->id);
-        })->orWhereHas('registrationPlacement.dospem', function ($query) use ($user) {
-            $query->where('user_id', $user->id);
-        })->get();
+        // Eager load the relationships to avoid N+1 problem
+        $daftarPeserta = Peserta::with(['registrationPlacement.lowongan.mitra'])
+            ->whereHas('registrationPlacement.lowongan.mitra', function ($query) use ($user, $batchId) {
+                $query->where('user_id', $user->id)->where('batch_id', $batchId); // Filter berdasarkan batch
+            })->orWhereHas('registrationPlacement.dospem', function ($query) use ($user, $batchId) {
+                $query->where('user_id', $user->id)->where('batch_id', $batchId); // Filter berdasarkan batch
+            })->get();
 
-    $laporanHarian = $pesertaId ? LaporanHarian::getByUser($user, $pesertaId) : collect();
-    $laporanMingguan = $pesertaId ? LaporanMingguan::getByUser($user, $pesertaId) : collect();
-    $laporanLengkap = $pesertaId ? LaporanLengkap::getByUser($user, $pesertaId) : collect();
+        $laporanHarian = $pesertaId ? LaporanHarian::getByUser($user, $pesertaId, $batchId) : collect(); // Tambahkan batchId
+        $laporanMingguan = $pesertaId ? LaporanMingguan::getByUser($user, $pesertaId, $batchId) : collect(); // Tambahkan batchId
+        $laporanLengkap = $pesertaId ? LaporanLengkap::getByUser($user, $pesertaId, $batchId) : collect(); // Tambahkan batchId
 
-    return view('applications.mbkm.laporan.index', compact('daftarPeserta', 'laporanHarian', 'laporanMingguan', 'laporanLengkap', 'pesertaId'));
-}
-
+        return view('applications.mbkm.laporan.index', compact('daftarPeserta', 'laporanHarian', 'laporanMingguan', 'laporanLengkap', 'pesertaId'));
+    }
 
     public function createLaporanHarian(Request $request)
     {
         $user = Auth::user();
-        $peserta = Peserta::with('registrationPlacement')->where('user_id', $user->id)->first();
+        $batchId = $this->activeBatch->id;
+        $peserta = Peserta::with(['registrationPlacement' => function ($query) use ($batchId) {
+            $query->where('batch_id', $batchId);
+        }])->where('user_id', $user->id)->first();
 
-        if (!$peserta) {
-            return response()->view('applications.mbkm.error-page.not-registered', ['message' => 'Anda tidak terdaftar sebagai peserta.'], 403);
+        if (!$peserta || !$peserta->registrationPlacement) {
+            return response()->view('applications.mbkm.error-page.not-registered', ['message' => 'Anda tidak terdaftar dalam kegiatan MBKM pada batch aktif.'], 403);
         }
 
-        $disabledPage = $peserta->registrationPlacement;
-
-        if (!$disabledPage) {
-            return response()->view('applications.mbkm.error-page.not-registered', ['message' => 'Anda tidak terdaftar dalam kegiatan MBKM apapun.'], 403);
-        }
         $namaPeserta = $user->peserta->nama;
 
         $weekNumber = $request->query('week', null);
@@ -71,7 +69,7 @@ class AktivitasMbkmController extends Controller
 
         $currentDate = \Carbon\Carbon::now();
 
-        $laporanHarian = LaporanHarian::where('peserta_id', $user->peserta->id)->get()->keyBy('tanggal');
+        $laporanHarian = LaporanHarian::where('peserta_id', $user->peserta->id)->where('batch_id', $batchId)->get()->keyBy('tanggal');
 
         $totalLaporan = $laporanHarian->count();
         $validasiLaporan = $laporanHarian->where('status', 'validasi')->count();
@@ -94,16 +92,13 @@ class AktivitasMbkmController extends Controller
     public function createLaporanMingguan()
     {
         $user = Auth::user();
-        $peserta = Peserta::with('registrationPlacement')->where('user_id', $user->id)->first();
+        $batchId = $this->activeBatch->id;
+        $peserta = Peserta::with(['registrationPlacement' => function ($query) use ($batchId) {
+            $query->where('batch_id', $batchId);
+        }])->where('user_id', $user->id)->first();
 
-        if (!$peserta) {
-            return response()->view('applications.mbkm.error-page.not-registered', ['message' => 'Anda tidak terdaftar sebagai peserta.'], 403);
-        }
-
-        $disabledPage = $peserta->registrationPlacement;
-
-        if (!$disabledPage) {
-            return response()->view('applications.mbkm.error-page.not-registered', ['message' => 'Anda tidak terdaftar dalam kegiatan MBKM apapun.'], 403);
+        if (!$peserta || !$peserta->registrationPlacement) {
+            return response()->view('applications.mbkm.error-page.not-registered', ['message' => 'Anda tidak terdaftar dalam kegiatan MBKM pada batch aktif.'], 403);
         }
 
         $namaPeserta = $user->peserta->nama;
@@ -114,7 +109,7 @@ class AktivitasMbkmController extends Controller
         $currentWeek = $currentDate->diffInWeeks($semesterStart) + 1;
         $totalWeeks = $semesterStart->diffInWeeks($semesterEnd) + 1;
 
-        $laporanHarian = LaporanHarian::where('peserta_id', $user->peserta->id)->get();
+        $laporanHarian = LaporanHarian::where('peserta_id', $user->peserta->id)->where('batch_id', $batchId)->get();
 
         $laporanHarian = $laporanHarian->map(function ($item) use ($semesterStart) {
             $tanggal = \Carbon\Carbon::parse($item->tanggal)->startOfWeek();
@@ -133,7 +128,7 @@ class AktivitasMbkmController extends Controller
         $revisiLaporan = $laporanHarian->where('status', 'revisi')->count();
         $pendingLaporan = $laporanHarian->where('status', 'pending')->count();
 
-        $laporanMingguan = LaporanMingguan::where('peserta_id', $user->peserta->id)->get()->keyBy('minggu_ke');
+        $laporanMingguan = LaporanMingguan::where('peserta_id', $user->peserta->id)->where('batch_id', $batchId)->get()->keyBy('minggu_ke');
 
         $weeks = [];
         for ($i = 0; $i < $totalWeeks; $i++) {
@@ -180,17 +175,16 @@ class AktivitasMbkmController extends Controller
     public function createLaporanLengkap()
     {
         $user = Auth::user();
-        $peserta = Peserta::with('registrationPlacement')->where('user_id', $user->id)->first();
+        $batchId = $this->activeBatch->id;
+        $peserta = Peserta::with(['registrationPlacement' => function ($query) use ($batchId) {
+            $query->where('batch_id', $batchId);
+        }])->where('user_id', $user->id)->first();
 
-        if (!$peserta) {
-            return response()->view('applications.mbkm.error-page.not-registered', ['message' => 'Anda tidak terdaftar sebagai peserta.'], 403);
+        if (!$peserta || !$peserta->registrationPlacement) {
+            return response()->view('applications.mbkm.error-page.not-registered', ['message' => 'Anda tidak terdaftar dalam kegiatan MBKM pada batch aktif.'], 403);
         }
-        $disabledPage = $peserta->registrationPlacement;
 
-        if (!$disabledPage) {
-            return response()->view('applications.mbkm.error-page.not-registered', ['message' => 'Anda tidak terdaftar dalam kegiatan MBKM apapun.'], 403);
-        }
-        $aktivitas = AktivitasMbkm::where('peserta_id', $user->id)->first();
+        $aktivitas = AktivitasMbkm::where('peserta_id', $user->id)->where('batch_id', $batchId)->first();
 
         return view('applications.mbkm.laporan.laporan-lengkap', compact('aktivitas'));
     }
@@ -204,6 +198,7 @@ class AktivitasMbkmController extends Controller
         ]);
 
         $user = Auth::user();
+        $batchId = $this->activeBatch->id;
 
         $user->load(['peserta.registrationPlacement.lowongan']);
 
@@ -213,6 +208,7 @@ class AktivitasMbkmController extends Controller
                 'mitra_id' => $user->peserta->registrationPlacement->lowongan->mitra_id,
                 'dospem_id' => $user->peserta->registrationPlacement->dospem_id,
                 'tanggal' => $request->tanggal,
+                'batch_id' => $batchId, // Tambahkan batch_id
             ],
             [
                 'isi_laporan' => $request->isi_laporan,
@@ -233,6 +229,7 @@ class AktivitasMbkmController extends Controller
         ]);
 
         $user = Auth::user();
+        $batchId = $this->activeBatch->id;
 
         $user->load(['peserta.registrationPlacement.lowongan']);
 
@@ -242,7 +239,7 @@ class AktivitasMbkmController extends Controller
                 'mitra_id' => $user->peserta->registrationPlacement->lowongan->mitra_id,
                 'dospem_id' => $user->peserta->registrationPlacement->dospem_id,
                 'minggu_ke' => $request->minggu_ke,
-
+                'batch_id' => $batchId, // Tambahkan batch_id
             ],
             [
                 'isi_laporan' => $request->isi_laporan,
@@ -262,7 +259,8 @@ class AktivitasMbkmController extends Controller
         ]);
 
         $user = Auth::user();
-        $aktivitas = AktivitasMbkm::where('peserta_id', $user->id)->first();
+        $batchId = $this->activeBatch->id;
+        $aktivitas = AktivitasMbkm::where('peserta_id', $user->id)->where('batch_id', $batchId)->first();
 
         $laporanLengkap = LaporanLengkap::updateOrCreate(
             [
@@ -270,6 +268,7 @@ class AktivitasMbkmController extends Controller
                 'mitra_id' => $user->peserta->registrationPlacement->lowongan->mitra_id,
                 'dospem_id' => $user->peserta->registrationPlacement->dospem_id,
                 'tanggal' => $request->tanggal,
+                'batch_id' => $batchId, // Tambahkan batch_id
             ],
             [
                 'isi_laporan' => $request->isi_laporan,
@@ -285,60 +284,58 @@ class AktivitasMbkmController extends Controller
 
     public function validateLaporanHarian(Request $request, $id)
     {
-        $laporanHarian = LaporanHarian::findOrFail($id);
-    
+        $laporanHarian = LaporanHarian::where('id', $id)->where('batch_id', $this->activeBatch->id)->firstOrFail();
+
         if ($laporanHarian->mitra->user_id != Auth::id() && $laporanHarian->dospem->user_id != Auth::id()) {
             return response()->json(['errors' => 'Anda tidak memiliki izin untuk memvalidasi laporan ini.'], 403);
         }
-    
+
         if ($request->action == 'validasi') {
             $laporanHarian->status = 'validasi';
         } elseif ($request->action == 'revisi') {
             $laporanHarian->status = 'revisi';
         }
-        
+
         $laporanHarian->save();
-        
+
         return response()->json(['success' => 'Laporan harian berhasil diperbarui.']);
     }
-    
+
     public function validateLaporanMingguan(Request $request, $id)
     {
-        $laporanMingguan = LaporanMingguan::findOrFail($id);
-    
+        $laporanMingguan = LaporanMingguan::where('id', $id)->where('batch_id', $this->activeBatch->id)->firstOrFail();
+
         if ($laporanMingguan->mitra->user_id != Auth::id() && $laporanMingguan->dospem->user_id != Auth::id()) {
             return response()->json(['errors' => 'Anda tidak memiliki izin untuk memvalidasi laporan ini.'], 403);
         }
-    
+
         if ($request->action == 'validasi') {
             $laporanMingguan->status = 'validasi';
         } elseif ($request->action == 'revisi') {
             $laporanMingguan->status = 'revisi';
         }
-    
+
         $laporanMingguan->save();
-    
+
         return response()->json(['success' => 'Laporan mingguan berhasil diperbarui.']);
     }
-    
+
     public function validateLaporanLengkap(Request $request, $id)
     {
-        $laporanLengkap = LaporanLengkap::findOrFail($id);
-    
+        $laporanLengkap = LaporanLengkap::where('id', $id)->where('batch_id', $this->activeBatch->id)->firstOrFail();
+
         if ($laporanLengkap->mitra->user_id != Auth::id() && $laporanLengkap->dospem->user_id != Auth::id()) {
             return response()->json(['errors' => 'Anda tidak memiliki izin untuk memvalidasi laporan ini.'], 403);
         }
-    
+
         if ($request->action == 'validasi') {
             $laporanLengkap->status = 'validasi';
         } elseif ($request->action == 'revisi') {
             $laporanLengkap->status = 'revisi';
         }
-        
+
         $laporanLengkap->save();
-    
+
         return response()->json(['success' => 'Laporan lengkap berhasil diperbarui.']);
     }
-    
-
 }
