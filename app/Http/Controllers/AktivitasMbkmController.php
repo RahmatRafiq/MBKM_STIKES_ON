@@ -34,8 +34,8 @@ class AktivitasMbkmController extends Controller
             ->whereHas('registrationPlacement.lowongan.mitra', function ($query) use ($user, $batchId) {
                 $query->where('user_id', $user->id)->where('batch_id', $batchId); // Filter berdasarkan batch
             })->orWhereHas('registrationPlacement.dospem', function ($query) use ($user, $batchId) {
-                $query->where('user_id', $user->id)->where('batch_id', $batchId); // Filter berdasarkan batch
-            })->get();
+            $query->where('user_id', $user->id)->where('batch_id', $batchId); // Filter berdasarkan batch
+        })->get();
 
         $laporanHarian = $pesertaId ? LaporanHarian::getByUser($user, $pesertaId, $batchId) : collect(); // Tambahkan batchId
         $laporanMingguan = $pesertaId ? LaporanMingguan::getByUser($user, $pesertaId, $batchId) : collect(); // Tambahkan batchId
@@ -49,18 +49,13 @@ class AktivitasMbkmController extends Controller
         $user = Auth::user();
         $peserta = Peserta::with('registrationPlacement')->where('user_id', $user->id)->first();
 
-        if (!$peserta) {
-            return response()->view('applications.mbkm.error-page.not-registered', ['message' => 'Anda tidak terdaftar sebagai peserta.'], 403);
+        if (!$peserta || !$peserta->registrationPlacement || $peserta->registrationPlacement->batch_id != $this->activeBatch->id) {
+            return response()->view('applications.mbkm.error-page.not-registered', ['message' => 'Anda tidak terdaftar dalam kegiatan MBKM apapun untuk batch ini.'], 403);
         }
 
-        $disabledPage = $peserta->registrationPlacement;
-
-        if (!$disabledPage) {
-            return response()->view('applications.mbkm.error-page.not-registered', ['message' => 'Anda tidak terdaftar dalam kegiatan MBKM apapun.'], 403);
-        }
         $namaPeserta = $user->peserta->nama;
-
         $weekNumber = $request->query('week', null);
+
         if ($weekNumber !== null) {
             $startOfWeek = \Carbon\Carbon::parse($this->activeBatch->semester_start)->addWeeks($weekNumber - 1)->startOfWeek();
             $endOfWeek = $startOfWeek->copy()->endOfWeek();
@@ -70,14 +65,7 @@ class AktivitasMbkmController extends Controller
         }
 
         $currentDate = \Carbon\Carbon::now();
-
-        $laporanHarian = LaporanHarian::where('peserta_id', $user->peserta->id)
-            ->whereHas('registrationPlacement', function($query) {
-                $query->where('batch_id', $this->activeBatch->id);
-            })
-            ->get()
-            ->keyBy('tanggal');
-
+        $laporanHarian = LaporanHarian::where('peserta_id', $user->peserta->id)->get()->keyBy('tanggal');
         $totalLaporan = $laporanHarian->count();
         $validasiLaporan = $laporanHarian->where('status', 'validasi')->count();
         $revisiLaporan = $laporanHarian->where('status', 'revisi')->count();
@@ -99,25 +87,20 @@ class AktivitasMbkmController extends Controller
     public function createLaporanMingguan()
     {
         $user = Auth::user();
-        $batchId = $this->activeBatch->id;
-        $peserta = Peserta::with(['registrationPlacement' => function ($query) use ($batchId) {
-            $query->where('batch_id', $batchId);
-        }])->where('user_id', $user->id)->first();
+        $peserta = Peserta::with('registrationPlacement')->where('user_id', $user->id)->first();
 
-        if (!$peserta || !$peserta->registrationPlacement) {
-            return response()->view('applications.mbkm.error-page.not-registered', ['message' => 'Anda tidak terdaftar dalam kegiatan MBKM pada batch aktif.'], 403);
+        if (!$peserta || !$peserta->registrationPlacement || $peserta->registrationPlacement->batch_id != $this->activeBatch->id) {
+            return response()->view('applications.mbkm.error-page.not-registered', ['message' => 'Anda tidak terdaftar dalam kegiatan MBKM apapun untuk batch ini.'], 403);
         }
 
         $namaPeserta = $user->peserta->nama;
-
         $semesterStart = \Carbon\Carbon::parse($this->activeBatch->semester_start)->startOfWeek();
         $semesterEnd = \Carbon\Carbon::parse($this->activeBatch->semester_end)->endOfWeek();
         $currentDate = \Carbon\Carbon::now();
         $currentWeek = $currentDate->diffInWeeks($semesterStart) + 1;
         $totalWeeks = $semesterStart->diffInWeeks($semesterEnd) + 1;
 
-        $laporanHarian = LaporanHarian::where('peserta_id', $user->peserta->id)->where('batch_id', $batchId)->get();
-
+        $laporanHarian = LaporanHarian::where('peserta_id', $user->peserta->id)->get();
         $laporanHarian = $laporanHarian->map(function ($item) use ($semesterStart) {
             $tanggal = \Carbon\Carbon::parse($item->tanggal)->startOfWeek();
             $diffWeeks = $semesterStart->diffInWeeks($tanggal->startOfWeek()) + 1;
@@ -129,20 +112,17 @@ class AktivitasMbkmController extends Controller
         });
 
         $laporanHarianPerMinggu = $laporanHarian->groupBy('minggu_ke');
-
         $totalLaporan = $laporanHarian->count();
         $validasiLaporan = $laporanHarian->where('status', 'validasi')->count();
         $revisiLaporan = $laporanHarian->where('status', 'revisi')->count();
         $pendingLaporan = $laporanHarian->where('status', 'pending')->count();
-
-        $laporanMingguan = LaporanMingguan::where('peserta_id', $user->peserta->id)->where('batch_id', $batchId)->get()->keyBy('minggu_ke');
+        $laporanMingguan = LaporanMingguan::where('peserta_id', $user->peserta->id)->get()->keyBy('minggu_ke');
 
         $weeks = [];
         for ($i = 0; $i < $totalWeeks; $i++) {
             $startOfWeek = $semesterStart->copy()->addWeeks($i)->startOfWeek();
             $endOfWeek = $startOfWeek->copy()->endOfWeek();
             $laporanHarianMingguIni = $laporanHarianPerMinggu->get($i + 1);
-
             $isComplete = $laporanHarianMingguIni && $laporanHarianMingguIni->count() >= 5;
             $hasRevisi = $laporanHarianMingguIni && $laporanHarianMingguIni->contains('is_revisi', true);
 
@@ -182,16 +162,13 @@ class AktivitasMbkmController extends Controller
     public function createLaporanLengkap()
     {
         $user = Auth::user();
-        $batchId = $this->activeBatch->id;
-        $peserta = Peserta::with(['registrationPlacement' => function ($query) use ($batchId) {
-            $query->where('batch_id', $batchId);
-        }])->where('user_id', $user->id)->first();
+        $peserta = Peserta::with('registrationPlacement')->where('user_id', $user->id)->first();
 
-        if (!$peserta || !$peserta->registrationPlacement) {
-            return response()->view('applications.mbkm.error-page.not-registered', ['message' => 'Anda tidak terdaftar dalam kegiatan MBKM pada batch aktif.'], 403);
+        if (!$peserta || !$peserta->registrationPlacement || $peserta->registrationPlacement->batch_id != $this->activeBatch->id) {
+            return response()->view('applications.mbkm.error-page.not-registered', ['message' => 'Anda tidak terdaftar dalam kegiatan MBKM apapun untuk batch ini.'], 403);
         }
 
-        $aktivitas = AktivitasMbkm::where('peserta_id', $user->id)->where('batch_id', $batchId)->first();
+        $aktivitas = AktivitasMbkm::where('peserta_id', $user->id)->first();
 
         return view('applications.mbkm.laporan.laporan-lengkap', compact('aktivitas'));
     }
@@ -205,7 +182,6 @@ class AktivitasMbkmController extends Controller
         ]);
 
         $user = Auth::user();
-        $batchId = $this->activeBatch->id;
 
         $user->load(['peserta.registrationPlacement.lowongan']);
 
@@ -215,7 +191,6 @@ class AktivitasMbkmController extends Controller
                 'mitra_id' => $user->peserta->registrationPlacement->lowongan->mitra_id,
                 'dospem_id' => $user->peserta->registrationPlacement->dospem_id,
                 'tanggal' => $request->tanggal,
-                'batch_id' => $batchId, // Tambahkan batch_id
             ],
             [
                 'isi_laporan' => $request->isi_laporan,
@@ -236,7 +211,6 @@ class AktivitasMbkmController extends Controller
         ]);
 
         $user = Auth::user();
-        $batchId = $this->activeBatch->id;
 
         $user->load(['peserta.registrationPlacement.lowongan']);
 
@@ -246,7 +220,7 @@ class AktivitasMbkmController extends Controller
                 'mitra_id' => $user->peserta->registrationPlacement->lowongan->mitra_id,
                 'dospem_id' => $user->peserta->registrationPlacement->dospem_id,
                 'minggu_ke' => $request->minggu_ke,
-                'batch_id' => $batchId, // Tambahkan batch_id
+
             ],
             [
                 'isi_laporan' => $request->isi_laporan,
@@ -266,8 +240,7 @@ class AktivitasMbkmController extends Controller
         ]);
 
         $user = Auth::user();
-        $batchId = $this->activeBatch->id;
-        $aktivitas = AktivitasMbkm::where('peserta_id', $user->id)->where('batch_id', $batchId)->first();
+        $aktivitas = AktivitasMbkm::where('peserta_id', $user->id)->first();
 
         $laporanLengkap = LaporanLengkap::updateOrCreate(
             [
@@ -275,7 +248,6 @@ class AktivitasMbkmController extends Controller
                 'mitra_id' => $user->peserta->registrationPlacement->lowongan->mitra_id,
                 'dospem_id' => $user->peserta->registrationPlacement->dospem_id,
                 'tanggal' => $request->tanggal,
-                'batch_id' => $batchId, // Tambahkan batch_id
             ],
             [
                 'isi_laporan' => $request->isi_laporan,
