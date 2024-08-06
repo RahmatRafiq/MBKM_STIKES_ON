@@ -17,7 +17,8 @@ class LaporanLengkap extends Model
         'mitra_id', // Tambahkan mitra_id di sini
         'isi_laporan',
         'status',
-        'feedback'
+        'feedback',
+        'batch_id', // Tambahkan batch_id
     ];
 
     public function peserta()
@@ -39,7 +40,8 @@ class LaporanLengkap extends Model
     {
         return $this->belongsTo(Lowongan::class);
     }
-    public static function getByUser($user, $pesertaId = null)
+    
+    public static function getByUser($user, $pesertaId = null, $batchId = null) // Tambahkan batchId
     {
         $query = self::with(['peserta', 'dospem'])
             ->whereHas('dospem', function ($query) use ($user) {
@@ -50,6 +52,11 @@ class LaporanLengkap extends Model
             $query->where('peserta_id', $pesertaId);
         }
 
+        if ($batchId) {
+            $query->where('batch_id', $batchId);
+        }
+
         return $query->get();
     }
 }
+
