@@ -47,15 +47,17 @@ class AktivitasMbkmController extends Controller
     public function createLaporanHarian(Request $request)
     {
         $user = Auth::user();
-        $batchId = $this->activeBatch->id;
-        $peserta = Peserta::with(['registrationPlacement' => function ($query) use ($batchId) {
-            $query->where('batch_id', $batchId);
-        }])->where('user_id', $user->id)->first();
+        $peserta = Peserta::with('registrationPlacement')->where('user_id', $user->id)->first();
 
-        if (!$peserta || !$peserta->registrationPlacement) {
-            return response()->view('applications.mbkm.error-page.not-registered', ['message' => 'Anda tidak terdaftar dalam kegiatan MBKM pada batch aktif.'], 403);
+        if (!$peserta) {
+            return response()->view('applications.mbkm.error-page.not-registered', ['message' => 'Anda tidak terdaftar sebagai peserta.'], 403);
         }
 
+        $disabledPage = $peserta->registrationPlacement;
+
+        if (!$disabledPage) {
+            return response()->view('applications.mbkm.error-page.not-registered', ['message' => 'Anda tidak terdaftar dalam kegiatan MBKM apapun.'], 403);
+        }
         $namaPeserta = $user->peserta->nama;
 
         $weekNumber = $request->query('week', null);
@@ -69,7 +71,12 @@ class AktivitasMbkmController extends Controller
 
         $currentDate = \Carbon\Carbon::now();
 
-        $laporanHarian = LaporanHarian::where('peserta_id', $user->peserta->id)->where('batch_id', $batchId)->get()->keyBy('tanggal');
+        $laporanHarian = LaporanHarian::where('peserta_id', $user->peserta->id)
+            ->whereHas('registrationPlacement', function($query) {
+                $query->where('batch_id', $this->activeBatch->id);
+            })
+            ->get()
+            ->keyBy('tanggal');
 
         $totalLaporan = $laporanHarian->count();
         $validasiLaporan = $laporanHarian->where('status', 'validasi')->count();
