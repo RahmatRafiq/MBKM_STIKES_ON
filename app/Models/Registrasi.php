@@ -19,9 +19,7 @@ class Registrasi extends Model
         'dospem_id',
         'nama_peserta',
         'nama_lowongan',
-        'laporan_harian_id',
-        'laporan_mingguan_id',
-        'laporan_lengkap_id',
+        'batch_id', // Tambahkan kolom batch_id
     ];
 
     protected $casts = [
@@ -29,7 +27,6 @@ class Registrasi extends Model
         'updated_at' => 'datetime:Y-m-d H:i:s',
     ];
 
-    // Registrasi.php
     public function peserta()
     {
         return $this->belongsTo(Peserta::class, 'peserta_id');
@@ -45,14 +42,12 @@ class Registrasi extends Model
         return $this->belongsTo(DosenPembimbingLapangan::class, 'dospem_id');
     }
 
-    // IdGenerator
     public static function generateReferensi()
     {
         $referensi = 'REG-' . date('Ymd') . '-' . rand(1000, 9999);
         return $referensi;
     }
 
-    // boot
     protected static function boot()
     {
         parent::boot();
