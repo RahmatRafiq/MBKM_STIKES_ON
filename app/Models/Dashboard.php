@@ -1,83 +1,7 @@
 <?php
 
-// namespace App\Models;
-
-// use App\Models\LaporanHarian;
-// use App\Models\LaporanMingguan;
-// use App\Models\Lowongan;
-// use App\Models\MitraProfile;
-// use App\Models\Peserta;
-// use Illuminate\Database\Eloquent\Factories\HasFactory;
-// use Illuminate\Database\Eloquent\Model;
-
-// class Dashboard extends Model
-// {
-//     use HasFactory;
-
-//     public static function getPesertaCount($user)
-//     {
-//         return Peserta::whereHas('registrationPlacement.lowongan.mitra', function ($query) use ($user) {
-//             $query->where('user_id', $user->id);
-//         })->count();
-//     }
-
-//     public static function getLowonganData($user)
-//     {
-//         return Lowongan::whereHas('mitra', function ($query) use ($user) {
-//             $query->where('user_id', $user->id);
-//         })->withCount('registrations')->get();
-//     }
-
-//     public static function getCounts()
-//     {
-//         return [
-//             'peserta' => Peserta::count(),
-//             'dosen' => DosenPembimbingLapangan::count(),
-//             'mitra' => MitraProfile::count(),
-//             'lowongan' => Lowongan::count(),
-//             'laporanHarian' => LaporanHarian::count(),
-//             'laporanMingguan' => LaporanMingguan::count(),
-//             'laporanLengkap' => LaporanLengkap::count(),
-//         ];
-//     }
-
-//     public static function getLaporanHarianStatusCounts()
-//     {
-//         return LaporanHarian::selectRaw('status, count(*) as count')
-//             ->groupBy('status')
-//             ->get()
-//             ->pluck('count', 'status')
-//             ->toArray();
-//     }
-
-//     public static function getLaporanMingguanStatusCounts()
-//     {
-//         return LaporanMingguan::selectRaw('status, count(*) as count')
-//             ->groupBy('status')
-//             ->get()
-//             ->pluck('count', 'status')
-//             ->toArray();
-//     }
-
-//     public static function getStaffDashboardData()
-//     {
-//         // $jumlahPesertaAktif = Peserta::where('status', 'aktif')->count();
-//         $laporanHarian = LaporanHarian::count();
-//         $laporanMingguan = LaporanMingguan::count();
-//         $lowonganTersedia = Lowongan::where('is_open', true)->count();
-//         $pesertaTerbaru = Peserta::orderBy('created_at', 'desc')->take(5)->get();
-
-//         return compact( 'laporanHarian', 'laporanMingguan', 'lowonganTersedia', 'pesertaTerbaru');
-//     }
-// }
-
 namespace App\Models;
 
-use App\Models\LaporanHarian;
-use App\Models\LaporanMingguan;
-use App\Models\Lowongan;
-use App\Models\MitraProfile;
-use App\Models\Peserta;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
@@ -85,45 +9,93 @@ class Dashboard extends Model
 {
     use HasFactory;
 
-    public static function getPesertaCount($user)
+    public static function getPesertaCount($user, $batchId = null)
     {
-        return Peserta::whereHas('registrationPlacement.lowongan.mitra', function ($query) use ($user) {
+        return Peserta::whereHas('registrationPlacement.lowongan.mitra', function ($query) use ($user, $batchId) {
             $query->where('user_id', $user->id);
+            if ($batchId) {
+                $query->where('batch_id', $batchId);
+            }
         })->count();
     }
 
-    public static function getLowonganData($user)
+    public static function getLowonganData($user, $batchId = null)
     {
-        return Lowongan::whereHas('mitra', function ($query) use ($user) {
+        return Lowongan::whereHas('mitra', function ($query) use ($user, $batchId) {
             $query->where('user_id', $user->id);
+            if ($batchId) {
+                $query->where('batch_id', $batchId);
+            }
         })->withCount('registrations')->get();
     }
 
-    public static function getCounts()
+    public static function getCounts($batchId = null)
     {
+        $pesertaCountQuery = Peserta::query();
+        if ($batchId) {
+            $pesertaCountQuery->whereHas('registrationPlacement', function ($query) use ($batchId) {
+                $query->where('batch_id', $batchId);
+            });
+        }
+        
+        $laporanHarianCountQuery = LaporanHarian::query();
+        if ($batchId) {
+            $laporanHarianCountQuery->whereHas('peserta.registrationPlacement', function ($query) use ($batchId) {
+                $query->where('batch_id', $batchId);
+            });
+        }
+
+        $laporanMingguanCountQuery = LaporanMingguan::query();
+        if ($batchId) {
+            $laporanMingguanCountQuery->whereHas('peserta.registrationPlacement', function ($query) use ($batchId) {
+                $query->where('batch_id', $batchId);
+            });
+        }
+
+        $laporanLengkapCountQuery = LaporanLengkap::query();
+        if ($batchId) {
+            $laporanLengkapCountQuery->whereHas('peserta.registrationPlacement', function ($query) use ($batchId) {
+                $query->where('batch_id', $batchId);
+            });
+        }
+
         return [
-            'peserta' => Peserta::count(),
+            'peserta' => $pesertaCountQuery->count(),
             'dosen' => DosenPembimbingLapangan::count(),
             'mitra' => MitraProfile::count(),
             'lowongan' => Lowongan::count(),
-            'laporanHarian' => LaporanHarian::count(),
-            'laporanMingguan' => LaporanMingguan::count(),
-            'laporanLengkap' => LaporanLengkap::count(),
+            'laporanHarian' => $laporanHarianCountQuery->count(),
+            'laporanMingguan' => $laporanMingguanCountQuery->count(),
+            'laporanLengkap' => $laporanLengkapCountQuery->count(),
         ];
     }
 
-    public static function getLaporanHarianStatusCounts()
+    public static function getLaporanHarianStatusCounts($batchId = null)
     {
-        return LaporanHarian::selectRaw('status, count(*) as count')
+        $query = LaporanHarian::query();
+        if ($batchId) {
+            $query->whereHas('peserta.registrationPlacement', function ($query) use ($batchId) {
+                $query->where('batch_id', $batchId);
+            });
+        }
+        
+        return $query->selectRaw('status, count(*) as count')
             ->groupBy('status')
             ->get()
             ->pluck('count', 'status')
             ->toArray();
     }
 
-    public static function getLaporanMingguanStatusCounts()
+    public static function getLaporanMingguanStatusCounts($batchId = null)
     {
-        return LaporanMingguan::selectRaw('status, count(*) as count')
+        $query = LaporanMingguan::query();
+        if ($batchId) {
+            $query->whereHas('peserta.registrationPlacement', function ($query) use ($batchId) {
+                $query->where('batch_id', $batchId);
+            });
+        }
+
+        return $query->selectRaw('status, count(*) as count')
             ->groupBy('status')
             ->get()
             ->pluck('count', 'status')
@@ -140,17 +112,37 @@ class Dashboard extends Model
         ];
     }
 
-    public static function getMitraDashboardData($user)
+    public static function getMitraDashboardData($user, $batchId = null)
     {
-        $daftarPeserta = Peserta::whereHas('registrationPlacement.lowongan.mitra', function ($query) use ($user) {
+        $daftarPesertaQuery = Peserta::whereHas('registrationPlacement.lowongan.mitra', function ($query) use ($user, $batchId) {
             $query->where('user_id', $user->id);
-        })->get();
+            if ($batchId) {
+                $query->where('batch_id', $batchId);
+            }
+        });
+        $daftarPeserta = $daftarPesertaQuery->get();
         $jumlahPeserta = $daftarPeserta->count();
-        $lowongan = Lowongan::whereHas('mitra', function ($query) use ($user) {
+
+        $lowonganQuery = Lowongan::whereHas('mitra', function ($query) use ($user) {
             $query->where('user_id', $user->id);
-        })->withCount('registrations')->get();
-        $laporanHarian = LaporanHarian::whereIn('peserta_id', $daftarPeserta->pluck('id'))->get();
-        $laporanMingguan = LaporanMingguan::whereIn('peserta_id', $daftarPeserta->pluck('id'))->get();
+        })->withCount('registrations');
+        $lowongan = $lowonganQuery->get();
+
+        $laporanHarianQuery = LaporanHarian::whereIn('peserta_id', $daftarPeserta->pluck('id'));
+        if ($batchId) {
+            $laporanHarianQuery->whereHas('peserta.registrationPlacement', function ($query) use ($batchId) {
+                $query->where('batch_id', $batchId);
+            });
+        }
+        $laporanHarian = $laporanHarianQuery->get();
+
+        $laporanMingguanQuery = LaporanMingguan::whereIn('peserta_id', $daftarPeserta->pluck('id'));
+        if ($batchId) {
+            $laporanMingguanQuery->whereHas('peserta.registrationPlacement', function ($query) use ($batchId) {
+                $query->where('batch_id', $batchId);
+            });
+        }
+        $laporanMingguan = $laporanMingguanQuery->get();
 
         return [
             'jumlahPeserta' => $jumlahPeserta,
@@ -166,13 +158,31 @@ class Dashboard extends Model
         ];
     }
 
-    public static function getDospemDashboardData($user)
+    public static function getDospemDashboardData($user, $batchId = null)
     {
-        $daftarPeserta = Peserta::whereHas('registrationPlacement.dospem', function ($query) use ($user) {
+        $daftarPesertaQuery = Peserta::whereHas('registrationPlacement.dospem', function ($query) use ($user, $batchId) {
             $query->where('user_id', $user->id);
-        })->get();
-        $laporanHarian = LaporanHarian::whereIn('peserta_id', $daftarPeserta->pluck('id'))->with(['lowongan', 'lowongan.mitra', 'peserta'])->get();
-        $laporanMingguan = LaporanMingguan::whereIn('peserta_id', $daftarPeserta->pluck('id'))->get();
+            if ($batchId) {
+                $query->where('batch_id', $batchId);
+            }
+        });
+        $daftarPeserta = $daftarPesertaQuery->get();
+
+        $laporanHarianQuery = LaporanHarian::whereIn('peserta_id', $daftarPeserta->pluck('id'))->with(['lowongan', 'lowongan.mitra', 'peserta']);
+        if ($batchId) {
+            $laporanHarianQuery->whereHas('peserta.registrationPlacement', function ($query) use ($batchId) {
+                $query->where('batch_id', $batchId);
+            });
+        }
+        $laporanHarian = $laporanHarianQuery->get();
+
+        $laporanMingguanQuery = LaporanMingguan::whereIn('peserta_id', $daftarPeserta->pluck('id'));
+        if ($batchId) {
+            $laporanMingguanQuery->whereHas('peserta.registrationPlacement', function ($query) use ($batchId) {
+                $query->where('batch_id', $batchId);
+            });
+        }
+        $laporanMingguan = $laporanMingguanQuery->get();
 
         $dataPeserta = $daftarPeserta->map(function ($peserta) use ($laporanHarian, $laporanMingguan) {
             $jumlahLaporanHarian = $laporanHarian->where('peserta_id', $peserta->id)->count();
