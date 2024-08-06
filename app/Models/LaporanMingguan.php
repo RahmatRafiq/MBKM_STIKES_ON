@@ -52,21 +52,17 @@ class LaporanMingguan extends Model
     public static function getByUser($user, $pesertaId = null, $batchId = null) // Tambahkan batchId
     {
         $query = self::with(['peserta', 'mitra', 'dospem'])
-            ->where(function ($query) use ($user) {
-                $query->whereHas('mitra', function ($query) use ($user) {
-                    $query->where('user_id', $user->id);
-                })->orWhereHas('dospem', function ($query) use ($user) {
-                    $query->where('user_id', $user->id);
-                });
+        ->where(function ($query) use ($user) {
+            $query->whereHas('mitra', function ($query) use ($user) {
+                $query->where('user_id', $user->id);
+            })->orWhereHas('dospem', function ($query) use ($user) {
+                $query->where('user_id', $user->id);
             });
+        });
 
-        if ($pesertaId) {
-            $query->where('peserta_id', $pesertaId);
-        }
-
-        if ($batchId) {
-            $query->where('batch_id', $batchId);
-        }
+    if ($pesertaId) {
+        $query->where('peserta_id', $pesertaId);
+    }
 
         $query->orderBy(
             DB::raw('CASE
