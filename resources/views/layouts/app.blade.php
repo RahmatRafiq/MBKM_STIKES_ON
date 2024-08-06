@@ -16,14 +16,16 @@
   ************* -->
   <link rel="stylesheet" href="{{ asset('assets/fonts/bootstrap/bootstrap-icons.css') }}" />
   <link rel="stylesheet" href="{{ asset('assets/css/main.min.css') }}" />
-  {{-- <link rel="stylesheet" href="{{ asset('assets/css/dark-theme.css') }}" /> --}}
-<link rel="stylesheet" href="{{ asset('assets/css/customcard.css') }}" />
+  {{--
+  <link rel="stylesheet" href="{{ asset('assets/css/dark-theme.css') }}" /> --}}
+  <link rel="stylesheet" href="{{ asset('assets/css/customcard.css') }}" />
   <!-- *************
    ************ Vendor Css Files *************
   ************ -->
 
   <!-- Scrollbar CSS -->
-  {{-- <link rel="stylesheet" href="{{ asset('assets/vendor/overlay-scroll/OverlayScrollbars.min.css') }}" /> --}}
+  {{--
+  <link rel="stylesheet" href="{{ asset('assets/vendor/overlay-scroll/OverlayScrollbars.min.css') }}" /> --}}
 
   <!-- Toastify CSS -->
   <link rel="stylesheet" href="{{ asset('assets/vendor/toastify/toastify.css') }}" />
@@ -31,7 +33,8 @@
   @vite(['resources/css/app.css', 'resources/js/app.js'])
   @yield('head')
   @stack('head')
-  {{-- <link rel="stylesheet" href="{{ asset('assets/bootstrap/css/bootstrap.min.css') }}"> --}}
+  {{--
+  <link rel="stylesheet" href="{{ asset('assets/bootstrap/css/bootstrap.min.css') }}"> --}}
   @stack('css')
   @yield('css')
 </head>
@@ -71,7 +74,7 @@
 
   <!-- Overlay Scroll JS -->
   {{-- <script src="{{asset('assets/vendor/overlay-scroll/jquery.overlayScrollbars.min.js')}}"></script>
-      <script src="{{asset('assets/vendor/overlay-scroll/custom-scrollbar.js')}}"></script> --}}
+  <script src="{{asset('assets/vendor/overlay-scroll/custom-scrollbar.js')}}"></script> --}}
 
   <!-- Toastify JS -->
   <script src="{{ asset('assets/vendor/toastify/toastify.js') }}"></script>
@@ -79,11 +82,11 @@
 
   <!-- Apex Charts -->
   {{-- <script src="{{asset('assets/vendor/apex/apexcharts.min.js')}}"></script>
-      <script src="{{asset('assets/vendor/apex/custom/dash1/visitors.js')}}"></script>
-      <script src="{{asset('assets/vendor/apex/custom/dash1/sales.js')}}"></script>
-      <script src="{{asset('assets/vendor/apex/custom/dash1/sparkline.js')}}"></script>
-      <script src="{{asset('assets/vendor/apex/custom/dash1/tasks.js')}}"></script>
-      <script src="{{asset('assets/vendor/apex/custom/dash1/income.js')}}"></script> --}}
+  <script src="{{asset('assets/vendor/apex/custom/dash1/visitors.js')}}"></script>
+  <script src="{{asset('assets/vendor/apex/custom/dash1/sales.js')}}"></script>
+  <script src="{{asset('assets/vendor/apex/custom/dash1/sparkline.js')}}"></script>
+  <script src="{{asset('assets/vendor/apex/custom/dash1/tasks.js')}}"></script>
+  <script src="{{asset('assets/vendor/apex/custom/dash1/income.js')}}"></script> --}}
 
   <!-- Custom JS files -->
   <script src="{{ asset('assets/js/custom.js') }}"></script>
@@ -127,6 +130,7 @@
   </script>
   @stack('javascript')
   @yield('javascript')
+  @include('includes.footer')
 </body>
 
 </html>

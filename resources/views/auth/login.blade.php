@@ -8,15 +8,13 @@
           @csrf
           <div class="border rounded-2 p-4 mt-5">
             <div class="login-form">
-              <a href="index.html" class="mb-4 d-flex">
-                <img src="{{ asset('assets/images/logo.svg') }}" class="img-fluid login-logo"
-                  alt="Earth Admin Dashboard" />
+              <a href="index.html" class="mb-4 d-flex justify-content-center">
+                <img src="{{ asset('assets/images/mbkm.png') }}" class="logo img-fluid" alt="Logo" />
               </a>
-              <h5 class="fw-light mb-5">Sign in to access dashboard.</h5>
+              <h5 class="fw-light mb-5 text-center">Sign in to access dashboard.</h5>
               <div class="mb-3">
                 <label class="form-label">Your Email</label>
-                <input type="email" class="form-control" name="email" placeholder="Enter your email"
-                  value="{{ old('email') }}" />
+                <input type="email" class="form-control" name="email" placeholder="Enter your email" value="{{ old('email') }}" />
               </div>
               <div class="mb-3">
                 <label class="form-label">Your Password</label>
@@ -34,11 +32,10 @@
                   Login
                 </button>
               </div>
-                <div class="text-center pt-4">
-                    <span>Don't have an account?</span>
-                    <a href="{{ route('register') }}" class="text-blue text-decoration-underline ms-2">
-                    Register</a>
-                </div>
+              <div class="text-center pt-4">
+                <span>Don't have an account?</span>
+                <a href="{{ route('register') }}" class="text-blue text-decoration-underline ms-2">Register</a>
+              </div>
             </div>
           </div>
         </form>
