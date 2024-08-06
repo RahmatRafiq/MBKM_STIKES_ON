@@ -59,23 +59,17 @@ class LaporanHarian extends Model
 
     public static function getByUser($user, $pesertaId = null, $batchId = null)
     {
-        $query = self::with(['peserta.registrationPlacement.mitra', 'peserta.registrationPlacement.dospem'])
+        $query = self::with(['peserta', 'mitra', 'dospem'])
             ->where(function ($query) use ($user) {
-                $query->whereHas('peserta.registrationPlacement.mitra', function ($query) use ($user) {
+                $query->whereHas('mitra', function ($query) use ($user) {
                     $query->where('user_id', $user->id);
-                })->orWhereHas('peserta.registrationPlacement.dospem', function ($query) use ($user) {
+                })->orWhereHas('dospem', function ($query) use ($user) {
                     $query->where('user_id', $user->id);
                 });
             });
 
         if ($pesertaId) {
             $query->where('peserta_id', $pesertaId);
-        }
-
-        if ($batchId) {
-            $query->whereHas('peserta.registrationPlacement', function ($query) use ($batchId) {
-                $query->where('batch_id', $batchId);
-            });
         }
 
         $query->orderBy(
@@ -90,5 +84,31 @@ class LaporanHarian extends Model
 
         return $query->get();
     }
+    // public static function getByUser($user, $pesertaId = null)
+    // {
+    //     $query = self::with(['peserta', 'mitra', 'dospem'])
+    //         ->where(function ($query) use ($user) {
+    //             $query->whereHas('mitra', function ($query) use ($user) {
+    //                 $query->where('user_id', $user->id);
+    //             })->orWhereHas('dospem', function ($query) use ($user) {
+    //                 $query->where('user_id', $user->id);
+    //             });
+    //         });
 
+    //     if ($pesertaId) {
+    //         $query->where('peserta_id', $pesertaId);
+    //     }
+
+    //     $query->orderBy(
+    //         DB::raw('CASE
+    //             WHEN laporan_harian.status = "pending" THEN 1
+    //             WHEN laporan_harian.status = "revisi" THEN 2
+    //             WHEN laporan_harian.status = "validasi" THEN 3
+    //             ELSE 4 END'),
+    //         'asc'
+    //     );
+    //     $query->orderBy('updated_at', 'desc');
+
+    //     return $query->get();
+    // }
 }
