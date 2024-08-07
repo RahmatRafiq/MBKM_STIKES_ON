@@ -20,6 +20,7 @@ class LaporanHarian extends Model
         'status',
         'kehadiran',
         'feedback',
+        'batch_id', // Tambahkan batch_id
     ];
 
     public function peserta()
@@ -56,7 +57,7 @@ class LaporanHarian extends Model
             ->whereRaw('WEEKOFYEAR(laporan_harian.tanggal) - WEEKOFYEAR(?) + 1 = laporan_mingguan.minggu_ke', [$semesterStart]);
     }
 
-    public static function getByUser($user, $pesertaId = null)
+    public static function getByUser($user, $pesertaId = null, $batchId = null)
     {
         $query = self::with(['peserta', 'mitra', 'dospem'])
             ->where(function ($query) use ($user) {
@@ -83,4 +84,31 @@ class LaporanHarian extends Model
 
         return $query->get();
     }
+    // public static function getByUser($user, $pesertaId = null)
+    // {
+    //     $query = self::with(['peserta', 'mitra', 'dospem'])
+    //         ->where(function ($query) use ($user) {
+    //             $query->whereHas('mitra', function ($query) use ($user) {
+    //                 $query->where('user_id', $user->id);
+    //             })->orWhereHas('dospem', function ($query) use ($user) {
+    //                 $query->where('user_id', $user->id);
+    //             });
+    //         });
+
+    //     if ($pesertaId) {
+    //         $query->where('peserta_id', $pesertaId);
+    //     }
+
+    //     $query->orderBy(
+    //         DB::raw('CASE
+    //             WHEN laporan_harian.status = "pending" THEN 1
+    //             WHEN laporan_harian.status = "revisi" THEN 2
+    //             WHEN laporan_harian.status = "validasi" THEN 3
+    //             ELSE 4 END'),
+    //         'asc'
+    //     );
+    //     $query->orderBy('updated_at', 'desc');
+
+    //     return $query->get();
+    // }
 }

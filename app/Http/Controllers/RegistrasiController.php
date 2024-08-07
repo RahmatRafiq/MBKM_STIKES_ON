@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Controllers\Controller;
 use App\Models\AktivitasMbkm;
+use App\Models\BatchMbkm;
 use App\Models\DosenPembimbingLapangan;
 use App\Models\Lowongan;
 use App\Models\MitraProfile;
@@ -37,16 +38,17 @@ class RegistrasiController extends Controller
         }])->paginate(10); // Gunakan paginate
 
         $types = MitraProfile::distinct()->pluck('type');
+        $batchId = BatchMbkm::getActiveBatch()->id; // Ambil batch aktif saat ini
 
         if ($request->ajax()) {
             $selectedLowongan = Lowongan::with('mitra:id,name,website')->find($lowonganId);
             return response()->json([
                 'selectedLowongan' => $selectedLowongan,
-                'html' => view('applications.mbkm.staff.registrasi-program.peserta.detail', compact('selectedLowongan'))->render(),
+                'html' => view('applications.mbkm.staff.registrasi-program.peserta.detail', compact('selectedLowongan', 'batchId'))->render(),
             ]);
         }
 
-        return view('applications.mbkm.staff.registrasi-program.peserta.registrasi', compact('lowongans', 'types'));
+        return view('applications.mbkm.staff.registrasi-program.peserta.registrasi', compact('lowongans', 'types', 'batchId'));
     }
 
     public function filter(Request $request)
@@ -98,17 +100,20 @@ class RegistrasiController extends Controller
         $request->validate([
             'peserta_id' => 'required|exists:peserta,id',
             'lowongan_id' => 'required|exists:lowongans,id',
+            'batch_id' => 'required|exists:batch_mbkms,id', // Tambahkan validasi batch_id
         ]);
 
         $pesertaId = $request->input('peserta_id');
         $lowonganId = $request->input('lowongan_id');
+        $batchId = $request->input('batch_id');
 
         $existingRegistration = Registrasi::where('peserta_id', $pesertaId)
             ->where('lowongan_id', $lowonganId)
+            ->where('batch_id', $batchId) // Tambahkan pengecekan batch_id
             ->first();
 
         if ($existingRegistration) {
-            return back()->withErrors(['error' => 'Peserta sudah mendaftar pada lowongan ini. Tidak dapat mendaftar lagi.']);
+            return back()->withErrors(['error' => 'Peserta sudah mendaftar pada lowongan ini di batch ini. Tidak dapat mendaftar lagi.']);
         }
 
         $peserta = Peserta::find($pesertaId);
@@ -116,10 +121,11 @@ class RegistrasiController extends Controller
 
         $existingAcceptedRegistration = Registrasi::where('peserta_id', $pesertaId)
             ->whereIn('status', ['accepted', 'accepted_offer'])
+            ->where('batch_id', $batchId) // Tambahkan pengecekan batch_id
             ->first();
 
         if ($existingAcceptedRegistration) {
-            return back()->withErrors(['Error' => 'Peserta sudah memiliki tawaran yang diterima. Tidak dapat mendaftar di lowongan lain.']);
+            return back()->withErrors(['Error' => 'Peserta sudah memiliki tawaran yang diterima di batch ini. Tidak dapat mendaftar di lowongan lain.']);
         }
 
         Registrasi::create([
@@ -128,6 +134,7 @@ class RegistrasiController extends Controller
             'status' => 'registered',
             'nama_peserta' => $peserta->nama,
             'nama_lowongan' => $lowongan->name,
+            'batch_id' => $batchId, // Simpan batch_id
         ]);
 
         return back()->with('success', 'Pendaftaran berhasil.');
