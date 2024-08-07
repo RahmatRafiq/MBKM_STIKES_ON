@@ -37,7 +37,7 @@ class Dashboard extends Model
                 $query->where('batch_id', $batchId);
             });
         }
-        
+
         $laporanHarianCountQuery = LaporanHarian::query();
         if ($batchId) {
             $laporanHarianCountQuery->whereHas('peserta.registrationPlacement', function ($query) use ($batchId) {
@@ -78,7 +78,7 @@ class Dashboard extends Model
                 $query->where('batch_id', $batchId);
             });
         }
-        
+
         return $query->selectRaw('status, count(*) as count')
             ->groupBy('status')
             ->get()
@@ -102,13 +102,42 @@ class Dashboard extends Model
             ->toArray();
     }
 
-    public static function getStaffDashboardData()
+    public static function getStaffDashboardData($batchId)
     {
+        // Eager load the relationships to reduce the number of queries
+        $laporanHarianCountQuery = LaporanHarian::with('peserta.registrationPlacement')
+            ->whereHas('peserta.registrationPlacement', function ($query) use ($batchId) {
+                $query->where('batch_id', $batchId);
+            });
+
+        $laporanMingguanCountQuery = LaporanMingguan::with('peserta.registrationPlacement')
+            ->whereHas('peserta.registrationPlacement', function ($query) use ($batchId) {
+                $query->where('batch_id', $batchId);
+            });
+
+        $laporanLengkapCountQuery = LaporanLengkap::with('peserta.registrationPlacement')
+            ->whereHas('peserta.registrationPlacement', function ($query) use ($batchId) {
+                $query->where('batch_id', $batchId);
+            });
+
+        $pesertaTerbaruQuery = Peserta::with('registrationPlacement')
+            ->orderBy('created_at', 'desc')
+            ->take(5);
+
+        $mitraTerbaruQuery = MitraProfile::orderBy('created_at', 'desc')
+            ->take(5);
+
+        $dospemTerbaruQuery = DosenPembimbingLapangan::orderBy('created_at', 'desc')
+            ->take(5);
+
         return [
-            'laporanHarian' => LaporanHarian::count(),
-            'laporanMingguan' => LaporanMingguan::count(),
+            'laporanHarian' => $laporanHarianCountQuery->count(),
+            'laporanMingguan' => $laporanMingguanCountQuery->count(),
+            'laporanLengkap' => $laporanLengkapCountQuery->count(),
             'lowonganTersedia' => Lowongan::where('is_open', true)->count(),
-            'pesertaTerbaru' => Peserta::orderBy('created_at', 'desc')->take(5)->get(),
+            'pesertaTerbaru' => $pesertaTerbaruQuery->get(),
+            'mitraTerbaru' => $mitraTerbaruQuery->get(),
+            'dospemTerbaru' => $dospemTerbaruQuery->get(),
         ];
     }
 
