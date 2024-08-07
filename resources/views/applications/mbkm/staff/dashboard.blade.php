@@ -66,7 +66,7 @@
             </div>
         </div>
     </div>
-    <div class="col-xl-6 col-md-8 col-12">
+    <div class="col-xl-4 col-md-6 col-12">
         <div class="card mb-3 card-custom background-gradient-7">
             <div class="card-header">
                 <h5 class="card-title text-black">Peserta Terbaru</h5>
@@ -92,7 +92,7 @@
             </div>
         </div>
     </div>
-    <div class="col-xl-6 col-md-8 col-12">
+    <div class="col-xl-4 col-md-6 col-12">
         <div class="card mb-3 card-custom background-gradient-8">
             <div class="card-header">
                 <h5 class="card-title text-black">Mitra Terbaru</h5>
@@ -118,6 +118,32 @@
             </div>
         </div>
     </div>
+    <div class="col-xl-4 col-md-6 col-12">
+        <div class="card mb-3 card-custom background-gradient-9">
+            <div class="card-header">
+                <h5 class="card-title text-black">Dospem Terbaru</h5>
+            </div>
+            <div class="card-body">
+                <div class="bg-light px-3 py-2 d-flex justify-content-between align-items-center rounded shadow-sm mb-3 text-black">
+                    <div id="todays-date-dospem" class="fw-semibold"></div>
+                    <div class="badge rounded-pill bg-primary fs-6 text-white">
+                        <span>{{ $dospemTerbaru->count() }}</span> dospem terbaru
+                    </div>
+                </div>
+                <div class="peserta-list mt-3">
+                    @foreach($dospemTerbaru as $dospem)
+                    <div class="peserta-item bg-white rounded shadow-sm p-3 mb-2 w-100 d-flex justify-content-between align-items-center">
+                        <div>
+                            <h6 class="text-primary mb-1 fw-bold">{{ $dospem->name }}</h6>
+                            <p class="m-0 text-black">{{ $dospem->created_at->format('d M Y') }}</p>
+                        </div>
+                        {{-- <div class="badge bg-info text-dark">{{ $dospem->status }}</div> --}}
+                    </div>
+                    @endforeach
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
 @endsection
 
@@ -134,6 +160,7 @@
         var date = today.toLocaleDateString('id-ID', options);
         document.getElementById('todays-date-peserta').textContent = date;
         document.getElementById('todays-date-mitra').textContent = date;
+        document.getElementById('todays-date-dospem').textContent = date;
     });
 </script>
 @endpush
