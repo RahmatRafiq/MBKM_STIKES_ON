@@ -40,7 +40,7 @@ class DashboardController extends Controller
         } elseif ($user->hasRole('dosen')) {
             return $this->dashboardDospem($batchId);
         } elseif ($user->hasRole('staff')) {
-            return $this->dashboardStaff();
+            return $this->dashboardStaff($batchId);
         } elseif ($user->hasRole('peserta')) {
             return $this->dashboardPeserta(app('request'), $batchId);
         } else {
@@ -107,18 +107,19 @@ class DashboardController extends Controller
         return view('applications.mbkm.dospem.dashboard', $data);
     }
 
-    public function dashboardStaff()
+    public function dashboardStaff($batchId)
     {
         if (!$this->batchActive) {
             return response()->view('applications.mbkm.error-page.batch-no-active', [
                 'message' => 'Tidak ada batch aktif yang sedang berjalan.',
             ], 403);
         }
-
-        $dashboardData = Dashboard::getStaffDashboardData();
-
+    
+        $dashboardData = Dashboard::getStaffDashboardData($batchId);
+    
         return view('applications.mbkm.staff.dashboard', $dashboardData);
     }
+    
 
     public function dashboardPeserta(Request $request, $batchId)
     {
@@ -140,7 +141,7 @@ class DashboardController extends Controller
         $laporanHarian = LaporanHarian::whereHas('peserta.registrationPlacement', function ($query) use ($batchId) {
             $query->where('batch_id', $batchId);
         })->where('peserta_id', $peserta->id)->get()->keyBy('tanggal');
-        
+
         $totalLaporan = $laporanHarian->count();
         $validasiLaporan = $laporanHarian->where('status', 'validasi')->count();
         $revisiLaporan = $laporanHarian->where('status', 'revisi')->count();
@@ -149,7 +150,7 @@ class DashboardController extends Controller
         $laporanMingguan = LaporanMingguan::whereHas('peserta.registrationPlacement', function ($query) use ($batchId) {
             $query->where('batch_id', $batchId);
         })->where('peserta_id', $peserta->id)->get()->keyBy('minggu_ke');
-        
+
         $totalLaporanMingguan = $laporanMingguan->count();
         $validasiLaporanMingguan = $laporanMingguan->where('status', 'validasi')->count();
         $revisiLaporanMingguan = $laporanMingguan->where('status', 'revisi')->count();
