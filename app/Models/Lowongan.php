@@ -11,7 +11,6 @@ class Lowongan extends Model
     use HasFactory;
 
     protected $fillable = [
-        'id',
         'name',
         'mitra_id',
         'description',
