@@ -17,6 +17,8 @@ class CreateLowonganHasMatakuliahTable extends Migration
             $table->id();
             $table->unsignedBigInteger('lowongan_id');
             $table->unsignedBigInteger('matakuliah_id');
+            $table->string('name')->nullable();
+            $table->integer('sks')->nullable();
             $table->timestamps();
 
             // Indexes to improve query performance
