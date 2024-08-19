@@ -2,9 +2,9 @@
 
 namespace App\Models\sisfo;
 
+use App\Models\Lowongan;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use App\Models\Lowongan;
 
 class Matakuliah extends Model
 {
@@ -12,6 +12,7 @@ class Matakuliah extends Model
 
     protected $connection = 'mysql_second'; // Mengambil data dari database mysql_second
     protected $table = 'mk';
+    protected $primaryKey = 'MKID'; // Tambahkan ini jika kunci utama tabel adalah MKID
 
     protected $fillable = [
         'MKID',
@@ -26,4 +27,3 @@ class Matakuliah extends Model
         return $this->belongsToMany(Lowongan::class, 'lowongan_has_matakuliah', 'matakuliah_id', 'lowongan_id');
     }
 }
-
