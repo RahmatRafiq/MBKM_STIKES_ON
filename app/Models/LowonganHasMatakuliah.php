@@ -14,6 +14,10 @@ class LowonganHasMatakuliah extends Model
     protected $fillable = [
         'lowongan_id',
         'matakuliah_id',
+        'name',
+        'sks',
+        'created_at',
+        'updated_at',
     ];
 
     public function lowongan()
