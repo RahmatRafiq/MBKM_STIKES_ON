@@ -126,10 +126,18 @@ class LowonganController extends Controller
         $matakuliahs = Matakuliah::all(); // Mengambil data mata kuliah dari koneksi kedua
     
         // Ambil matakuliah_id yang sudah terkait dengan lowongan ini
-        
-        $lowonganHasMatakuliah = LowonganHasMatakuliah::where('lowongan_id', $lowongan->id)->get();
+        $lowonganHasMatakuliah = LowonganHasMatakuliah::where('lowongan_id', $lowongan->id)
+            ->with(['matakuliah' => function($query) {
+                $query->select('MKID', 'Nama'); // Sesuaikan dengan nama kolom di tabel mk
+            }])
+            ->get()
+            ->pluck('matakuliah_id')
+            ->toArray();
+    
         return view('applications.mbkm.lowongan-mitra.edit', compact('lowongan', 'mitraProfile', 'matakuliahs', 'lowonganHasMatakuliah'));
     }
+    
+    
     
 
     public function update(Request $request, $id)
