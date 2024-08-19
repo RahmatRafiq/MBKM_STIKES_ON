@@ -103,9 +103,32 @@
                         </div>
                     </div>
                 </div>
+                {{-- $lowonganHasMatakuliah --}}
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="mb-3">
+                            <label for="matakuliah_ids" class="form-label">Mata Kuliah</label>
+                            <select class="form-control" id="matakuliah_ids" name="matakuliah_ids[]" multiple required>
+                                @foreach ($lowonganHasMatakuliah as $matakuliah)
+                                <option value="{{ $matakuliah->matakuliah_id }}" selected>
+                                    {{ $matakuliah->matakuliah->name }}
+                                </option>
+                                @endforeach
+                            </select>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
     <button type="submit" class="btn btn-primary">Update Lowongan</button>
 </form>
+@endsection
+
+@section('javascript')
+<script>
+    $(document).ready(function() {
+        $('#matakuliah_ids').select2();
+    });
+</script>
 @endsection
