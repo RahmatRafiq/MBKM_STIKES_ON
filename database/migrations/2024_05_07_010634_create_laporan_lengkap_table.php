@@ -13,6 +13,7 @@ return new class extends Migration {
         Schema::create('laporan_lengkap', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger('peserta_id');
+            $table->unsignedBigInteger('mitra_id');
             $table->unsignedBigInteger('dospem_id');
             $table->text('isi_laporan');
             $table->string('status');

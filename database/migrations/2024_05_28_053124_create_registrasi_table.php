@@ -14,6 +14,7 @@ return new class extends Migration
         Schema::create('registrasi', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger('peserta_id');
+            $table->integer('batch_id')->nullable();
             $table->string('nama_peserta')->nullable();
             $table->unsignedBigInteger('lowongan_id');
             $table->string('nama_lowongan')->nullable();

@@ -20,13 +20,12 @@
                     </div>
                     <div class="col-md-6">
                         <div class="mb-3">
-                            <label for="name" class="form-label">Nama</label>
+                            <label for="mitra_id" class="form-label">Mitra</label>
                             <select class="form-control" id="mitra_id" name="mitra_id">
                                 @foreach ($mitraProfile as $mitra)
-                                <option value="{{ $mitra->id }}" {{ $lowongan->mitra_id == $mitra->id ? 'selected' : ''
-                                    }}>
-                                    {{ $mitra->name }}
-                                </option>
+                                    <option value="{{ $mitra->id }}" {{ $lowongan->mitra_id == $mitra->id ? 'selected' : '' }}>
+                                        {{ $mitra->name }}
+                                    </option>
                                 @endforeach
                             </select>
                         </div>
@@ -35,10 +34,8 @@
                         <div class="mb-3">
                             <label for="is_open" class="form-label">Status</label>
                             <select class="form-control" id="is_open" name="is_open" required>
-                                <option value="1" {{ old('is_open', $lowongan->is_open) == 1 ? 'selected' : '' }}>Open
-                                </option>
-                                <option value="0" {{ old('is_open', $lowongan->is_open) == 0 ? 'selected' : '' }}>Closed
-                                </option>
+                                <option value="1" {{ old('is_open', $lowongan->is_open) == 1 ? 'selected' : '' }}>Open</option>
+                                <option value="0" {{ old('is_open', $lowongan->is_open) == 0 ? 'selected' : '' }}>Closed</option>
                             </select>
                         </div>
                     </div>
@@ -46,18 +43,18 @@
                         <div class="mb-3">
                             <label for="semester" class="form-label">Semester</label>
                             <select class="form-control" id="semester" name="semester" required>
-                                @for ($i = 1; $i <= 14; $i++) <option value="{{ $i }}" {{ old('semester', $lowongan->
-                                    semester) == $i ?
-                                    'selected' : '' }}>{{ $i }}</option>
-                                    @endfor
+                                @for ($i = 1; $i <= 14; $i++)
+                                    <option value="{{ $i }}" {{ old('semester', $lowongan->semester) == $i ? 'selected' : '' }}>
+                                        {{ $i }}
+                                    </option>
+                                @endfor
                             </select>
                         </div>
                     </div>
                     <div class="col-md-12">
                         <div class="mb-3">
                             <label for="description" class="form-label">Deskripsi</label>
-                            <textarea class="form-control" id="description" name="description"
-                                required>{{ old('description', $lowongan->description) }}</textarea>
+                            <textarea class="form-control" id="description" name="description" required>{{ old('description', $lowongan->description) }}</textarea>
                         </div>
                     </div>
                     <div class="col-md-6">
@@ -103,9 +100,41 @@
                         </div>
                     </div>
                 </div>
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="mb-3">
+                            <label for="matakuliah_ids" class="form-label">Mata Kuliah</label>
+                            <select class="form-control" id="matakuliah_ids" name="matakuliah_ids[]" multiple required>
+                                @foreach ($matakuliahs as $matakuliah)
+                                    <option value="{{ $matakuliah->MKID }}"
+                                        {{ in_array($matakuliah->MKID, $lowonganHasMatakuliah) ? 'selected' : '' }}>
+                                        {{ $matakuliah->Nama }}
+                                    </option>
+                                @endforeach
+                            </select>
+                            @if ($errors->has('matakuliah_ids'))
+                                <span class="text-danger">{{ $errors->first('matakuliah_ids') }}</span>
+                            @endif
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
     <button type="submit" class="btn btn-primary">Update Lowongan</button>
 </form>
 @endsection
+@push('css')
+<link href="{{ asset('assets/select2/dist/css/select2.min.css') }}" rel="stylesheet" />
+@endpush
+@push('javascript')
+<script src="{{ asset('assets/select2/dist/js/select2.min.js') }}"></script>
+<script>
+    $(document).ready(function() {
+        $('#matakuliah_ids').select2({
+            placeholder: "Pilih Mata Kuliah",
+            allowClear: true
+        });
+    });
+</script>
+@endpush

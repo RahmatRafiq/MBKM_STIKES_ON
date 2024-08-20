@@ -93,6 +93,21 @@
                                 value="{{ old('end_date') }}">
                         </div>
                     </div>
+                    <div class="col-md-12">
+                        <div class="mb-3">
+                            <label for="matakuliah_id" class="form-label">Pilih Mata Kuliah</label>
+                            <select class="form-control" id="matakuliah_id" name="matakuliah_id[]" multiple="multiple">
+                                @foreach ($matakuliahs as $matakuliah)
+                                <option value="{{ $matakuliah->MKID }}" {{ in_array($matakuliah->MKID, old('matakuliah_id', [])) ? 'selected' : '' }}>
+                                    {{ $matakuliah->Nama }}
+                                </option>
+                                @endforeach
+                            </select>
+                            @if ($errors->has('matakuliah_id'))
+                                <span class="text-danger">{{ $errors->first('matakuliah_id') }}</span>
+                            @endif
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -100,3 +115,18 @@
     <button type="submit" class="btn btn-primary">Simpan</button>
 </form>
 @endsection
+@push('css')
+<link href="{{ asset('assets/select2/dist/css/select2.min.css') }}" rel="stylesheet" />
+@endpush
+
+@push('javascript')
+<script src="{{ asset('assets/select2/dist/js/select2.min.js') }}"></script>
+<script>
+    $(document).ready(function() {
+        $('#matakuliah_id').select2({  // Sesuaikan ID di sini
+            placeholder: "Pilih Mata Kuliah",
+            allowClear: true
+        });
+    });
+</script>
+@endpush

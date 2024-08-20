@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Models\sisfo\Matakuliah;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
@@ -10,7 +11,6 @@ class Lowongan extends Model
     use HasFactory;
 
     protected $fillable = [
-        'id',
         'name',
         'mitra_id',
         'description',
@@ -32,5 +32,10 @@ class Lowongan extends Model
     public function registrations()
     {
         return $this->hasMany(Registrasi::class, 'lowongan_id');
+    }
+
+    public function matakuliah()
+    {
+        return $this->belongsToMany(Matakuliah::class, 'lowongan_has_matakuliah', 'lowongan_id', 'matakuliah_id');
     }
 }
