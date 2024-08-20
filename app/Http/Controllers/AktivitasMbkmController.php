@@ -28,23 +28,22 @@ class AktivitasMbkmController extends Controller
         $user = Auth::user();
         $pesertaId = $request->input('peserta_id');
         $batchId = $this->activeBatch->id;
-    
+
         // Eager load the relationships to avoid N+1 problem
         $daftarPeserta = Peserta::with(['registrationPlacement.lowongan.mitra', 'registrationPlacement.dospem'])
             ->whereHas('registrationPlacement.lowongan.mitra', function ($query) use ($user, $batchId) {
                 $query->where('user_id', $user->id)->where('batch_id', $batchId);
             })->orWhereHas('registrationPlacement.dospem', function ($query) use ($user, $batchId) {
-                $query->where('user_id', $user->id)->where('batch_id', $batchId);
-            })->get();
-    
+            $query->where('user_id', $user->id)->where('batch_id', $batchId);
+        })->get();
+
         // Retrieve the reports only if pesertaId is provided
         $laporanHarian = $pesertaId ? LaporanHarian::getByUser($user, $pesertaId, $batchId) : collect();
         $laporanMingguan = $pesertaId ? LaporanMingguan::getByUser($user, $pesertaId, $batchId) : collect();
         $laporanLengkap = $pesertaId ? LaporanLengkap::getByUser($user, $pesertaId, $batchId) : collect();
-    
+
         return view('applications.mbkm.laporan.index', compact('daftarPeserta', 'laporanHarian', 'laporanMingguan', 'laporanLengkap', 'pesertaId'));
     }
-    
 
     public function createLaporanHarian(Request $request)
     {
@@ -234,22 +233,25 @@ class AktivitasMbkmController extends Controller
         return back()->with('success', 'Laporan mingguan berhasil disimpan.');
     }
 
+// Tidak perlu lagi menyimpan 'tanggal' sebagai field terpisah
     public function storeLaporanLengkap(Request $request)
     {
         $request->validate([
-            'tanggal' => 'required|date',
             'isi_laporan' => 'required|string',
         ]);
 
         $user = Auth::user();
-        $aktivitas = AktivitasMbkm::where('peserta_id', $user->id)->first();
+        $aktivitas = AktivitasMbkm::where('peserta_id', $user->peserta->id)->first();
+
+        if (!$aktivitas) {
+            return back()->withErrors(['error' => 'Aktivitas tidak ditemukan. Pastikan Anda terdaftar dalam kegiatan MBKM.']);
+        }
 
         $laporanLengkap = LaporanLengkap::updateOrCreate(
             [
                 'peserta_id' => $aktivitas->peserta_id,
                 'mitra_id' => $user->peserta->registrationPlacement->lowongan->mitra_id,
                 'dospem_id' => $user->peserta->registrationPlacement->dospem_id,
-                'tanggal' => $request->tanggal,
             ],
             [
                 'isi_laporan' => $request->isi_laporan,
@@ -270,22 +272,22 @@ class AktivitasMbkmController extends Controller
                 $query->where('batch_id', $this->activeBatch->id);
             })
             ->firstOrFail();
-    
+
         if ($laporanHarian->mitra->user_id != Auth::id() && $laporanHarian->dospem->user_id != Auth::id()) {
             return response()->json(['errors' => 'Anda tidak memiliki izin untuk memvalidasi laporan ini.'], 403);
         }
-    
+
         if ($request->action == 'validasi') {
             $laporanHarian->status = 'validasi';
         } elseif ($request->action == 'revisi') {
             $laporanHarian->status = 'revisi';
         }
-    
+
         $laporanHarian->save();
-    
+
         return response()->json(['success' => 'Laporan harian berhasil diperbarui.']);
     }
-    
+
     public function validateLaporanMingguan(Request $request, $id)
     {
         $laporanMingguan = LaporanMingguan::where('id', $id)
@@ -293,22 +295,22 @@ class AktivitasMbkmController extends Controller
                 $query->where('batch_id', $this->activeBatch->id);
             })
             ->firstOrFail();
-    
+
         if ($laporanMingguan->mitra->user_id != Auth::id() && $laporanMingguan->dospem->user_id != Auth::id()) {
             return response()->json(['errors' => 'Anda tidak memiliki izin untuk memvalidasi laporan ini.'], 403);
         }
-    
+
         if ($request->action == 'validasi') {
             $laporanMingguan->status = 'validasi';
         } elseif ($request->action == 'revisi') {
             $laporanMingguan->status = 'revisi';
         }
-    
+
         $laporanMingguan->save();
-    
+
         return response()->json(['success' => 'Laporan mingguan berhasil diperbarui.']);
     }
-    
+
     public function validateLaporanLengkap(Request $request, $id)
     {
         $laporanLengkap = LaporanLengkap::where('id', $id)
@@ -316,21 +318,20 @@ class AktivitasMbkmController extends Controller
                 $query->where('batch_id', $this->activeBatch->id);
             })
             ->firstOrFail();
-    
+
         if ($laporanLengkap->mitra->user_id != Auth::id() && $laporanLengkap->dospem->user_id != Auth::id()) {
             return response()->json(['errors' => 'Anda tidak memiliki izin untuk memvalidasi laporan ini.'], 403);
         }
-    
+
         if ($request->action == 'validasi') {
             $laporanLengkap->status = 'validasi';
         } elseif ($request->action == 'revisi') {
             $laporanLengkap->status = 'revisi';
         }
-    
+
         $laporanLengkap->save();
-    
+
         return response()->json(['success' => 'Laporan lengkap berhasil diperbarui.']);
     }
-    
 
 }
