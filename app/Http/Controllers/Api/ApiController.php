@@ -34,12 +34,14 @@ class ApiController extends Controller
         }
 
         // Transformasi data untuk kebutuhan API
-        $data = $laporanLengkap->map(function ($laporan) {
+        $data = $laporanLengkap->map(function ($laporan) use ($activeBatch) {
             return [
                 'MhswID' => $laporan->peserta->nim, // Ganti NIM menjadi MhswID
                 'Nama Mahasiswa' => $laporan->peserta->nama,
                 'Nama Mitra' => $laporan->peserta->registrationPlacement->lowongan->mitra->name ?? 'N/A',
                 'Nama Lowongan' => $laporan->peserta->registrationPlacement->lowongan->name ?? 'N/A',
+                'Dosen Pembimbing' => $laporan->peserta->registrationPlacement->dospem->name ?? 'N/A',
+                'Batch Aktif' => $activeBatch->name, // Nama batch aktif
                 'Isi Laporan' => $laporan->isi_laporan,
                 'Status' => $laporan->status,
                 'Tanggal Validasi' => $laporan->updated_at->format('Y-m-d'),
