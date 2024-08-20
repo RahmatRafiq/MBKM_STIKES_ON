@@ -3,7 +3,10 @@ namespace App\Http\Controllers;
 
 use App\Helpers\DataTable;
 use App\Models\Lowongan;
+use App\Models\LowonganHasMatakuliah;
 use App\Models\MitraProfile;
+use App\Models\sisfo\Matakuliah;
+use DB;
 use Illuminate\Http\Request;
 
 class LowonganController extends Controller
@@ -62,13 +65,14 @@ class LowonganController extends Controller
 
     public function create()
     {
-        $lowongans = Lowongan::all();
         $mitraProfile = MitraProfile::all();
-        return view('applications.mbkm.lowongan-mitra.create', compact('lowongans', 'mitraProfile'));
+        $matakuliahs = Matakuliah::all(); // Mengambil data mata kuliah
+        return view('applications.mbkm.lowongan-mitra.create', compact('mitraProfile', 'matakuliahs'));
     }
 
     public function store(Request $request)
     {
+        // Validasi request
         $validatedData = $request->validate([
             'name' => 'required|string|max:255',
             'mitra_id' => 'required|exists:mitra_profile,id',
@@ -81,24 +85,66 @@ class LowonganController extends Controller
             'experience_required' => 'required|string',
             'start_date' => 'required|date',
             'end_date' => 'required|date',
+            'matakuliah_id' => 'required|array',
+            'matakuliah_id.*' => 'exists:mysql_second.mk,MKID', // Validasi mata kuliah dari database kedua
         ]);
 
-        Lowongan::create($validatedData);
+        // Mulai transaksi
+        DB::beginTransaction();
 
-        return redirect()->route('lowongan.index')->with('success', 'Lowongan created successfully.');
+        try {
+            // Membuat entri baru di tabel Lowongan (database mysql)
+            $lowongan = Lowongan::create($validatedData);
+
+            // Gunakan query manual untuk menyimpan ke tabel pivot di koneksi mysql
+            foreach ($request->matakuliah_id as $matakuliahId) {
+                $matakuliah = Matakuliah::find($matakuliahId);
+                DB::connection('mysql')->table('lowongan_has_matakuliah')->insert([
+                    'lowongan_id' => $lowongan->id,
+                    'matakuliah_id' => $matakuliahId,
+                    'name' => $matakuliah->Nama, // Mengambil nama dari model Matakuliah
+                    'sks' => $matakuliah->SKS, // Mengambil SKS dari model Matakuliah
+                    'created_at' => now(),
+                    'updated_at' => now(),
+                ]);
+            }
+
+            // Commit transaksi jika semua operasi berhasil
+            DB::commit();
+            return redirect()->route('lowongan.index')->with('success', 'Lowongan created successfully.');
+
+        } catch (\Exception $e) {
+            // Rollback transaksi jika terjadi kesalahan
+            DB::rollBack();
+
+            return back()->withErrors(['error' => 'An error occurred while creating Lowongan: ' . $e->getMessage()])->withInput();
+        }
     }
 
     public function edit($id)
     {
         $lowongan = Lowongan::findOrFail($id);
         $mitraProfile = MitraProfile::all();
-        return view('applications.mbkm.lowongan-mitra.edit', compact('lowongan', 'mitraProfile'));
+        $matakuliahs = Matakuliah::all(); // Mengambil data mata kuliah dari koneksi kedua
+
+        // Ambil matakuliah_id yang sudah terkait dengan lowongan ini
+        $lowonganHasMatakuliah = LowonganHasMatakuliah::where('lowongan_id', $lowongan->id)
+            ->with(['matakuliah' => function ($query) {
+                $query->select('MKID', 'Nama'); // Sesuaikan dengan nama kolom di tabel mk
+            }])
+            ->get()
+            ->pluck('matakuliah_id')
+            ->toArray();
+
+        return view('applications.mbkm.lowongan-mitra.edit', compact('lowongan', 'mitraProfile', 'matakuliahs', 'lowonganHasMatakuliah'));
     }
 
     public function update(Request $request, $id)
     {
+        // Ambil data lowongan berdasarkan ID
         $lowongan = Lowongan::findOrFail($id);
-
+    
+        // Validasi request
         $validatedData = $request->validate([
             'name' => 'required|string|max:255',
             'mitra_id' => 'required|exists:mitra_profile,id',
@@ -111,28 +157,70 @@ class LowonganController extends Controller
             'experience_required' => 'required|string',
             'start_date' => 'required|date',
             'end_date' => 'required|date',
+            'matakuliah_ids' => 'required|array',
+            'matakuliah_ids.*' => 'exists:mysql_second.mk,MKID',
         ]);
-
-        $lowongan->update([
-            'name' => $validatedData['name'],
-            'mitra_id' => $validatedData['mitra_id'],
-            'description' => $validatedData['description'],
-            'quota' => $validatedData['quota'],
-            'is_open' => $validatedData['is_open'],
-            'location' => $validatedData['location'],
-            'gpa' => $validatedData['gpa'],
-            'semester' => $validatedData['semester'],
-            'experience_required' => $validatedData['experience_required'],
-            'start_date' => $validatedData['start_date'],
-            'end_date' => $validatedData['end_date'],
-        ]);
-
-        return redirect()->route('lowongan.index')->with('success', 'Lowongan updated successfully.');
+    
+        // Mulai transaksi
+        DB::beginTransaction();
+        try {
+            // Update data lowongan
+            $lowongan->update($validatedData);
+    
+            // Sinkronisasi relasi dengan mata kuliah menggunakan koneksi manual
+            // Hapus relasi lama di tabel pivot
+            DB::connection('mysql')->table('lowongan_has_matakuliah')
+                ->where('lowongan_id', $lowongan->id)
+                ->delete();
+    
+            // Tambahkan relasi baru di tabel pivot
+            foreach ($request->matakuliah_ids as $matakuliahId) {
+                $matakuliah = Matakuliah::find($matakuliahId);
+                DB::connection('mysql')->table('lowongan_has_matakuliah')->insert([
+                    'lowongan_id' => $lowongan->id,
+                    'matakuliah_id' => $matakuliahId,
+                    'name' => $matakuliah->Nama, // Mengambil nama dari model Matakuliah
+                    'sks' => $matakuliah->SKS,   // Mengambil SKS dari model Matakuliah
+                    'created_at' => now(),
+                    'updated_at' => now(),
+                ]);
+            }
+    
+            // Commit transaksi jika semua operasi berhasil
+            DB::commit();
+            return redirect()->route('lowongan.index')->with('success', 'Lowongan updated successfully.');
+    
+        } catch (\Exception $e) {
+            // Rollback transaksi jika terjadi kesalahan
+            DB::rollBack();
+            return back()->withErrors(['error' => 'An error occurred while updating Lowongan: ' . $e->getMessage()])->withInput();
+        }
     }
+    
 
     public function destroy(Lowongan $lowongan)
     {
-        $lowongan->delete();
-        return redirect()->route('lowongan.index')->with('success', 'Lowongan deleted successfully.');
+        DB::beginTransaction();
+
+        try {
+            // Hapus relasi dengan mata kuliah di tabel pivot menggunakan koneksi mysql
+            DB::connection('mysql')->table('lowongan_has_matakuliah')
+                ->where('lowongan_id', $lowongan->id)
+                ->delete();
+
+            // Hapus data lowongan
+            $lowongan->delete();
+
+            // Commit transaksi jika semua operasi berhasil
+            DB::commit();
+            return redirect()->route('lowongan.index')->with('success', 'Lowongan deleted successfully.');
+
+        } catch (\Exception $e) {
+            // Rollback transaksi jika terjadi kesalahan
+            DB::rollBack();
+
+            return back()->withErrors(['error' => 'An error occurred while deleting Lowongan: ' . $e->getMessage()]);
+        }
     }
+
 }
