@@ -45,6 +45,7 @@ class ApiController extends Controller
                 'Isi Laporan' => $laporan->isi_laporan,
                 'Status' => $laporan->status,
                 'Tanggal Validasi' => $laporan->updated_at->format('Y-m-d'),
+                'Laporan Dibuat' => $laporan->created_at->format('Y-m-d'),
             ];
         });
 
