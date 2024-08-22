@@ -129,8 +129,7 @@ class PesertaController extends Controller
 
     public function edit(Peserta $peserta)
     {
-        $mahasiswa = Mahasiswa::all();
-        return view('applications.mbkm.peserta.edit', compact('peserta', 'mahasiswa'));
+        return view('applications.mbkm.peserta.edit', compact('peserta'));
     }
 
     public function update(Request $request, Peserta $peserta)
@@ -162,5 +161,29 @@ class PesertaController extends Controller
     {
         $peserta->delete();
         return redirect()->route('peserta.index')->with('success', 'Peserta deleted successfully');
+    }
+
+    public function uploadDocument(Request $request, $id, $type)
+    {
+        $peserta = Peserta::findOrFail($id);
+
+        $request->validate([
+            'file' => 'required|file|mimes:pdf,doc,docx|max:2048',
+        ]);
+
+        // Clear any existing file in the specific collection
+        $peserta->clearMediaCollection($type);
+
+        // Store the new file
+        $peserta->addMediaFromRequest('file')->toMediaCollection($type);
+
+        return response()->json(['success' => 'File uploaded successfully']);
+    }
+
+    public function destroyFile($id, $type)
+    {
+        $peserta = Peserta::findOrFail($id);
+        $peserta->clearMediaCollection($type);
+        return response()->json(['success' => 'File deleted successfully']);
     }
 }
