@@ -65,7 +65,7 @@ Route::middleware('auth')->group(function () {
         Route::post('/laporan-mingguan/validate/{id}', [\App\Http\Controllers\AktivitasMbkmController::class, 'validateLaporanMingguan'])->name('laporan.mingguan.validate');
     });
 
-    Route::middleware(['role:staff|super admin'])->group(function () {
+    Route::middleware(['role:staff|super admin|peserta'])->group(function () {
         Route::resource('mbkm/staff/mitra', \App\Http\Controllers\MitraProfileController::class);
         Route::post('mbkm/staff/mitra/json', [\App\Http\Controllers\MitraProfileController::class, 'json'])->name('mitra.json');
         Route::post('mbkm/staff/mitra/create', [\App\Http\Controllers\MitraProfileController::class, 'storeMitraUser'])->name('mitra.user.store');
