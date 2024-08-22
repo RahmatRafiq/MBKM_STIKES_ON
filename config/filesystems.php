@@ -11,7 +11,7 @@ return [
     | by the framework. The "local" disk, as well as a variety of cloud
     | based disks are available to your application for file storage.
     |
-    */
+     */
 
     'default' => env('FILESYSTEM_DISK', 'local'),
 
@@ -26,7 +26,7 @@ return [
     |
     | Supported Drivers: "local", "ftp", "sftp", "s3"
     |
-    */
+     */
 
     'disks' => [
 
@@ -47,6 +47,13 @@ return [
             'driver' => 'local',
             'root' => storage_path('app/public/media'),
             'url' => env('APP_URL') . '/storage/media',
+            'visibility' => 'public',
+        ],
+
+        'dokument-peserta' => [
+            'driver' => 'local',
+            'root' => storage_path('app/public/dokumen-peserta'),
+            'url' => env('APP_URL') . '/storage/dokumen-peserta',
             'visibility' => 'public',
         ],
 
@@ -81,7 +88,7 @@ return [
     | `storage:link` Artisan command is executed. The array keys should be
     | the locations of the links and the values should be their targets.
     |
-    */
+     */
 
     'links' => [
         public_path('storage') => storage_path('app/public'),
