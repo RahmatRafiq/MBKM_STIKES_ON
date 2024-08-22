@@ -166,19 +166,24 @@ class PesertaController extends Controller
     public function uploadDocument(Request $request, $id, $type)
     {
         $peserta = Peserta::findOrFail($id);
-
+    
         $request->validate([
             'file' => 'required|file|mimes:pdf,doc,docx|max:2048',
         ]);
-
+    
         // Clear any existing file in the specific collection
         $peserta->clearMediaCollection($type);
-
-        // Store the new file
-        $peserta->addMediaFromRequest('file')->toMediaCollection($type);
-
+    
+        // Store the new file in the custom directory 'dokument-peserta'
+        $peserta->addMediaFromRequest('file')
+                ->usingFileName(uniqid().'_'.$request->file('file')->getClientOriginalName()) // Optional: Untuk menambahkan uniqid pada nama file
+                ->toMediaCollection($type, 'dokument-peserta');
+    
         return response()->json(['success' => 'File uploaded successfully']);
     }
+    
+
+    
 
     public function destroyFile($id, $type)
     {
