@@ -1,6 +1,7 @@
 <div class="card">
     <div class="card-header">Edit Profil Peserta</div>
     <div class="card-body">
+        <!-- Form untuk mengupdate data peserta -->
         <form method="POST" action="{{ route('peserta.update', $peserta->id) }}">
             @csrf
             @method('PUT')
@@ -117,6 +118,8 @@
             </div>
             <button type="submit" class="btn btn-primary">Update</button>
         </form>
+
+        <!-- Form untuk Surat Rekomendasi -->
         <!-- Form untuk Surat Rekomendasi -->
         <form method="POST"
             action="{{ route('peserta.upload', ['id' => $peserta->id, 'type' => 'surat_rekomendasi']) }}"
@@ -124,8 +127,14 @@
             @csrf
             <div class="mb-3">
                 <label for="surat_rekomendasi" class="form-label">Surat Rekomendasi</label>
-                <div class="dropzone" id="suratRekomendasiDropzone"></div>
+                <input type="file" name="file" class="form-control" required>
+
+                @if($peserta->getFirstMediaUrl('surat_rekomendasi'))
+                <a href="{{ $peserta->getFirstMediaUrl('surat_rekomendasi') }}" target="_blank"
+                    class="btn btn-secondary mt-2">Lihat Surat Rekomendasi</a>
+                @endif
             </div>
+            <button type="submit" class="btn btn-primary">Upload</button>
         </form>
 
         <!-- Form untuk Transkrip Nilai -->
@@ -134,8 +143,14 @@
             @csrf
             <div class="mb-3">
                 <label for="transkrip_nilai" class="form-label">Transkrip Nilai</label>
-                <div class="dropzone" id="transkripNilaiDropzone"></div>
+                <input type="file" name="file" class="form-control" required>
+
+                @if($peserta->getFirstMediaUrl('transkrip_nilai'))
+                <a href="{{ $peserta->getFirstMediaUrl('transkrip_nilai') }}" target="_blank"
+                    class="btn btn-secondary mt-2">Lihat Transkrip Nilai</a>
+                @endif
             </div>
+            <button type="submit" class="btn btn-primary">Upload</button>
         </form>
 
         <!-- Form untuk CV -->
@@ -143,9 +158,15 @@
             enctype="multipart/form-data" class="mt-4">
             @csrf
             <div class="mb-3">
-                <label for="cv" class="form-label">Curriculum Vitae (CV)</label>
-                <div class="dropzone" id="cvDropzone"></div>
+                <label for "cv" class="form-label">Curriculum Vitae (CV)</label>
+                <input type="file" name="file" class="form-control" required>
+
+                @if($peserta->getFirstMediaUrl('cv'))
+                <a href="{{ $peserta->getFirstMediaUrl('cv') }}" target="_blank" class="btn btn-secondary mt-2">Lihat
+                    CV</a>
+                @endif
             </div>
+            <button type="submit" class="btn btn-primary">Upload</button>
         </form>
 
         <!-- Form untuk Surat Pakta Integritas -->
@@ -154,8 +175,14 @@
             @csrf
             <div class="mb-3">
                 <label for="pakta_integritas" class="form-label">Surat Pakta Integritas</label>
-                <div class="dropzone" id="paktaIntegritasDropzone"></div>
+                <input type="file" name="file" class="form-control" required>
+
+                @if($peserta->getFirstMediaUrl('pakta_integritas'))
+                <a href="{{ $peserta->getFirstMediaUrl('pakta_integritas') }}" target="_blank"
+                    class="btn btn-secondary mt-2">Lihat Surat Pakta Integritas</a>
+                @endif
             </div>
+            <button type="submit" class="btn btn-primary">Upload</button>
         </form>
 
         <!-- Form untuk Surat Izin Orangtua -->
@@ -164,8 +191,14 @@
             @csrf
             <div class="mb-3">
                 <label for="izin_orangtua" class="form-label">Surat Izin Orangtua</label>
-                <div class="dropzone" id="izinOrangtuaDropzone"></div>
+                <input type="file" name="file" class="form-control" required>
+
+                @if($peserta->getFirstMediaUrl('izin_orangtua'))
+                <a href="{{ $peserta->getFirstMediaUrl('izin_orangtua') }}" target="_blank"
+                    class="btn btn-secondary mt-2">Lihat Surat Izin Orangtua</a>
+                @endif
             </div>
+            <button type="submit" class="btn btn-primary">Upload</button>
         </form>
 
         <!-- Form untuk Surat Keterangan Sehat -->
@@ -175,137 +208,15 @@
             @csrf
             <div class="mb-3">
                 <label for="surat_keterangan_sehat" class="form-label">Surat Keterangan Sehat</label>
-                <div class="dropzone" id="suratKeteranganSehatDropzone"></div>
+                <input type="file" name="file" class="form-control" required>
+
+                @if($peserta->getFirstMediaUrl('surat_keterangan_sehat'))
+                <a href="{{ $peserta->getFirstMediaUrl('surat_keterangan_sehat') }}" target="_blank"
+                    class="btn btn-secondary mt-2">Lihat Surat Keterangan Sehat</a>
+                @endif
             </div>
+            <button type="submit" class="btn btn-primary">Upload</button>
         </form>
+
     </div>
 </div>
-
-@push('head')
-@vite(['resources/js/dropzoner.js'])
-@endpush
-
-@push('javascript')
-<script type="module">
-    const csrf = "{!! csrf_token() !!}";
-
-    const files = {
-        surat_rekomendasi: {!! json_encode($peserta->getMedia('surat_rekomendasi')->map(function($file) {
-            return [
-                'id' => $file->id,
-                'name' => $file->file_name,
-                'size' => $file->size,
-                'url' => $file->getUrl()
-            ];
-        })) !!},
-
-        transkrip_nilai: {!! json_encode($peserta->getMedia('transkrip_nilai')->map(function($file) {
-            return [
-                'id' => $file->id,
-                'name' => $file->file_name,
-                'size' => $file->size,
-                'url' => $file->getUrl()
-            ];
-        })) !!},
-
-        cv: {!! json_encode($peserta->getMedia('cv')->map(function($file) {
-            return [
-                'id' => $file->id,
-                'name' => $file->file_name,
-                'size' => $file->size,
-                'url' => $file->getUrl()
-            ];
-        })) !!},
-
-        pakta_integritas: {!! json_encode($peserta->getMedia('pakta_integritas')->map(function($file) {
-            return [
-                'id' => $file->id,
-                'name' => $file->file_name,
-                'size' => $file->size,
-                'url' => $file->getUrl()
-            ];
-        })) !!},
-
-        izin_orangtua: {!! json_encode($peserta->getMedia('izin_orangtua')->map(function($file) {
-            return [
-                'id' => $file->id,
-                'name' => $file->file_name,
-                'size' => $file->size,
-                'url' => $file->getUrl()
-            ];
-        })) !!},
-
-        surat_keterangan_sehat: {!! json_encode($peserta->getMedia('surat_keterangan_sehat')->map(function($file) {
-            return [
-                'id' => $file->id,
-                'name' => $file->file_name,
-                'size' => $file->size,
-                'url' => $file->getUrl()
-            ];
-        })) !!}
-    };
-
-    Dropzoner('#suratRekomendasiDropzone', 'file', {
-        urlStore: "{{ route('peserta.upload', ['id' => $peserta->id, 'type' => 'surat_rekomendasi']) }}",
-        urlDestroy: "{{ route('peserta.destroyFile', ['id' => $peserta->id, 'type' => 'surat_rekomendasi']) }}",
-        csrf: csrf,
-        acceptedFiles: 'application/pdf,.doc,.docx',
-        maxFiles: 1,
-        files: files.surat_rekomendasi,
-        kind: 'file'
-    });
-
-    Dropzoner('#transkripNilaiDropzone', 'file', {
-        urlStore: "{{ route('peserta.upload', ['id' => $peserta->id, 'type' => 'transkrip_nilai']) }}",
-        urlDestroy: "{{ route('peserta.destroyFile', ['id' => $peserta->id, 'type' => 'transkrip_nilai']) }}",
-        csrf: csrf,
-        acceptedFiles: 'application/pdf,.doc,.docx',
-        maxFiles: 1,
-        files: files.transkrip_nilai,
-        kind: 'file'
-    });
-
-    Dropzoner('#cvDropzone', 'file', {
-        urlStore: "{{ route('peserta.upload', ['id' => $peserta->id, 'type' => 'cv']) }}",
-        urlDestroy: "{{ route('peserta.destroyFile', ['id' => $peserta->id, 'type' => 'cv']) }}",
-        csrf: csrf,
-        acceptedFiles: 'application/pdf,.doc,.docx',
-        maxFiles: 1,
-        files: files.cv,
-        kind: 'file'
-    });
-
-    Dropzoner('#paktaIntegritasDropzone', 'file', {
-        urlStore: "{{ route('peserta.upload', ['id' => $peserta->id, 'type' => 'pakta_integritas']) }}",
-        urlDestroy: "{{ route('peserta.destroyFile', ['id' => $peserta->id, 'type' => 'pakta_integritas']) }}",
-        csrf: csrf,
-        acceptedFiles: 'application/pdf,.doc,.docx',
-        maxFiles: 1,
-        files: files.pakta_integritas,
-        kind: 'file'
-    });
-
-    Dropzoner('#izinOrangtuaDropzone', 'file', {
-        urlStore: "{{ route('peserta.upload', ['id' => $peserta->id, 'type' => 'izin_orangtua']) }}",
-        urlDestroy: "{{ route('peserta.destroyFile', ['id' => $peserta->id, 'type' => 'izin_orangtua']) }}",
-        csrf: csrf,
-        acceptedFiles: 'application/pdf,.doc,.docx',
-        maxFiles: 1,
-        files: files.izin_orangtua,
-        kind: 'file'
-    });
-
-    Dropzoner('#suratKeteranganSehatDropzone', 'file', {
-        urlStore: "{{ route('peserta.upload', ['id' => $peserta->id, 'type' => 'surat_keterangan_sehat']) }}",
-        urlDestroy: "{{ route('peserta.destroyFile', ['id' => $peserta->id, 'type' => 'surat_keterangan_sehat']) }}",
-        csrf: csrf,
-        acceptedFiles: 'application/pdf,.doc,.docx',
-        maxFiles: 1,
-        files: files.surat_keterangan_sehat,
-        kind: 'file'
-    });
-</script>
-@endpush
-
-
-
