@@ -91,6 +91,8 @@ Route::middleware('auth')->group(function () {
 
         Route::post('/peserta/{id}/upload/{type}', [\App\Http\Controllers\PesertaController::class, 'uploadDocument'])->name('peserta.upload');
         Route::delete('/peserta/{id}/delete/{type}', [\App\Http\Controllers\PesertaController::class, 'destroyFile'])->name('peserta.destroyFile');
+        Route::post('/peserta/{id}/upload-multiple', [\App\Http\Controllers\PesertaController::class, 'uploadMultipleDocuments'])->name('peserta.uploadMultiple');
+
 
         Route::get('/staff/registrasi', [RegistrasiController::class, 'index'])->name('staff.registrasiIndex');
         Route::put('/staff/registrasi/{id}', [RegistrasiController::class, 'update'])->name('staff.updateRegistrasi');
