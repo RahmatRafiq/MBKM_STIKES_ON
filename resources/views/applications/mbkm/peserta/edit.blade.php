@@ -1,8 +1,5 @@
-@extends('layouts.app')
-
-@section('content')
 <div class="card">
-    <div class="card-header">Edit Peserta MBKM</div>
+    <div class="card-header">Edit Profil Peserta</div>
     <div class="card-body">
         <form method="POST" action="{{ route('peserta.update', $peserta->id) }}">
             @csrf
@@ -26,7 +23,7 @@
                     <div class="card mb-3">
                         <div class="card-body">
                             <div class="m-0">
-                                <label for="nim" class="form-label">nim</label>
+                                <label for="nim" class="form-label">NIM</label>
                                 <input type="text" name="nim" id="nim" value="{{ old('nim', $peserta->nim) }}"
                                     class="form-control @error('nim') is-invalid @enderror" required>
                                 @error('nim')
@@ -56,7 +53,8 @@
                         <div class="card-body">
                             <div class="m-0">
                                 <label for="tanggal_lahir" class="form-label">Tanggal Lahir</label>
-                                <input type="date" name="tanggal_lahir" id="tanggal_lahir" value="{{ old('tanggal_lahir', $peserta->tanggal_lahir ? $peserta->tanggal_lahir->format('Y-m-d') : '') }}"
+                                <input type="date" name="tanggal_lahir" id="tanggal_lahir"
+                                    value="{{ old('tanggal_lahir', $peserta->tanggal_lahir ? $peserta->tanggal_lahir->format('Y-m-d') : '') }}"
                                     class="form-control @error('tanggal_lahir') is-invalid @enderror" required>
                                 @error('tanggal_lahir')
                                 <div class="invalid-feedback">{{ $message }}</div>
@@ -70,10 +68,13 @@
                         <div class="card-body">
                             <div class="m-0">
                                 <label for="jenis_kelamin" class="form-label">Jenis Kelamin</label>
-                                <select name="jenis_kelamin" id="jenis_kelamin" class="form-control @error('jenis_kelamin') is-invalid @enderror" required>
+                                <select name="jenis_kelamin" id="jenis_kelamin"
+                                    class="form-control @error('jenis_kelamin') is-invalid @enderror" required>
                                     <option value="">Pilih Jenis Kelamin</option>
-                                    <option value="Laki-Laki" {{ old('jenis_kelamin', $peserta->jenis_kelamin) == 'Laki-Laki' ? 'selected' : '' }}>Laki-Laki</option>
-                                    <option value="Perempuan" {{ old('jenis_kelamin', $peserta->jenis_kelamin) == 'Perempuan' ? 'selected' : '' }}>Perempuan</option>
+                                    <option value="Laki-Laki" {{ old('jenis_kelamin', $peserta->jenis_kelamin) ==
+                                        'Laki-Laki' ? 'selected' : '' }}>Laki-Laki</option>
+                                    <option value="Perempuan" {{ old('jenis_kelamin', $peserta->jenis_kelamin) ==
+                                        'Perempuan' ? 'selected' : '' }}>Perempuan</option>
                                 </select>
                                 @error('jenis_kelamin')
                                 <div class="invalid-feedback">{{ $message }}</div>
@@ -82,7 +83,7 @@
                         </div>
                     </div>
                 </div>
-                
+
                 <div class="col-lg-4 col-sm-6 col-12">
                     <div class="card mb-3">
                         <div class="card-body">
@@ -118,4 +119,3 @@
         </form>
     </div>
 </div>
-@endsection
