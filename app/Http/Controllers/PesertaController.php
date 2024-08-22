@@ -190,12 +190,16 @@ class PesertaController extends Controller
             'documents.*' => 'file|mimes:pdf,doc,docx|max:2048',
         ]);
     
-        foreach ($request->file('documents') as $file) {
-            $peserta->addMedia($file)->toMediaCollection('documents', 'dokument-peserta');
+        foreach ($request->documents as $type => $file) {
+            if ($file) {
+                $peserta->clearMediaCollection($type);
+                $peserta->addMedia($file)->toMediaCollection($type, 'dokument-peserta');
+            }
         }
     
         return response()->json(['success' => 'Multiple files uploaded successfully']);
     }
+    
     
 
     public function destroyFile($id, $type)
