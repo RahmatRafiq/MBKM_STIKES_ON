@@ -124,134 +124,89 @@
 <div class="card mt-4">
     <div class="card-header">Upload Dokumen Peserta</div>
     <div class="card-body">
-        <!-- Form untuk Surat Rekomendasi -->
-        <form id="uploadFormSuratRekomendasi" enctype="multipart/form-data" class="mt-4">
+        <form id="uploadFormAllFiles" enctype="multipart/form-data" class="row gx-3">
             @csrf
-            <div class="mb-3">
+            <div class="col-lg-6 mb-3">
                 <label for="surat_rekomendasi" class="form-label">Surat Rekomendasi</label>
-                <input type="file" name="file" class="form-control" required>
-
+                <input type="file" name="documents[surat_rekomendasi]" class="form-control">
                 @if($peserta->getFirstMediaUrl('surat_rekomendasi'))
-                <a href="{{ $peserta->getFirstMediaUrl('surat_rekomendasi') }}" target="_blank"
-                    class="btn btn-secondary mt-2">Lihat Surat Rekomendasi</a>
+                <a href="{{ $peserta->getFirstMediaUrl('surat_rekomendasi') }}" target="_blank" class="btn btn-secondary mt-2">Lihat Surat Rekomendasi</a>
                 @endif
             </div>
-            <button type="submit" class="btn btn-primary">Upload</button>
-        </form>
-
-        <!-- Form untuk Transkrip Nilai -->
-        <form id="uploadFormTranskripNilai" enctype="multipart/form-data" class="mt-4">
-            @csrf
-            <div class="mb-3">
+            <div class="col-lg-6 mb-3">
                 <label for="transkrip_nilai" class="form-label">Transkrip Nilai</label>
-                <input type="file" name="file" class="form-control" required>
-
+                <input type="file" name="documents[transkrip_nilai]" class="form-control">
                 @if($peserta->getFirstMediaUrl('transkrip_nilai'))
-                <a href="{{ $peserta->getFirstMediaUrl('transkrip_nilai') }}" target="_blank"
-                    class="btn btn-secondary mt-2">Lihat Transkrip Nilai</a>
+                <a href="{{ $peserta->getFirstMediaUrl('transkrip_nilai') }}" target="_blank" class="btn btn-secondary mt-2">Lihat Transkrip Nilai</a>
                 @endif
             </div>
-            <button type="submit" class="btn btn-primary">Upload</button>
-        </form>
-
-        <!-- Form untuk CV -->
-        <form id="uploadFormCV" enctype="multipart/form-data" class="mt-4">
-            @csrf
-            <div class="mb-3">
+            <div class="col-lg-6 mb-3">
                 <label for="cv" class="form-label">Curriculum Vitae (CV)</label>
-                <input type="file" name="file" class="form-control" required>
-
+                <input type="file" name="documents[cv]" class="form-control">
                 @if($peserta->getFirstMediaUrl('cv'))
-                <a href="{{ $peserta->getFirstMediaUrl('cv') }}" target="_blank" class="btn btn-secondary mt-2">Lihat
-                    CV</a>
+                <a href="{{ $peserta->getFirstMediaUrl('cv') }}" target="_blank" class="btn btn-secondary mt-2">Lihat CV</a>
                 @endif
             </div>
-            <button type="submit" class="btn btn-primary">Upload</button>
-        </form>
-
-        <!-- Form untuk Surat Pakta Integritas -->
-        <form id="uploadFormPaktaIntegritas" enctype="multipart/form-data" class="mt-4">
-            @csrf
-            <div class="mb-3">
+            <div class="col-lg-6 mb-3">
                 <label for="pakta_integritas" class="form-label">Surat Pakta Integritas</label>
-                <input type="file" name="file" class="form-control" required>
-
+                <input type="file" name="documents[pakta_integritas]" class="form-control">
                 @if($peserta->getFirstMediaUrl('pakta_integritas'))
-                <a href="{{ $peserta->getFirstMediaUrl('pakta_integritas') }}" target="_blank"
-                    class="btn btn-secondary mt-2">Lihat Surat Pakta Integritas</a>
+                <a href="{{ $peserta->getFirstMediaUrl('pakta_integritas') }}" target="_blank" class="btn btn-secondary mt-2">Lihat Surat Pakta Integritas</a>
                 @endif
             </div>
-            <button type="submit" class="btn btn-primary">Upload</button>
-        </form>
-
-        <!-- Form untuk Surat Izin Orangtua -->
-        <form id="uploadFormIzinOrangtua" enctype="multipart/form-data" class="mt-4">
-            @csrf
-            <div class="mb-3">
+            <div class="col-lg-6 mb-3">
                 <label for="izin_orangtua" class="form-label">Surat Izin Orangtua</label>
-                <input type="file" name="file" class="form-control" required>
-
+                <input type="file" name="documents[izin_orangtua]" class="form-control">
                 @if($peserta->getFirstMediaUrl('izin_orangtua'))
-                <a href="{{ $peserta->getFirstMediaUrl('izin_orangtua') }}" target="_blank"
-                    class="btn btn-secondary mt-2">Lihat Surat Izin Orangtua</a>
+                <a href="{{ $peserta->getFirstMediaUrl('izin_orangtua') }}" target="_blank" class="btn btn-secondary mt-2">Lihat Surat Izin Orangtua</a>
                 @endif
             </div>
-            <button type="submit" class="btn btn-primary">Upload</button>
-        </form>
-
-        <!-- Form untuk Surat Keterangan Sehat -->
-        <form id="uploadFormSuratKeteranganSehat" enctype="multipart/form-data" class="mt-4">
-            @csrf
-            <div class="mb-3">
+            <div class="col-lg-6 mb-3">
                 <label for="surat_keterangan_sehat" class="form-label">Surat Keterangan Sehat</label>
-                <input type="file" name="file" class="form-control" required>
-
+                <input type="file" name="documents[surat_keterangan_sehat]" class="form-control">
                 @if($peserta->getFirstMediaUrl('surat_keterangan_sehat'))
-                <a href="{{ $peserta->getFirstMediaUrl('surat_keterangan_sehat') }}" target="_blank"
-                    class="btn btn-secondary mt-2">Lihat Surat Keterangan Sehat</a>
+                <a href="{{ $peserta->getFirstMediaUrl('surat_keterangan_sehat') }}" target="_blank" class="btn btn-secondary mt-2">Lihat Surat Keterangan Sehat</a>
                 @endif
             </div>
-            <button type="submit" class="btn btn-primary">Upload</button>
+                <button type="submit" class="btn btn-primary">Upload All Documents</button>
         </form>
     </div>
 </div>
 
-<!-- Script untuk Menghandle Form Upload dengan Axios -->
-<script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+<script src="{{ asset('assets/js/jquery.min.js') }}"></script>
+<script src="{{ asset('assets/vendor/toastify/toastify.js') }}"></script>
 <script>
-    function handleFormSubmit(formId, url) {
-        const form = document.getElementById(formId);
-        form.addEventListener('submit', function(e) {
-            e.preventDefault();
+    $('#uploadFormAllFiles').on('submit', function(e) {
+        e.preventDefault();
+        let formData = new FormData(this);
 
-            const formData = new FormData(this);
-
-            axios.post(url, formData, {
-                headers: {
-                    'Content-Type': 'multipart/form-data'
-                },
-                onUploadProgress: function(progressEvent) {
-                    let percentCompleted = Math.round((progressEvent.loaded * 100) / progressEvent.total);
-                    console.log('Upload Progress: ' + percentCompleted + '%');
-                }
-            })
-            .then(response => {
-                alert('File uploaded successfully');
-                console.log(response.data);
-                // Optionally reload the page or update the UI
-            })
-            .catch(error => {
-                alert('An error occurred while uploading the file');
+        $.ajax({
+            url: "{{ route('peserta.uploadMultiple', $peserta->id) }}",
+            type: 'POST',
+            data: formData,
+            contentType: false,
+            processData: false,
+            success: function(response) {
+                Toastify({
+                    text: "Files uploaded successfully",
+                    duration: 3000,
+                    close: true,
+                    gravity: "top",
+                    position: "right",
+                    backgroundColor: "#4CAF50",
+                }).showToast();
+            },
+            error: function(error) {
+                Toastify({
+                    text: "An error occurred while uploading the files",
+                    duration: 3000,
+                    close: true,
+                    gravity: "top",
+                    position: "right",
+                    backgroundColor: "#f44336",
+                }).showToast();
                 console.error(error);
-            });
+            }
         });
-    }
-
-    // Panggil fungsi handleFormSubmit untuk setiap form
-    handleFormSubmit('uploadFormSuratRekomendasi', '{{ route('peserta.upload', ['id' => $peserta->id, 'type' => 'surat_rekomendasi']) }}');
-    handleFormSubmit('uploadFormTranskripNilai', '{{ route('peserta.upload', ['id' => $peserta->id, 'type' => 'transkrip_nilai']) }}');
-    handleFormSubmit('uploadFormCV', '{{ route('peserta.upload', ['id' => $peserta->id, 'type' => 'cv']) }}');
-    handleFormSubmit('uploadFormPaktaIntegritas', '{{ route('peserta.upload', ['id' => $peserta->id, 'type' => 'pakta_integritas']) }}');
-    handleFormSubmit('uploadFormIzinOrangtua', '{{ route('peserta.upload', ['id' => $peserta->id, 'type' => 'izin_orangtua']) }}');
-    handleFormSubmit('uploadFormSuratKeteranganSehat', '{{ route('peserta.upload', ['id' => $peserta->id, 'type' => 'surat_keterangan_sehat']) }}');
+    });
 </script>
