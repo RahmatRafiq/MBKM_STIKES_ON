@@ -117,5 +117,195 @@
             </div>
             <button type="submit" class="btn btn-primary">Update</button>
         </form>
+        <!-- Form untuk Surat Rekomendasi -->
+        <form method="POST"
+            action="{{ route('peserta.upload', ['id' => $peserta->id, 'type' => 'surat_rekomendasi']) }}"
+            enctype="multipart/form-data" class="mt-4">
+            @csrf
+            <div class="mb-3">
+                <label for="surat_rekomendasi" class="form-label">Surat Rekomendasi</label>
+                <div class="dropzone" id="suratRekomendasiDropzone"></div>
+            </div>
+        </form>
+
+        <!-- Form untuk Transkrip Nilai -->
+        <form method="POST" action="{{ route('peserta.upload', ['id' => $peserta->id, 'type' => 'transkrip_nilai']) }}"
+            enctype="multipart/form-data" class="mt-4">
+            @csrf
+            <div class="mb-3">
+                <label for="transkrip_nilai" class="form-label">Transkrip Nilai</label>
+                <div class="dropzone" id="transkripNilaiDropzone"></div>
+            </div>
+        </form>
+
+        <!-- Form untuk CV -->
+        <form method="POST" action="{{ route('peserta.upload', ['id' => $peserta->id, 'type' => 'cv']) }}"
+            enctype="multipart/form-data" class="mt-4">
+            @csrf
+            <div class="mb-3">
+                <label for="cv" class="form-label">Curriculum Vitae (CV)</label>
+                <div class="dropzone" id="cvDropzone"></div>
+            </div>
+        </form>
+
+        <!-- Form untuk Surat Pakta Integritas -->
+        <form method="POST" action="{{ route('peserta.upload', ['id' => $peserta->id, 'type' => 'pakta_integritas']) }}"
+            enctype="multipart/form-data" class="mt-4">
+            @csrf
+            <div class="mb-3">
+                <label for="pakta_integritas" class="form-label">Surat Pakta Integritas</label>
+                <div class="dropzone" id="paktaIntegritasDropzone"></div>
+            </div>
+        </form>
+
+        <!-- Form untuk Surat Izin Orangtua -->
+        <form method="POST" action="{{ route('peserta.upload', ['id' => $peserta->id, 'type' => 'izin_orangtua']) }}"
+            enctype="multipart/form-data" class="mt-4">
+            @csrf
+            <div class="mb-3">
+                <label for="izin_orangtua" class="form-label">Surat Izin Orangtua</label>
+                <div class="dropzone" id="izinOrangtuaDropzone"></div>
+            </div>
+        </form>
+
+        <!-- Form untuk Surat Keterangan Sehat -->
+        <form method="POST"
+            action="{{ route('peserta.upload', ['id' => $peserta->id, 'type' => 'surat_keterangan_sehat']) }}"
+            enctype="multipart/form-data" class="mt-4">
+            @csrf
+            <div class="mb-3">
+                <label for="surat_keterangan_sehat" class="form-label">Surat Keterangan Sehat</label>
+                <div class="dropzone" id="suratKeteranganSehatDropzone"></div>
+            </div>
+        </form>
     </div>
 </div>
+
+@push('head')
+@vite(['resources/js/dropzoner.js'])
+@endpush
+
+@push('javascript')
+<script type="module">
+    const csrf = "{!! csrf_token() !!}";
+
+    const files = {
+        surat_rekomendasi: {!! json_encode($peserta->getMedia('surat_rekomendasi')->map(function($file) {
+            return [
+                'id' => $file->id,
+                'name' => $file->file_name,
+                'size' => $file->size,
+                'url' => $file->getUrl()
+            ];
+        })) !!},
+
+        transkrip_nilai: {!! json_encode($peserta->getMedia('transkrip_nilai')->map(function($file) {
+            return [
+                'id' => $file->id,
+                'name' => $file->file_name,
+                'size' => $file->size,
+                'url' => $file->getUrl()
+            ];
+        })) !!},
+
+        cv: {!! json_encode($peserta->getMedia('cv')->map(function($file) {
+            return [
+                'id' => $file->id,
+                'name' => $file->file_name,
+                'size' => $file->size,
+                'url' => $file->getUrl()
+            ];
+        })) !!},
+
+        pakta_integritas: {!! json_encode($peserta->getMedia('pakta_integritas')->map(function($file) {
+            return [
+                'id' => $file->id,
+                'name' => $file->file_name,
+                'size' => $file->size,
+                'url' => $file->getUrl()
+            ];
+        })) !!},
+
+        izin_orangtua: {!! json_encode($peserta->getMedia('izin_orangtua')->map(function($file) {
+            return [
+                'id' => $file->id,
+                'name' => $file->file_name,
+                'size' => $file->size,
+                'url' => $file->getUrl()
+            ];
+        })) !!},
+
+        surat_keterangan_sehat: {!! json_encode($peserta->getMedia('surat_keterangan_sehat')->map(function($file) {
+            return [
+                'id' => $file->id,
+                'name' => $file->file_name,
+                'size' => $file->size,
+                'url' => $file->getUrl()
+            ];
+        })) !!}
+    };
+
+    Dropzoner('#suratRekomendasiDropzone', 'file', {
+        urlStore: "{{ route('peserta.upload', ['id' => $peserta->id, 'type' => 'surat_rekomendasi']) }}",
+        urlDestroy: "{{ route('peserta.destroyFile', ['id' => $peserta->id, 'type' => 'surat_rekomendasi']) }}",
+        csrf: csrf,
+        acceptedFiles: 'application/pdf,.doc,.docx',
+        maxFiles: 1,
+        files: files.surat_rekomendasi,
+        kind: 'file'
+    });
+
+    Dropzoner('#transkripNilaiDropzone', 'file', {
+        urlStore: "{{ route('peserta.upload', ['id' => $peserta->id, 'type' => 'transkrip_nilai']) }}",
+        urlDestroy: "{{ route('peserta.destroyFile', ['id' => $peserta->id, 'type' => 'transkrip_nilai']) }}",
+        csrf: csrf,
+        acceptedFiles: 'application/pdf,.doc,.docx',
+        maxFiles: 1,
+        files: files.transkrip_nilai,
+        kind: 'file'
+    });
+
+    Dropzoner('#cvDropzone', 'file', {
+        urlStore: "{{ route('peserta.upload', ['id' => $peserta->id, 'type' => 'cv']) }}",
+        urlDestroy: "{{ route('peserta.destroyFile', ['id' => $peserta->id, 'type' => 'cv']) }}",
+        csrf: csrf,
+        acceptedFiles: 'application/pdf,.doc,.docx',
+        maxFiles: 1,
+        files: files.cv,
+        kind: 'file'
+    });
+
+    Dropzoner('#paktaIntegritasDropzone', 'file', {
+        urlStore: "{{ route('peserta.upload', ['id' => $peserta->id, 'type' => 'pakta_integritas']) }}",
+        urlDestroy: "{{ route('peserta.destroyFile', ['id' => $peserta->id, 'type' => 'pakta_integritas']) }}",
+        csrf: csrf,
+        acceptedFiles: 'application/pdf,.doc,.docx',
+        maxFiles: 1,
+        files: files.pakta_integritas,
+        kind: 'file'
+    });
+
+    Dropzoner('#izinOrangtuaDropzone', 'file', {
+        urlStore: "{{ route('peserta.upload', ['id' => $peserta->id, 'type' => 'izin_orangtua']) }}",
+        urlDestroy: "{{ route('peserta.destroyFile', ['id' => $peserta->id, 'type' => 'izin_orangtua']) }}",
+        csrf: csrf,
+        acceptedFiles: 'application/pdf,.doc,.docx',
+        maxFiles: 1,
+        files: files.izin_orangtua,
+        kind: 'file'
+    });
+
+    Dropzoner('#suratKeteranganSehatDropzone', 'file', {
+        urlStore: "{{ route('peserta.upload', ['id' => $peserta->id, 'type' => 'surat_keterangan_sehat']) }}",
+        urlDestroy: "{{ route('peserta.destroyFile', ['id' => $peserta->id, 'type' => 'surat_keterangan_sehat']) }}",
+        csrf: csrf,
+        acceptedFiles: 'application/pdf,.doc,.docx',
+        maxFiles: 1,
+        files: files.surat_keterangan_sehat,
+        kind: 'file'
+    });
+</script>
+@endpush
+
+
+
