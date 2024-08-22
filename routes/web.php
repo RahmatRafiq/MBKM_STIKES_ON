@@ -89,6 +89,9 @@ Route::middleware('auth')->group(function () {
         Route::delete('mbkm/staff/peserta/{peserta}', [\App\Http\Controllers\PesertaController::class, 'destroy'])->name('peserta.destroy');
         Route::post('mbkm/staff/peserta/json', [\App\Http\Controllers\PesertaController::class, 'json'])->name('peserta.json');
 
+        Route::post('/peserta/{id}/upload/{type}', [\App\Http\Controllers\PesertaController::class, 'uploadDocument'])->name('peserta.upload');
+        Route::delete('/peserta/{id}/delete/{type}', [\App\Http\Controllers\PesertaController::class, 'destroyFile'])->name('peserta.destroyFile');
+
         Route::get('/staff/registrasi', [RegistrasiController::class, 'index'])->name('staff.registrasiIndex');
         Route::put('/staff/registrasi/{id}', [RegistrasiController::class, 'update'])->name('staff.updateRegistrasi');
         Route::put('/staff/registrasi/{id}/dospem', [RegistrasiController::class, 'updateDospem'])->name('staff.updateDospem');
