@@ -4,9 +4,8 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Spatie\MediaLibrary\InteractsWithMedia;
 use Spatie\MediaLibrary\HasMedia;
-
+use Spatie\MediaLibrary\InteractsWithMedia;
 
 class Peserta extends Model implements HasMedia
 {
@@ -47,6 +46,30 @@ class Peserta extends Model implements HasMedia
             ->whereDate('registrasi.created_at', '>=', $semesterStart)
             ->whereDate('registrasi.created_at', '<=', $semesterEnd);
     }
+    public function registerMediaCollections(): void
+    {
+        $this
+            ->addMediaCollection('surat_rekomendasi')
+            ->singleFile();
+
+        $this
+            ->addMediaCollection('transkrip_nilai')
+            ->singleFile();
+
+        $this
+            ->addMediaCollection('cv')
+            ->singleFile();
+
+        $this
+            ->addMediaCollection('pakta_integritas')
+            ->singleFile();
+
+        $this
+            ->addMediaCollection('izin_orangtua')
+            ->singleFile();
+
+        $this
+            ->addMediaCollection('surat_keterangan_sehat')
+            ->singleFile();
+    }
 }
-
-
