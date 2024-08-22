@@ -118,12 +118,14 @@
             </div>
             <button type="submit" class="btn btn-primary">Update</button>
         </form>
+    </div>
+</div>
 
+<div class="card mt-4">
+    <div class="card-header">Upload Dokumen Peserta</div>
+    <div class="card-body">
         <!-- Form untuk Surat Rekomendasi -->
-        <!-- Form untuk Surat Rekomendasi -->
-        <form method="POST"
-            action="{{ route('peserta.upload', ['id' => $peserta->id, 'type' => 'surat_rekomendasi']) }}"
-            enctype="multipart/form-data" class="mt-4">
+        <form id="uploadFormSuratRekomendasi" enctype="multipart/form-data" class="mt-4">
             @csrf
             <div class="mb-3">
                 <label for="surat_rekomendasi" class="form-label">Surat Rekomendasi</label>
@@ -138,8 +140,7 @@
         </form>
 
         <!-- Form untuk Transkrip Nilai -->
-        <form method="POST" action="{{ route('peserta.upload', ['id' => $peserta->id, 'type' => 'transkrip_nilai']) }}"
-            enctype="multipart/form-data" class="mt-4">
+        <form id="uploadFormTranskripNilai" enctype="multipart/form-data" class="mt-4">
             @csrf
             <div class="mb-3">
                 <label for="transkrip_nilai" class="form-label">Transkrip Nilai</label>
@@ -154,11 +155,10 @@
         </form>
 
         <!-- Form untuk CV -->
-        <form method="POST" action="{{ route('peserta.upload', ['id' => $peserta->id, 'type' => 'cv']) }}"
-            enctype="multipart/form-data" class="mt-4">
+        <form id="uploadFormCV" enctype="multipart/form-data" class="mt-4">
             @csrf
             <div class="mb-3">
-                <label for "cv" class="form-label">Curriculum Vitae (CV)</label>
+                <label for="cv" class="form-label">Curriculum Vitae (CV)</label>
                 <input type="file" name="file" class="form-control" required>
 
                 @if($peserta->getFirstMediaUrl('cv'))
@@ -170,8 +170,7 @@
         </form>
 
         <!-- Form untuk Surat Pakta Integritas -->
-        <form method="POST" action="{{ route('peserta.upload', ['id' => $peserta->id, 'type' => 'pakta_integritas']) }}"
-            enctype="multipart/form-data" class="mt-4">
+        <form id="uploadFormPaktaIntegritas" enctype="multipart/form-data" class="mt-4">
             @csrf
             <div class="mb-3">
                 <label for="pakta_integritas" class="form-label">Surat Pakta Integritas</label>
@@ -186,8 +185,7 @@
         </form>
 
         <!-- Form untuk Surat Izin Orangtua -->
-        <form method="POST" action="{{ route('peserta.upload', ['id' => $peserta->id, 'type' => 'izin_orangtua']) }}"
-            enctype="multipart/form-data" class="mt-4">
+        <form id="uploadFormIzinOrangtua" enctype="multipart/form-data" class="mt-4">
             @csrf
             <div class="mb-3">
                 <label for="izin_orangtua" class="form-label">Surat Izin Orangtua</label>
@@ -202,9 +200,7 @@
         </form>
 
         <!-- Form untuk Surat Keterangan Sehat -->
-        <form method="POST"
-            action="{{ route('peserta.upload', ['id' => $peserta->id, 'type' => 'surat_keterangan_sehat']) }}"
-            enctype="multipart/form-data" class="mt-4">
+        <form id="uploadFormSuratKeteranganSehat" enctype="multipart/form-data" class="mt-4">
             @csrf
             <div class="mb-3">
                 <label for="surat_keterangan_sehat" class="form-label">Surat Keterangan Sehat</label>
@@ -217,6 +213,45 @@
             </div>
             <button type="submit" class="btn btn-primary">Upload</button>
         </form>
-
     </div>
 </div>
+
+<!-- Script untuk Menghandle Form Upload dengan Axios -->
+<script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+<script>
+    function handleFormSubmit(formId, url) {
+        const form = document.getElementById(formId);
+        form.addEventListener('submit', function(e) {
+            e.preventDefault();
+
+            const formData = new FormData(this);
+
+            axios.post(url, formData, {
+                headers: {
+                    'Content-Type': 'multipart/form-data'
+                },
+                onUploadProgress: function(progressEvent) {
+                    let percentCompleted = Math.round((progressEvent.loaded * 100) / progressEvent.total);
+                    console.log('Upload Progress: ' + percentCompleted + '%');
+                }
+            })
+            .then(response => {
+                alert('File uploaded successfully');
+                console.log(response.data);
+                // Optionally reload the page or update the UI
+            })
+            .catch(error => {
+                alert('An error occurred while uploading the file');
+                console.error(error);
+            });
+        });
+    }
+
+    // Panggil fungsi handleFormSubmit untuk setiap form
+    handleFormSubmit('uploadFormSuratRekomendasi', '{{ route('peserta.upload', ['id' => $peserta->id, 'type' => 'surat_rekomendasi']) }}');
+    handleFormSubmit('uploadFormTranskripNilai', '{{ route('peserta.upload', ['id' => $peserta->id, 'type' => 'transkrip_nilai']) }}');
+    handleFormSubmit('uploadFormCV', '{{ route('peserta.upload', ['id' => $peserta->id, 'type' => 'cv']) }}');
+    handleFormSubmit('uploadFormPaktaIntegritas', '{{ route('peserta.upload', ['id' => $peserta->id, 'type' => 'pakta_integritas']) }}');
+    handleFormSubmit('uploadFormIzinOrangtua', '{{ route('peserta.upload', ['id' => $peserta->id, 'type' => 'izin_orangtua']) }}');
+    handleFormSubmit('uploadFormSuratKeteranganSehat', '{{ route('peserta.upload', ['id' => $peserta->id, 'type' => 'surat_keterangan_sehat']) }}');
+</script>
