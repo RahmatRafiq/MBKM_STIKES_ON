@@ -17,9 +17,12 @@ Route::name('api')->group(function () {
     })->name('login');
 });
 
+
+
 Route::middleware([ApiKeyMiddleware::class])->group(function () {
     Route::get('/laporan-lengkap-peserta/json', [ApiController::class, 'getValidatedLaporanLengkap']);
     Route::get('/dosen-sisfo/json', [ApiController::class, 'getDataDosenSisfo']);
+  Route::get('/mahasiswa-sisfo/json', [ApiController::class, 'getDataMahasiswaSisfo']);
 });
 Route::fallback(function () {
     return response()->json([

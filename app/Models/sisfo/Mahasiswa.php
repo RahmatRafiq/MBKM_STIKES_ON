@@ -14,7 +14,11 @@ class Mahasiswa extends Model
 
     protected $fillable = [
         'MhswID',       // ID Mahasiswa
-        'Nama',         // Nama
+        'Nama',   
+        'Kelamin',      // Kelamin
+        'Alamat',       // Alamat
+        'telepon',      // Telepon
+        'Agama',        // Agama
         'Email',        // Email
         'Login',        // Login
         'LevelID',      // Level ID
