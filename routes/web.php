@@ -65,7 +65,7 @@ Route::middleware('auth')->group(function () {
         Route::post('/laporan-mingguan/validate/{id}', [\App\Http\Controllers\AktivitasMbkmController::class, 'validateLaporanMingguan'])->name('laporan.mingguan.validate');
     });
 
-    Route::middleware(['role:staff|super admin'])->group(function () {
+    Route::middleware(['role:staff|super admin|peserta'])->group(function () {
         Route::resource('mbkm/staff/mitra', \App\Http\Controllers\MitraProfileController::class);
         Route::post('mbkm/staff/mitra/json', [\App\Http\Controllers\MitraProfileController::class, 'json'])->name('mitra.json');
         Route::post('mbkm/staff/mitra/create', [\App\Http\Controllers\MitraProfileController::class, 'storeMitraUser'])->name('mitra.user.store');
@@ -88,6 +88,11 @@ Route::middleware('auth')->group(function () {
         Route::put('mbkm/staff/peserta/{peserta}', [\App\Http\Controllers\PesertaController::class, 'update'])->name('peserta.update');
         Route::delete('mbkm/staff/peserta/{peserta}', [\App\Http\Controllers\PesertaController::class, 'destroy'])->name('peserta.destroy');
         Route::post('mbkm/staff/peserta/json', [\App\Http\Controllers\PesertaController::class, 'json'])->name('peserta.json');
+
+        Route::post('/peserta/{id}/upload/{type}', [\App\Http\Controllers\PesertaController::class, 'uploadDocument'])->name('peserta.upload');
+        Route::delete('/peserta/{id}/delete/{type}', [\App\Http\Controllers\PesertaController::class, 'destroyFile'])->name('peserta.destroyFile');
+        Route::post('/peserta/{id}/upload-multiple', [\App\Http\Controllers\PesertaController::class, 'uploadMultipleDocuments'])->name('peserta.uploadMultiple');
+
 
         Route::get('/staff/registrasi', [RegistrasiController::class, 'index'])->name('staff.registrasiIndex');
         Route::put('/staff/registrasi/{id}', [RegistrasiController::class, 'update'])->name('staff.updateRegistrasi');
