@@ -3,9 +3,9 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
-use App\Models\LaporanLengkap;
 use App\Models\BatchMbkm;
-use Illuminate\Http\Request;
+use App\Models\LaporanLengkap;
+use App\Models\sisfo\Dosen;
 
 class ApiController extends Controller
 {
@@ -20,7 +20,7 @@ class ApiController extends Controller
         // Ambil laporan lengkap dengan status 'validasi' berdasarkan batch aktif
         $laporanLengkap = LaporanLengkap::with([
             'peserta.registrationPlacement.lowongan.mitra',
-            'peserta.registrationPlacement.dospem'
+            'peserta.registrationPlacement.dospem',
         ])
             ->whereHas('peserta.registrationPlacement', function ($query) use ($activeBatch) {
                 $query->where('batch_id', $activeBatch->id);
@@ -53,7 +53,37 @@ class ApiController extends Controller
         return response()->json([
             'status' => 'success',
             'message' => 'Data laporan lengkap dengan status validasi berhasil diambil.',
-            'data' => $data
+            'data' => $data,
+        ]);
+    }
+
+    public function getDataDosenSisfo()
+    {
+        $dataDosen = Dosen::all();
+
+        if ($dataDosen->isEmpty()) {
+            return response()->json(['message' => 'Tidak ada data dosen yang ditemukan.'], 404);
+        }
+
+        $data = $dataDosen->map(function ($dosen) {
+            return [
+                'Nama' => $dosen->Nama,
+                'NIDN' => $dosen->NIDN,
+                'Login' => $dosen->Login,
+                'KodeID' => $dosen->KodeID,
+                'HomebaseInduk' => $dosen->HomebaseInduk,
+                'NIPPNS' => $dosen->NIPPNS,
+                'TempatLahir' => $dosen->TempatLahir, // TempatLahir
+                'TanggalLahir' => $dosen->TanggalLahir, // TanggalLahir
+                'LevelID' => $dosen->LevelID, // LevelID
+                'KTP' => $dosen->KTP, // KTP
+            ];
+        });
+
+        return response()->json([
+            'status' => 'success',
+            'message' => 'Data dosen berhasil diambil.',
+            'data' => $data,
         ]);
     }
 }
