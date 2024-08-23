@@ -152,7 +152,7 @@ class PesertaController extends Controller
             'telepon' => $request->telepon,
         ]);
 
-        return redirect()->route('peserta.index')->with('success', 'Peserta updated successfully');
+        return back()->with('success', 'Peserta updated successfully');
     }
 
     public function destroy(Peserta $peserta)
@@ -164,7 +164,7 @@ class PesertaController extends Controller
     public function uploadAllDocuments(Request $request, $id)
     {
         $peserta = Peserta::findOrFail($id);
-    
+
         $request->validate([
             'surat_rekomendasi' => 'file|mimes:pdf,doc,docx|max:2048',
             'transkrip_nilai' => 'file|mimes:pdf,doc,docx|max:2048',
@@ -173,34 +173,32 @@ class PesertaController extends Controller
             'izin_orangtua' => 'file|mimes:pdf,doc,docx|max:2048',
             'surat_keterangan_sehat' => 'file|mimes:pdf,doc,docx|max:2048',
         ]);
-    
+
         foreach ($request->allFiles() as $type => $file) {
             $peserta->clearMediaCollection($type);
             $peserta->addMedia($file)->toMediaCollection($type, 'dokument-peserta');
         }
-    
-        return response()->json(['success' => 'All files uploaded successfully']);
+
+        return back()->with('success', 'All files uploaded successfully');
     }
-    
+
     public function uploadMultipleDocuments(Request $request, $id)
     {
         $peserta = Peserta::findOrFail($id);
-    
+
         $request->validate([
             'documents.*' => 'file|mimes:pdf,doc,docx|max:2048',
         ]);
-    
+
         foreach ($request->documents as $type => $file) {
             if ($file) {
                 $peserta->clearMediaCollection($type);
                 $peserta->addMedia($file)->toMediaCollection($type, 'dokument-peserta');
             }
         }
-    
-        return response()->json(['success' => 'Multiple files uploaded successfully']);
+
+        return back()->with('success', 'All files uploaded successfully');
     }
-    
-    
 
     public function destroyFile($id, $type)
     {
