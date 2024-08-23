@@ -164,6 +164,18 @@
             </div>
         </div>
         @endif
+
+        @if(auth()->user()->mitraProfile)
+        <div class="row gx-3 mt-4">
+            <div class="col-lg-12 col-sm-12 col-12">
+                @include('applications.mbkm.staff.mitra.edit', ['item' => auth()->user()->mitraProfile, 'types' => $types])
+            </div>
+        </div>
+    @endif
+    
+
+
+
     </div>
 </div>
 @endsection
