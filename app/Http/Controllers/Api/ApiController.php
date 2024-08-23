@@ -5,7 +5,11 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Models\BatchMbkm;
 use App\Models\LaporanLengkap;
+
 use App\Models\sisfo\Mahasiswa;
+
+use App\Models\sisfo\Dosen;
+
 
 class ApiController extends Controller
 {
@@ -57,6 +61,7 @@ class ApiController extends Controller
         ]);
     }
 
+
     public function getDataMahasiswaSisfo()
     {
         $dataMahasiswa = Mahasiswa::all();
@@ -85,6 +90,34 @@ class ApiController extends Controller
         return response()->json([
             'status' => 'success',
             'message' => 'Data mahasiswa berhasil diambil.',
+
+    public function getDataDosenSisfo()
+    {
+        $dataDosen = Dosen::all();
+
+        if ($dataDosen->isEmpty()) {
+            return response()->json(['message' => 'Tidak ada data dosen yang ditemukan.'], 404);
+        }
+
+        $data = $dataDosen->map(function ($dosen) {
+            return [
+                'Nama' => $dosen->Nama,
+                'NIDN' => $dosen->NIDN,
+                'Login' => $dosen->Login,
+                'KodeID' => $dosen->KodeID,
+                'HomebaseInduk' => $dosen->HomebaseInduk,
+                'NIPPNS' => $dosen->NIPPNS,
+                'TempatLahir' => $dosen->TempatLahir, // TempatLahir
+                'TanggalLahir' => $dosen->TanggalLahir, // TanggalLahir
+                'LevelID' => $dosen->LevelID, // LevelID
+                'KTP' => $dosen->KTP, // KTP
+            ];
+        });
+
+        return response()->json([
+            'status' => 'success',
+            'message' => 'Data dosen berhasil diambil.',
+
             'data' => $data,
         ]);
     }
