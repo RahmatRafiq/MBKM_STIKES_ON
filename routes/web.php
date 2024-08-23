@@ -1,16 +1,12 @@
 <?php
 
-use App\Http\Controllers\DashboardController;
-use App\Http\Controllers\ProfileController;
-use App\Http\Controllers\RegistrasiController;
-use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
 
 Route::middleware('auth')->group(function () {
-    Route::get('/', [DashboardController::class, 'index'])->name('dashboard');
-    Route::get('mbkm/profile', [ProfileController::class, 'edit'])->name('profile.edit');
-    Route::patch('mbkm/profile', [ProfileController::class, 'update'])->name('profile.update');
-    Route::delete('mbkm/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+    Route::get('/', [\App\Http\Controllers\DashboardController::class, 'index'])->name('dashboard');
+    Route::get('mbkm/profile', [\App\Http\Controllers\ProfileController::class, 'edit'])->name('profile.edit');
+    Route::patch('mbkm/profile', [\App\Http\Controllers\ProfileController::class, 'update'])->name('profile.update');
+    Route::delete('mbkm/profile', [\App\Http\Controllers\ProfileController::class, 'destroy'])->name('profile.destroy');
 
     Route::middleware(['role:super admin'])->group(function () {
         Route::get('mbkm/manajemen-aplikasi/about-mbkm', [\App\Http\Controllers\AboutMbkmController::class, 'index'])->name('about-mbkms.index');
@@ -28,17 +24,17 @@ Route::middleware('auth')->group(function () {
         Route::resource('mbkm/admin/role-permissions/role', \App\Http\Controllers\RolePermission\RoleController::class);
         Route::post('mbkm/admin/role-permissions/role/json', [\App\Http\Controllers\RolePermission\RoleController::class, 'json'])->name('role.json');
 
-        Route::resource('mbkm/admin/role-permissions/user', UserController::class);
-        Route::post('mbkm/admin/role-permissions/user/json', [UserController::class, 'json'])->name('user.json');
+        Route::resource('mbkm/admin/role-permissions/user', \App\Http\Controllers\UserController::class);
+        Route::post('mbkm/admin/role-permissions/user/json', [\App\Http\Controllers\UserController::class, 'json'])->name('user.json');
     });
 
     Route::middleware(['role:peserta|super admin'])->group(function () {
-        Route::get('/registrasi/filter', [RegistrasiController::class, 'filter'])->name('peserta.filter');
-        Route::get('/peserta/registrasi', [RegistrasiController::class, 'showPesertaRegistrasiForm'])->name('peserta.registrasiForm');
-        Route::post('/peserta/registrasi', [RegistrasiController::class, 'store'])->name('peserta.registrasi');
-        Route::post('/peserta/registrasi/{id}/accept', [RegistrasiController::class, 'acceptOffer'])->name('peserta.acceptOffer');
-        Route::post('/peserta/registrasi/{id}/reject', [RegistrasiController::class, 'rejectOffer'])->name('peserta.rejectOffer');
-        Route::get('/registrasi/{id}/registrations-and-accept-offer', [RegistrasiController::class, 'showRegistrationsAndAcceptOffer'])->name('registrasi.registrations-and-accept-offer');
+        Route::get('/registrasi/filter', [\App\Http\Controllers\RegistrasiController::class, 'filter'])->name('peserta.filter');
+        Route::get('/peserta/registrasi', [\App\Http\Controllers\RegistrasiController::class, 'showPesertaRegistrasiForm'])->name('peserta.registrasiForm');
+        Route::post('/peserta/registrasi', [\App\Http\Controllers\RegistrasiController::class, 'store'])->name('peserta.registrasi');
+        Route::post('/peserta/registrasi/{id}/accept', [\App\Http\Controllers\RegistrasiController::class, 'acceptOffer'])->name('peserta.acceptOffer');
+        Route::post('/peserta/registrasi/{id}/reject', [\App\Http\Controllers\RegistrasiController::class, 'rejectOffer'])->name('peserta.rejectOffer');
+        Route::get('/registrasi/{id}/registrations-and-accept-offer', [\App\Http\Controllers\RegistrasiController::class, 'showRegistrationsAndAcceptOffer'])->name('registrasi.registrations-and-accept-offer');
 
         Route::get('/laporan-harian', [\App\Http\Controllers\AktivitasMbkmController::class, 'createLaporanHarian'])->name('laporan.harian');
         Route::get('/laporan-harian/create', [\App\Http\Controllers\AktivitasMbkmController::class, 'createLaporanHarian'])->name('laporan.harian.create');
@@ -50,23 +46,26 @@ Route::middleware('auth')->group(function () {
         Route::get('/laporan-lengkap/create', [\App\Http\Controllers\AktivitasMbkmController::class, 'createLaporanLengkap'])->name('laporan.lengkap.create');
         Route::post('/laporan-lengkap/store', [\App\Http\Controllers\AktivitasMbkmController::class, 'storeLaporanLengkap'])->name('laporan.lengkap.store');
 
+        Route::get('mbkm/staff/peserta/{peserta}/edit', [\App\Http\Controllers\PesertaController::class, 'edit'])->name('peserta.edit');
+        Route::put('mbkm/staff/peserta/{peserta}', [\App\Http\Controllers\PesertaController::class, 'update'])->name('peserta.update');
     });
 
-    Route::middleware(['role:mitra|dosen|super admin'])->group(function () {
-        // Route::get('/lowongan/filter', [RegistrasiController::class, 'filter'])->name('lowongan.filter');
+    Route::middleware(['role:mitra'])->group(function () {
+        Route::resource('mbkm/staff/mitra', \App\Http\Controllers\MitraProfileController::class)->only(['edit', 'update']);
+    });
 
-        // Rute untuk staff
-        Route::get('/staff/registrasi', [RegistrasiController::class, 'index'])->name('staff.registrasiIndex');
-        Route::put('/staff/registrasi/{id}', [RegistrasiController::class, 'update'])->name('staff.updateRegistrasi');
-        Route::put('/staff/registrasi/{id}/dospem', [RegistrasiController::class, 'updateDospem'])->name('staff.updateDospem');
+    Route::middleware(['role:mitra|dosen'])->group(function () {
+        Route::get('/staff/registrasi', [\App\Http\Controllers\RegistrasiController::class, 'index'])->name('staff.registrasiIndex');
+        Route::put('/staff/registrasi/{id}', [\App\Http\Controllers\RegistrasiController::class, 'update'])->name('staff.updateRegistrasi');
+        Route::put('/staff/registrasi/{id}/dospem', [\App\Http\Controllers\RegistrasiController::class, 'updateDospem'])->name('staff.updateDospem');
 
         Route::get('/laporan', [\App\Http\Controllers\AktivitasMbkmController::class, 'index'])->name('laporan.index');
         Route::post('/laporan-harian/validate/{id}', [\App\Http\Controllers\AktivitasMbkmController::class, 'validateLaporanHarian'])->name('laporan.harian.validate');
         Route::post('/laporan-mingguan/validate/{id}', [\App\Http\Controllers\AktivitasMbkmController::class, 'validateLaporanMingguan'])->name('laporan.mingguan.validate');
     });
 
-    Route::middleware(['role:staff|super admin|peserta'])->group(function () {
-        Route::resource('mbkm/staff/mitra', \App\Http\Controllers\MitraProfileController::class);
+    Route::middleware(['role:staff|super admin'])->group(function () {
+        Route::resource('mbkm/staff/mitra', \App\Http\Controllers\MitraProfileController::class)->only(['index', 'create', 'store', 'show', 'destroy']);
         Route::post('mbkm/staff/mitra/json', [\App\Http\Controllers\MitraProfileController::class, 'json'])->name('mitra.json');
         Route::post('mbkm/staff/mitra/create', [\App\Http\Controllers\MitraProfileController::class, 'storeMitraUser'])->name('mitra.user.store');
 
@@ -84,8 +83,7 @@ Route::middleware('auth')->group(function () {
         Route::get('mbkm/staff/peserta/create', [\App\Http\Controllers\PesertaController::class, 'create'])->name('peserta.create');
         Route::post('mbkm/staff/peserta', [\App\Http\Controllers\PesertaController::class, 'store'])->name('peserta.store');
         Route::get('mbkm/staff/peserta/{peserta}', [\App\Http\Controllers\PesertaController::class, 'show'])->name('peserta.show');
-        Route::get('mbkm/staff/peserta/{peserta}/edit', [\App\Http\Controllers\PesertaController::class, 'edit'])->name('peserta.edit');
-        Route::put('mbkm/staff/peserta/{peserta}', [\App\Http\Controllers\PesertaController::class, 'update'])->name('peserta.update');
+
         Route::delete('mbkm/staff/peserta/{peserta}', [\App\Http\Controllers\PesertaController::class, 'destroy'])->name('peserta.destroy');
         Route::post('mbkm/staff/peserta/json', [\App\Http\Controllers\PesertaController::class, 'json'])->name('peserta.json');
 
@@ -93,10 +91,9 @@ Route::middleware('auth')->group(function () {
         Route::delete('/peserta/{id}/delete/{type}', [\App\Http\Controllers\PesertaController::class, 'destroyFile'])->name('peserta.destroyFile');
         Route::post('/peserta/{id}/upload-multiple', [\App\Http\Controllers\PesertaController::class, 'uploadMultipleDocuments'])->name('peserta.uploadMultiple');
 
-
-        Route::get('/staff/registrasi', [RegistrasiController::class, 'index'])->name('staff.registrasiIndex');
-        Route::put('/staff/registrasi/{id}', [RegistrasiController::class, 'update'])->name('staff.updateRegistrasi');
-        Route::put('/staff/registrasi/{id}/dospem', [RegistrasiController::class, 'updateDospem'])->name('staff.updateDospem');
+        Route::get('/staff/registrasi', [\App\Http\Controllers\RegistrasiController::class, 'index'])->name('staff.registrasiIndex');
+        Route::put('/staff/registrasi/{id}', [\App\Http\Controllers\RegistrasiController::class, 'update'])->name('staff.updateRegistrasi');
+        Route::put('/staff/registrasi/{id}/dospem', [\App\Http\Controllers\RegistrasiController::class, 'updateDospem'])->name('staff.updateDospem');
     });
 
     Route::middleware(['role:dosen|super admin'])->group(function () {
