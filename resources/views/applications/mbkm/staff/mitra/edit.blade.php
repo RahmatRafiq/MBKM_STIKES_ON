@@ -1,6 +1,6 @@
-@extends('layouts.app')
+{{-- @extends('layouts.app')
 
-@section('content')
+@section('content') --}}
 <form method="POST" action="{{ route('mitra.update', $item->id) }}" enctype="multipart/form-data">
     @csrf
     @method('PUT')
@@ -84,10 +84,11 @@
 
     <button type="submit" class="btn btn-primary">Update Mitra</button>
 </form>
-@endsection
+{{-- @endsection --}}
 
 @push('head')
 @vite(['resources/js/dropzoner.js'])
+<script src="{{ asset('assets/vendor/toastify/toastify.js') }}"></script>
 @endpush
 
 @push('javascript')
@@ -128,5 +129,6 @@
             kind,
         }
     );
+    
 </script>
 @endpush
