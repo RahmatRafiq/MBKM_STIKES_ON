@@ -3,9 +3,11 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
-use App\Models\LaporanLengkap;
 use App\Models\BatchMbkm;
-use Illuminate\Http\Request;
+use App\Models\LaporanLengkap;
+use App\Models\sisfo\Dosen;
+use App\Models\sisfo\Mahasiswa;
+use App\Models\sisfo\Matakuliah;
 
 class ApiController extends Controller
 {
@@ -20,7 +22,7 @@ class ApiController extends Controller
         // Ambil laporan lengkap dengan status 'validasi' berdasarkan batch aktif
         $laporanLengkap = LaporanLengkap::with([
             'peserta.registrationPlacement.lowongan.mitra',
-            'peserta.registrationPlacement.dospem'
+            'peserta.registrationPlacement.dospem',
         ])
             ->whereHas('peserta.registrationPlacement', function ($query) use ($activeBatch) {
                 $query->where('batch_id', $activeBatch->id);
@@ -53,7 +55,92 @@ class ApiController extends Controller
         return response()->json([
             'status' => 'success',
             'message' => 'Data laporan lengkap dengan status validasi berhasil diambil.',
-            'data' => $data
+            'data' => $data,
+        ]);
+    }
+
+    public function getDataMataKuliahSisfo()
+    {
+        $matakuliah = Matakuliah::get();
+
+        if ($matakuliah->isEmpty()) {
+            return response()->json(['message' => 'Tidak ada data mata kuliah yang ditemukan.'], 404);
+        }
+
+        $data = $matakuliah->map(function ($mk) {
+            return [
+                'MKID' => $mk->MKID,
+                'KodeID' => $mk->KodeID,
+                'Nama' => $mk->Nama,
+                'SKS' => $mk->SKS,
+                'MKKode' => $mk->MKKode,
+            ];
+        });
+        return response()->json([
+            'status' => 'success',
+            'message' => 'Data mata kuliah berhasil diambil.',
+            'data' => $data,
+        ]);
+    }
+
+    public function getDataMahasiswaSisfo()
+    {
+        $dataMahasiswa = Mahasiswa::all();
+
+        if ($dataMahasiswa->isEmpty()) {
+            return response()->json(['message' => 'Tidak ada data mahasiswa yang ditemukan.'], 404);
+        }
+
+        $data = $dataMahasiswa->map(function ($mahasiswa) {
+            return [
+                'MhswID' => $mahasiswa->MhswID,
+                'Nama' => $mahasiswa->Nama,
+                'Kelamin' => $mahasiswa->Kelamin,
+                'Alamat' => $mahasiswa->Alamat,
+                'Telepon' => $mahasiswa->telepon,
+                'Agama' => $mahasiswa->Agama,
+                'Email' => $mahasiswa->Email,
+                'Login' => $mahasiswa->Login,
+                'LevelID' => $mahasiswa->LevelID,
+                'Password' => $mahasiswa->Password,
+                'NIMSementara' => $mahasiswa->NIMSementara,
+                'KDPIN' => $mahasiswa->KDPIN,
+                'PMBID' => $mahasiswa->PMBID,
+            ];
+        });
+        return response()->json([
+            'status' => 'success',
+            'message' => 'Data mahasiswa berhasil diambil.',
+            'data' => $data,
+        ]);
+    }
+    public function getDataDosenSisfo()
+    {
+        $dataDosen = Dosen::all();
+
+        if ($dataDosen->isEmpty()) {
+            return response()->json(['message' => 'Tidak ada data dosen yang ditemukan.'], 404);
+        }
+
+        $data = $dataDosen->map(function ($dosen) {
+            return [
+                'Nama' => $dosen->Nama,
+                'NIDN' => $dosen->NIDN,
+                'Login' => $dosen->Login,
+                'KodeID' => $dosen->KodeID,
+                'HomebaseInduk' => $dosen->HomebaseInduk,
+                'NIPPNS' => $dosen->NIPPNS,
+                'TempatLahir' => $dosen->TempatLahir, // TempatLahir
+                'TanggalLahir' => $dosen->TanggalLahir, // TanggalLahir
+                'LevelID' => $dosen->LevelID, // LevelID
+                'KTP' => $dosen->KTP, // KTP
+            ];
+        });
+
+        return response()->json([
+            'status' => 'success',
+            'message' => 'Data mata kuliah berhasil diambil.',
+            'data' => $data,
         ]);
     }
 }
