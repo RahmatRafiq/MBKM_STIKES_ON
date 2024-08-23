@@ -22,9 +22,9 @@ class TypeProgram extends Model
         'updated_at' => 'datetime:Y-m-d H:i:s',
     ];
 
-    public function typeProgram()
+    public function mitraProfiles()
     {
-        return $this->belongsTo(TypeProgram::class, 'type_id');
+        return $this->hasMany(MitraProfile::class, 'type_id');
     }
 
 }
