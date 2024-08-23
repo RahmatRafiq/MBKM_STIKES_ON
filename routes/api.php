@@ -20,7 +20,7 @@ Route::name('api')->group(function () {
 // Rute baru tanpa autentikasi
 // Rute baru yang dilindungi oleh middleware API key
 Route::middleware([ApiKeyMiddleware::class])->get('/laporan-lengkap-peserta/json', [ApiController::class, 'getValidatedLaporanLengkap']);
-
+Route::get('/matakuliah-sisfo/json', [ApiController::class, 'getDataMataKuliahSisfo']);
 // Route fallback untuk menangani rute yang tidak ditemukan
 Route::fallback(function(){
     return response()->json([
