@@ -3,9 +3,9 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
-use App\Models\LaporanLengkap;
 use App\Models\BatchMbkm;
-use Illuminate\Http\Request;
+use App\Models\LaporanLengkap;
+use App\Models\sisfo\Mahasiswa;
 
 class ApiController extends Controller
 {
@@ -20,7 +20,7 @@ class ApiController extends Controller
         // Ambil laporan lengkap dengan status 'validasi' berdasarkan batch aktif
         $laporanLengkap = LaporanLengkap::with([
             'peserta.registrationPlacement.lowongan.mitra',
-            'peserta.registrationPlacement.dospem'
+            'peserta.registrationPlacement.dospem',
         ])
             ->whereHas('peserta.registrationPlacement', function ($query) use ($activeBatch) {
                 $query->where('batch_id', $activeBatch->id);
@@ -53,7 +53,39 @@ class ApiController extends Controller
         return response()->json([
             'status' => 'success',
             'message' => 'Data laporan lengkap dengan status validasi berhasil diambil.',
-            'data' => $data
+            'data' => $data,
+        ]);
+    }
+
+    public function getDataMahasiswaSisfo()
+    {
+        $dataMahasiswa = Mahasiswa::all();
+
+        if ($dataMahasiswa->isEmpty()) {
+            return response()->json(['message' => 'Tidak ada data mahasiswa yang ditemukan.'], 404);
+        }
+
+        $data = $dataMahasiswa->map(function ($mahasiswa) {
+            return [
+                'MhswID' => $mahasiswa->MhswID,
+                'Nama' => $mahasiswa->Nama,
+                'Kelamin' => $mahasiswa->Kelamin,
+                'Alamat' => $mahasiswa->Alamat,
+                'Telepon' => $mahasiswa->telepon,
+                'Agama' => $mahasiswa->Agama,
+                'Email' => $mahasiswa->Email,
+                'Login' => $mahasiswa->Login,
+                'LevelID' => $mahasiswa->LevelID,
+                'Password' => $mahasiswa->Password,
+                'NIMSementara' => $mahasiswa->NIMSementara,
+                'KDPIN' => $mahasiswa->KDPIN,
+                'PMBID' => $mahasiswa->PMBID,
+            ];
+        });
+        return response()->json([
+            'status' => 'success',
+            'message' => 'Data mahasiswa berhasil diambil.',
+            'data' => $data,
         ]);
     }
 }
