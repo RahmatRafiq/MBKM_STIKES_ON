@@ -152,10 +152,7 @@ class MitraProfileController extends Controller
             'description' => $request->description,
         ]);
 
-        return redirect()->route('mitra.index')->with([
-            'success' => 'Mitra updated successfully.',
-            'media' => $media,
-        ]);
+        return back()->with('success', 'Mitra updated successfully.');
     }
 
     public function destroy($id)

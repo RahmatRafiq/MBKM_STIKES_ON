@@ -86,15 +86,6 @@
                 orderable: false,
                 searchable: false,
                 render: function(data, type, row) {
-                    // create element
-                    const editButton = document.createElement('a');
-                    editButton.classList.add('btn', 'btn-primary', 'mr-2'); // Tambahkan kelas 'mr-2' untuk menambahkan margin kanan
-                    editButton.href = `{{ route('mitra.edit', ':id') }}`.replace(
-                        ':id',
-                        row.id
-                    );
-                    editButton.textContent = 'Edit';
-
                     // delete use Swal as confirmation
                     const deleteButton = document.createElement('button');
                     deleteButton.classList.add('btn', 'btn-danger');
@@ -102,14 +93,9 @@
                     deleteButton.addEventListener('click', function() {
                         deleteRow(row.id);
                     });
-                    console.log(row.id)
-                    // Add the buttons to a container element
-                    const container = document.createElement('div');
-                    container.appendChild(editButton);
-                    container.appendChild(deleteButton);
 
-                    // Return the container element
-                    return container;
+                    // Return the delete button
+                    return deleteButton;
                 }
             }
         ]
