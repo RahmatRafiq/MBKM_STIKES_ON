@@ -17,11 +17,10 @@ Route::name('api')->group(function () {
     })->name('login');
 });
 
-// Rute baru tanpa autentikasi
-// Rute baru yang dilindungi oleh middleware API key
-Route::middleware([ApiKeyMiddleware::class])->get('/laporan-lengkap-peserta/json', [ApiController::class, 'getValidatedLaporanLengkap']);
-Route::middleware([ApiKeyMiddleware::class])->get('/dosen-sisfo/json', [ApiController::class, 'getDataDosenSisfo']);
-// Route fallback untuk menangani rute yang tidak ditemukan
+Route::middleware([ApiKeyMiddleware::class])->group(function () {
+    Route::get('/laporan-lengkap-peserta/json', [ApiController::class, 'getValidatedLaporanLengkap']);
+    Route::get('/dosen-sisfo/json', [ApiController::class, 'getDataDosenSisfo']);
+});
 Route::fallback(function () {
     return response()->json([
         'status' => 'error',
