@@ -5,12 +5,9 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Models\BatchMbkm;
 use App\Models\LaporanLengkap;
-use App\Models\sisfo\Matakuliah;
-
-use App\Models\sisfo\Mahasiswa;
-
 use App\Models\sisfo\Dosen;
-
+use App\Models\sisfo\Mahasiswa;
+use App\Models\sisfo\Matakuliah;
 
 class ApiController extends Controller
 {
@@ -77,6 +74,14 @@ class ApiController extends Controller
                 'Nama' => $mk->Nama,
                 'SKS' => $mk->SKS,
                 'MKKode' => $mk->MKKode,
+            ];
+        });
+        return response()->json([
+            'status' => 'success',
+            'message' => 'Data mata kuliah berhasil diambil.',
+            'data' => $data,
+        ]);
+    }
 
     public function getDataMahasiswaSisfo()
     {
@@ -106,7 +111,9 @@ class ApiController extends Controller
         return response()->json([
             'status' => 'success',
             'message' => 'Data mahasiswa berhasil diambil.',
-
+            'data' => $data,
+        ]);
+    }
     public function getDataDosenSisfo()
     {
         $dataDosen = Dosen::all();
@@ -133,9 +140,6 @@ class ApiController extends Controller
         return response()->json([
             'status' => 'success',
             'message' => 'Data mata kuliah berhasil diambil.',
-            'message' => 'Data dosen berhasil diambil.',
-
-
             'data' => $data,
         ]);
     }
