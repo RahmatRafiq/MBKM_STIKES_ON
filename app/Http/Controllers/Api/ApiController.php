@@ -3,10 +3,9 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
-use App\Models\LaporanLengkap;
 use App\Models\BatchMbkm;
+use App\Models\LaporanLengkap;
 use App\Models\sisfo\Matakuliah;
-use Illuminate\Http\Request;
 
 class ApiController extends Controller
 {
@@ -21,7 +20,7 @@ class ApiController extends Controller
         // Ambil laporan lengkap dengan status 'validasi' berdasarkan batch aktif
         $laporanLengkap = LaporanLengkap::with([
             'peserta.registrationPlacement.lowongan.mitra',
-            'peserta.registrationPlacement.dospem'
+            'peserta.registrationPlacement.dospem',
         ])
             ->whereHas('peserta.registrationPlacement', function ($query) use ($activeBatch) {
                 $query->where('batch_id', $activeBatch->id);
@@ -54,7 +53,7 @@ class ApiController extends Controller
         return response()->json([
             'status' => 'success',
             'message' => 'Data laporan lengkap dengan status validasi berhasil diambil.',
-            'data' => $data
+            'data' => $data,
         ]);
     }
 
@@ -62,10 +61,24 @@ class ApiController extends Controller
     {
         $matakuliah = Matakuliah::get();
 
+        if ($matakuliah->isEmpty()) {
+            return response()->json(['message' => 'Tidak ada data mata kuliah yang ditemukan.'], 404);
+        }
+
+        $data = $matakuliah->map(function ($mk) {
+            return [
+                'MKID' => $mk->MKID,
+                'KodeID' => $mk->KodeID,
+                'Nama' => $mk->Nama,
+                'SKS' => $mk->SKS,
+                'MKKode' => $mk->MKKode,
+            ];
+        });
+
         return response()->json([
             'status' => 'success',
             'message' => 'Data mata kuliah berhasil diambil.',
-            'data' => $matakuliah
+            'data' => $data,
         ]);
     }
 }
