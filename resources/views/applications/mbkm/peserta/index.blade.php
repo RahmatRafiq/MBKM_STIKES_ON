@@ -89,8 +89,6 @@
                     searchable: false,
                     render: function(data, type, row) {
                         return `
-                            <a href="{{ route('peserta.edit', ':id') }}" class="btn btn-primary">Edit</a>
-                            <a href="{{ route('peserta.show', ':id') }}" class="btn btn-info">Show</a>
                             <form action="{{ route('peserta.destroy', ':id') }}" method="POST" class="d-inline">
                                 @csrf
                                 @method('DELETE')
