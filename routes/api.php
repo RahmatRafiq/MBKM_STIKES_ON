@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Middleware\ApiKeyMiddleware;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\ApiController;
@@ -17,7 +18,8 @@ Route::name('api')->group(function () {
 });
 
 // Rute baru tanpa autentikasi
-Route::get('/laporan-lengkap-peserta/json', [ApiController::class, 'getValidatedLaporanLengkap']);
+// Rute baru yang dilindungi oleh middleware API key
+Route::middleware([ApiKeyMiddleware::class])->get('/laporan-lengkap-peserta/json', [ApiController::class, 'getValidatedLaporanLengkap']);
 
 // Route fallback untuk menangani rute yang tidak ditemukan
 Route::fallback(function(){
