@@ -63,10 +63,9 @@ class PesertaController extends Controller
         $mahasiswa = Mahasiswa::whereNotNull('Email')
             ->where('Email', '!=', '')
             ->get();
-    
+
         return view('applications.mbkm.peserta.create', compact('mahasiswa'));
     }
-    
 
     public function store(Request $request)
     {
@@ -75,30 +74,30 @@ class PesertaController extends Controller
             'mahasiswa_id' => 'required|exists:mysql_second.mhsw,Login', // Menggunakan 'Login' sebagai primary key
             'password' => 'required|confirmed|min:8',
         ]);
-    
+
         // Mulai transaksi
         DB::beginTransaction();
-    
+
         try {
             $mahasiswa = Mahasiswa::where('Login', $request->mahasiswa_id)->firstOrFail();
-    
+
             if (Peserta::where('email', $mahasiswa->Email)->exists()) {
                 return back()->withErrors(['email' => 'Email already exists in Peserta'])->withInput();
             }
-    
+
             if (Peserta::where('nama', $mahasiswa->Nama)->exists()) {
                 return back()->withErrors(['name' => 'Name already exists in Peserta'])->withInput();
             }
-    
+
             $user = User::create([
                 'name' => $mahasiswa->Nama,
                 'email' => $mahasiswa->Email,
                 'password' => Hash::make($request->password),
             ]);
-    
+
             $role = Role::findByName('peserta');
             $user->assignRole($role);
-    
+
             Peserta::create([
                 'user_id' => $user->id ?? null,
                 'nim' => $mahasiswa->MhswID ?? null,
@@ -109,28 +108,26 @@ class PesertaController extends Controller
                 'telepon' => $mahasiswa->PMBID ?? null,
                 'jenis_kelamin' => $mahasiswa->PMBFormJualID ?? null,
             ]);
-    
+
             // Commit transaksi jika semua operasi berhasil
             DB::commit();
-    
+
             return redirect()->route('peserta.index')->with('success', 'Peserta created successfully');
-    
+
         } catch (\Exception $e) {
             // Rollback transaksi jika terjadi kesalahan
             DB::rollBack();
-    
+
             // Logging error
             \log::error('Error creating Peserta: ' . $e->getMessage());
-    
+
             return back()->withErrors(['error' => 'An error occurred while creating Peserta: ' . $e->getMessage()])->withInput();
         }
     }
-    
 
     public function edit(Peserta $peserta)
     {
-        $mahasiswa = Mahasiswa::all();
-        return view('applications.mbkm.peserta.edit', compact('peserta', 'mahasiswa'));
+        return view('applications.mbkm.peserta.edit', compact('peserta'));
     }
 
     public function update(Request $request, Peserta $peserta)
@@ -162,5 +159,53 @@ class PesertaController extends Controller
     {
         $peserta->delete();
         return redirect()->route('peserta.index')->with('success', 'Peserta deleted successfully');
+    }
+
+    public function uploadAllDocuments(Request $request, $id)
+    {
+        $peserta = Peserta::findOrFail($id);
+    
+        $request->validate([
+            'surat_rekomendasi' => 'file|mimes:pdf,doc,docx|max:2048',
+            'transkrip_nilai' => 'file|mimes:pdf,doc,docx|max:2048',
+            'cv' => 'file|mimes:pdf,doc,docx|max:2048',
+            'pakta_integritas' => 'file|mimes:pdf,doc,docx|max:2048',
+            'izin_orangtua' => 'file|mimes:pdf,doc,docx|max:2048',
+            'surat_keterangan_sehat' => 'file|mimes:pdf,doc,docx|max:2048',
+        ]);
+    
+        foreach ($request->allFiles() as $type => $file) {
+            $peserta->clearMediaCollection($type);
+            $peserta->addMedia($file)->toMediaCollection($type, 'dokument-peserta');
+        }
+    
+        return response()->json(['success' => 'All files uploaded successfully']);
+    }
+    
+    public function uploadMultipleDocuments(Request $request, $id)
+    {
+        $peserta = Peserta::findOrFail($id);
+    
+        $request->validate([
+            'documents.*' => 'file|mimes:pdf,doc,docx|max:2048',
+        ]);
+    
+        foreach ($request->documents as $type => $file) {
+            if ($file) {
+                $peserta->clearMediaCollection($type);
+                $peserta->addMedia($file)->toMediaCollection($type, 'dokument-peserta');
+            }
+        }
+    
+        return response()->json(['success' => 'Multiple files uploaded successfully']);
+    }
+    
+    
+
+    public function destroyFile($id, $type)
+    {
+        $peserta = Peserta::findOrFail($id);
+        $peserta->clearMediaCollection($type);
+        return response()->json(['success' => 'File deleted successfully']);
     }
 }

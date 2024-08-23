@@ -4,10 +4,13 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Spatie\MediaLibrary\InteractsWithMedia;
+use Spatie\MediaLibrary\HasMedia;
 
-class Peserta extends Model
+
+class Peserta extends Model implements HasMedia
 {
-    use HasFactory;
+    use HasFactory, InteractsWithMedia;
 
     protected $table = 'peserta';
 
@@ -44,6 +47,7 @@ class Peserta extends Model
             ->whereDate('registrasi.created_at', '>=', $semesterStart)
             ->whereDate('registrasi.created_at', '<=', $semesterEnd);
     }
+    
 }
 
 

@@ -24,6 +24,18 @@
                     @include('profile.partials.delete-user-form')
                 </div>
             </div>
+
+            <!-- Include the Peserta edit form -->
+            @if(auth()->user()->peserta)
+            <div class="p-4 sm:p-8 bg-white dark:bg-gray-800 shadow sm:rounded-lg">
+                <div class="max-w-xl">
+                    <h4 class="font-semibold text-lg text-gray-800 dark:text-gray-200 mb-4">
+                        {{ __('Update Peserta Information') }}
+                    </h4>
+                    @include('applications.mbkm.peserta.edit', ['peserta' => auth()->user()->peserta])
+                </div>
+            </div>
+            @endif
         </div>
     </div>
 </x-app-layout>
