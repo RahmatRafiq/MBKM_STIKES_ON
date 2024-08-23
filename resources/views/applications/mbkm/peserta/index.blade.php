@@ -41,63 +41,91 @@
 
 @push('javascript')
 <script src="{{ asset('assets/DataTables/datatables.min.js') }}"></script>
-    <script>
-        $.ajaxSetup({
-            headers: {
-                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+<script src="{{ asset('assets/js/sweetalert2.all.min.js') }}"></script>
+
+<script>
+    $.ajaxSetup({
+        headers: {
+            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+        }
+    });
+    $('#peserta').DataTable({
+        responsive: true,
+        serverSide: true,
+        processing: true,
+        paging: true,
+        ajax: {
+            url: '{{ route('peserta.json') }}',
+            type: 'POST',
+        },
+        columns: [{
+                data: 'nim'
+            },
+            { 
+                data: 'nama'
+            },
+            { 
+                data: 'alamat'
+            },
+            { 
+                data: 'jurusan'
+            },
+            { 
+                data: 'email'
+            },
+            { 
+                data: 'telepon'
+            },
+            { 
+                data: 'jenis_kelamin'
+            },
+            { 
+                data: 'created_at'
+            },
+            { 
+                data: 'updated_at'
+            },
+            {
+                data: 'action',
+                orderable: false,
+                searchable: false,
+                render: function(data, type, row) {
+                    return `
+                        <button class="btn btn-danger delete-button" data-id="${row.id}">Delete</button>
+                    `;
+                }
+            },
+        ]
+    });
+
+    $(document).on('click', '.delete-button', function() {
+        var id = $(this).data('id');
+        Swal.fire({
+            title: 'Are you sure?',
+            text: 'You will not be able to recover this Peserta!',
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonText: 'Yes, delete it!',
+            cancelButtonText: 'No, keep it',
+        }).then((result) => {
+            if (result.isConfirmed) {
+                $.ajax({
+                    url: '{{ route('peserta.destroy', ':id') }}'.replace(':id', id),
+                    type: 'POST',
+                    data: {
+                        _token: '{{ csrf_token() }}',
+                        _method: 'DELETE',
+                    },
+                    success: function(response) {
+                        $('#peserta').DataTable().ajax.reload();
+                        Swal.fire('Deleted!', 'Peserta has been deleted.', 'success');
+                    },
+                    error: function(xhr) {
+                        Swal.fire('Error!', 'Failed to delete Peserta.', 'error');
+                    }
+                });
             }
         });
-        $('#peserta').DataTable({
-            responsive: true,
-            serverSide: true,
-            processing: true,
-            paging: true,
-            ajax: {
-                url: '{{ route('peserta.json') }}',
-                type: 'POST',
-            },
-            columns: [{
-                    data: 'nim'
-                },
-                { 
-                    data: 'nama'
-                },
-                { 
-                    data: 'alamat'
-                },
-                { 
-                    data: 'jurusan'
-                },
-                { 
-                    data: 'email'
-                },
-                { 
-                    data: 'telepon'
-                },
-                { 
-                    data: 'jenis_kelamin'
-                },
-                { 
-                    data: 'created_at'
-                },
-                { 
-                    data: 'updated_at'
-                },
-                {
-                    data: 'action',
-                    orderable: false,
-                    searchable: false,
-                    render: function(data, type, row) {
-                        return `
-                            <form action="{{ route('peserta.destroy', ':id') }}" method="POST" class="d-inline">
-                                @csrf
-                                @method('DELETE')
-                                <button type="submit" class="btn btn-danger">Delete</button>
-                            </form>
-                        `.replace(':id', row.id);
-                    }
-                },
-            ]
-        });
-    </script>
+    });
+</script>
 @endpush
