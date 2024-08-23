@@ -7,6 +7,11 @@ use App\Models\BatchMbkm;
 use App\Models\LaporanLengkap;
 use App\Models\sisfo\Matakuliah;
 
+use App\Models\sisfo\Mahasiswa;
+
+use App\Models\sisfo\Dosen;
+
+
 class ApiController extends Controller
 {
     public function getValidatedLaporanLengkap()
@@ -72,12 +77,65 @@ class ApiController extends Controller
                 'Nama' => $mk->Nama,
                 'SKS' => $mk->SKS,
                 'MKKode' => $mk->MKKode,
+
+    public function getDataMahasiswaSisfo()
+    {
+        $dataMahasiswa = Mahasiswa::all();
+
+        if ($dataMahasiswa->isEmpty()) {
+            return response()->json(['message' => 'Tidak ada data mahasiswa yang ditemukan.'], 404);
+        }
+
+        $data = $dataMahasiswa->map(function ($mahasiswa) {
+            return [
+                'MhswID' => $mahasiswa->MhswID,
+                'Nama' => $mahasiswa->Nama,
+                'Kelamin' => $mahasiswa->Kelamin,
+                'Alamat' => $mahasiswa->Alamat,
+                'Telepon' => $mahasiswa->telepon,
+                'Agama' => $mahasiswa->Agama,
+                'Email' => $mahasiswa->Email,
+                'Login' => $mahasiswa->Login,
+                'LevelID' => $mahasiswa->LevelID,
+                'Password' => $mahasiswa->Password,
+                'NIMSementara' => $mahasiswa->NIMSementara,
+                'KDPIN' => $mahasiswa->KDPIN,
+                'PMBID' => $mahasiswa->PMBID,
+            ];
+        });
+        return response()->json([
+            'status' => 'success',
+            'message' => 'Data mahasiswa berhasil diambil.',
+
+    public function getDataDosenSisfo()
+    {
+        $dataDosen = Dosen::all();
+
+        if ($dataDosen->isEmpty()) {
+            return response()->json(['message' => 'Tidak ada data dosen yang ditemukan.'], 404);
+        }
+
+        $data = $dataDosen->map(function ($dosen) {
+            return [
+                'Nama' => $dosen->Nama,
+                'NIDN' => $dosen->NIDN,
+                'Login' => $dosen->Login,
+                'KodeID' => $dosen->KodeID,
+                'HomebaseInduk' => $dosen->HomebaseInduk,
+                'NIPPNS' => $dosen->NIPPNS,
+                'TempatLahir' => $dosen->TempatLahir, // TempatLahir
+                'TanggalLahir' => $dosen->TanggalLahir, // TanggalLahir
+                'LevelID' => $dosen->LevelID, // LevelID
+                'KTP' => $dosen->KTP, // KTP
             ];
         });
 
         return response()->json([
             'status' => 'success',
             'message' => 'Data mata kuliah berhasil diambil.',
+            'message' => 'Data dosen berhasil diambil.',
+
+
             'data' => $data,
         ]);
     }
