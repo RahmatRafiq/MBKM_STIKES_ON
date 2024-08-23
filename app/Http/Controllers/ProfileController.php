@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\ProfileUpdateRequest;
+use App\Models\TypeProgram;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -21,8 +22,10 @@ class ProfileController extends Controller
     //     ]);
     // }
     {
+        $typePrograms = TypeProgram::all();
         return view('applications.mbkm.admin.role-permission.profile.index', [
             'user' => $request->user(),
+            'types' => $typePrograms,
         ]);
     }
 
