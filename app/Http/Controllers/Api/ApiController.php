@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Models\LaporanLengkap;
 use App\Models\BatchMbkm;
+use App\Models\sisfo\Matakuliah;
 use Illuminate\Http\Request;
 
 class ApiController extends Controller
@@ -54,6 +55,17 @@ class ApiController extends Controller
             'status' => 'success',
             'message' => 'Data laporan lengkap dengan status validasi berhasil diambil.',
             'data' => $data
+        ]);
+    }
+
+    public function getDataMataKuliahSisfo()
+    {
+        $matakuliah = Matakuliah::get();
+
+        return response()->json([
+            'status' => 'success',
+            'message' => 'Data mata kuliah berhasil diambil.',
+            'data' => $matakuliah
         ]);
     }
 }
