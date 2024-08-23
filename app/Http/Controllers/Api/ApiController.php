@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Models\BatchMbkm;
 use App\Models\LaporanLengkap;
+use App\Models\sisfo\Matakuliah;
 
 use App\Models\sisfo\Mahasiswa;
 
@@ -61,6 +62,21 @@ class ApiController extends Controller
         ]);
     }
 
+    public function getDataMataKuliahSisfo()
+    {
+        $matakuliah = Matakuliah::get();
+
+        if ($matakuliah->isEmpty()) {
+            return response()->json(['message' => 'Tidak ada data mata kuliah yang ditemukan.'], 404);
+        }
+
+        $data = $matakuliah->map(function ($mk) {
+            return [
+                'MKID' => $mk->MKID,
+                'KodeID' => $mk->KodeID,
+                'Nama' => $mk->Nama,
+                'SKS' => $mk->SKS,
+                'MKKode' => $mk->MKKode,
 
     public function getDataMahasiswaSisfo()
     {
@@ -116,7 +132,9 @@ class ApiController extends Controller
 
         return response()->json([
             'status' => 'success',
+            'message' => 'Data mata kuliah berhasil diambil.',
             'message' => 'Data dosen berhasil diambil.',
+
 
             'data' => $data,
         ]);
