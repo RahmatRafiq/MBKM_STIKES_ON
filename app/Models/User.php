@@ -59,4 +59,9 @@ class User extends Authenticatable
     {
         return $this->hasOne(Peserta::class, 'user_id', 'id');
     }
+    public function mitraProfile()
+    {
+        return $this->hasOne(MitraProfile::class, 'user_id');
+    }
+
 }
