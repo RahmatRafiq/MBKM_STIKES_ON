@@ -10,12 +10,14 @@ use Illuminate\Support\Facades\Auth;
 
 class ApiLowonganController extends Controller
 {
-    // Mendapatkan daftar lowongan dengan filter (search dan tipe mitra)
+    // Mendapatkan daftar lowongan dengan gambar mitra
     public function getLowongan(Request $request)
     {
         $search = $request->query('search');
         $type = $request->query('type');
-        $query = Lowongan::with('mitra');
+        $query = Lowongan::with(['mitra' => function($query) {
+            $query->select('id', 'name', 'type'); // Ambil kolom yang diperlukan
+        }]);
 
         if ($search) {
             $query->where('name', 'like', "%{$search}%");
@@ -29,6 +31,29 @@ class ApiLowonganController extends Controller
 
         $lowongans = $query->paginate(10);
 
+        // Map untuk menambahkan URL gambar dari koleksi mitra
+        $lowongans->getCollection()->transform(function ($lowongan) {
+            return [
+                'id' => $lowongan->id,
+                'name' => $lowongan->name,
+                'description' => $lowongan->description,
+                'quota' => $lowongan->quota,
+                'is_open' => $lowongan->is_open,
+                'location' => $lowongan->location,
+                'gpa' => $lowongan->gpa,
+                'semester' => $lowongan->semester,
+                'experience_required' => $lowongan->experience_required,
+                'start_date' => $lowongan->start_date,
+                'end_date' => $lowongan->end_date,
+                'mitra' => [
+                    'id' => $lowongan->mitra->id,
+                    'name' => $lowongan->mitra->name,
+                    'type' => $lowongan->mitra->type,
+                    'image_url' => $lowongan->mitra->getFirstMediaUrl('images') // Ambil URL gambar pertama
+                ]
+            ];
+        });
+
         return response()->json([
             'status' => 'success',
             'message' => 'Lowongan berhasil diambil.',
@@ -41,10 +66,32 @@ class ApiLowonganController extends Controller
     {
         $lowongan = Lowongan::with('mitra')->findOrFail($id);
 
+        // Periksa apakah pengguna sudah login
+        $isLoggedIn = Auth::check();
+
         return response()->json([
             'status' => 'success',
             'message' => 'Detail lowongan berhasil diambil.',
-            'data' => $lowongan,
+            'data' => [
+                'id' => $lowongan->id,
+                'name' => $lowongan->name,
+                'description' => $lowongan->description,
+                'quota' => $lowongan->quota,
+                'is_open' => $lowongan->is_open,
+                'location' => $lowongan->location,
+                'gpa' => $lowongan->gpa,
+                'semester' => $lowongan->semester,
+                'experience_required' => $lowongan->experience_required,
+                'start_date' => $lowongan->start_date,
+                'end_date' => $lowongan->end_date,
+                'mitra' => [
+                    'id' => $lowongan->mitra->id,
+                    'name' => $lowongan->mitra->name,
+                    'type' => $lowongan->mitra->type,
+                    'image_url' => $lowongan->mitra->getFirstMediaUrl('images') // Ambil URL gambar
+                ],
+                'can_register' => $isLoggedIn, // Tambahkan informasi apakah user bisa mendaftar atau tidak
+            ]
         ]);
     }
 
@@ -53,7 +100,6 @@ class ApiLowonganController extends Controller
     {
         // Cek apakah pengguna sudah login
         if (!Auth::check()) {
-            // Jika belum login, kembalikan respons 401 Unauthorized
             return response()->json(['message' => 'Silahkan login terlebih dahulu.'], 401);
         }
 
