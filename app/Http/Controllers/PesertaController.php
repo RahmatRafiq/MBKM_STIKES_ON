@@ -212,19 +212,16 @@ class PesertaController extends Controller
 
     public function showAddTeamMemberForm(Peserta $ketua)
     {
-        // Gunakan fungsi canAddTeamMember untuk validasi
         if (!$ketua->canAddTeamMember()) {
             return back()->withErrors('Hanya ketua dengan lowongan tipe "Wirausaha Merdeka" yang dapat mengakses halaman ini.');
         }
     
         $anggotaTim = TeamMember::where('ketua_id', $ketua->id)->with('peserta')->get();
-    
         return view('applications.mbkm.staff.registrasi-program.peserta.add-team-member', compact('ketua', 'anggotaTim'));
     }
     
     public function addTeamMember(Request $request, Peserta $ketua)
     {
-        // Gunakan fungsi canAddTeamMember untuk validasi
         if (!$ketua->canAddTeamMember()) {
             return back()->withErrors('Hanya ketua dengan lowongan tipe "Wirausaha Merdeka" yang dapat menambahkan anggota tim.');
         }
@@ -293,21 +290,16 @@ class PesertaController extends Controller
             $teamMember = TeamMember::findOrFail($id);
             $peserta = $teamMember->peserta;
 
-            // Hapus aktivitas MBKM terkait
             AktivitasMbkm::where('peserta_id', $peserta->id)->delete();
 
-            // Hapus registrasi terkait
             Registrasi::where('peserta_id', $peserta->id)->delete();
 
-            // Hapus user terkait
             if ($peserta->user) {
                 $peserta->user->delete();
             }
 
-            // Hapus peserta terkait
             $peserta->delete();
 
-            // Hapus team member
             $teamMember->delete();
         });
 
