@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Helpers\DataTable;
 use App\Models\AktivitasMbkm;
 use App\Models\Peserta;
+use App\Models\Registrasi;
 use App\Models\Role;
 use App\Models\sisfo\Mahasiswa;
 use App\Models\TeamMember;
@@ -219,8 +220,16 @@ class PesertaController extends Controller
             'password' => 'required|string|min:8|confirmed',
         ]);
 
+        // Mengambil lowongan yang terkait dengan ketua tim
+        $lowongan = $ketua->registrations->lowongan;
+
+        // Periksa apakah tipe mitra dari lowongan adalah "Wirausaha Merdeka"
+        if ($lowongan->mitra->type !== 'Wirausaha Merdeka') {
+            return back()->withErrors('Hanya lowongan dengan tipe "Wirausaha Merdeka" yang dapat menambahkan anggota tim.');
+        }
+
         // Menggunakan transaksi untuk memastikan konsistensi data
-        DB::transaction(function () use ($request, $ketua) {
+        DB::transaction(function () use ($request, $ketua, $lowongan) {
             // 1. Membuat User baru untuk anggota tim
             $user = User::create([
                 'name' => $request->nama,
@@ -228,7 +237,7 @@ class PesertaController extends Controller
                 'password' => Hash::make($request->password),
             ]);
 
-            // 2. Membuat entri di tabel Peserta, otomatis mengisi kolom dospem_id, lowongan_id, dll.
+            // 2. Membuat entri di tabel Peserta
             $anggota = Peserta::create([
                 'user_id' => $user->id,
                 'nim' => $request->nim,
@@ -239,18 +248,29 @@ class PesertaController extends Controller
                 'telepon' => $request->telepon ?? null,
                 'jenis_kelamin' => $request->jenis_kelamin ?? $ketua->jenis_kelamin,
                 'tahun_masuk' => $request->tahun_masuk ?? $ketua->tahun_masuk,
-                'dospem_id' => $ketua->dospem_id, // Mengambil dospem dari ketua tim
-            ]);
-
-            // 3. Membuat entri di tabel AktivitasMbkm untuk anggota, otomatis mengisi kolom terkait
-            AktivitasMbkm::create([
-                'peserta_id' => $anggota->id,
-                'lowongan_id' => $ketua->registrations->lowongan_id, // Mengambil lowongan dari ketua tim
-                'mitra_id' => $ketua->registrations->lowongan->mitra_id,
                 'dospem_id' => $ketua->dospem_id,
             ]);
 
-            // 4. Menambahkan hubungan ke tabel pivot Team Members
+            // 3. Membuat entri di tabel Registrasi dengan status "placement"
+            $registrasi = Registrasi::create([
+                'peserta_id' => $anggota->id,
+                'lowongan_id' => $lowongan->id,
+                'status' => 'placement',
+                'dospem_id' => $ketua->dospem_id,
+                'nama_peserta' => $anggota->nama,
+                'nama_lowongan' => $lowongan->name,
+                'batch_id' => $ketua->registrations->batch_id,
+            ]);
+
+            // 4. Membuat entri di tabel AktivitasMbkm untuk anggota
+            AktivitasMbkm::create([
+                'peserta_id' => $anggota->id,
+                'lowongan_id' => $registrasi->lowongan_id,
+                'mitra_id' => $registrasi->lowongan->mitra_id,
+                'dospem_id' => $registrasi->dospem_id,
+            ]);
+
+            // 5. Menambahkan hubungan ke tabel pivot Team Members
             TeamMember::create([
                 'ketua_id' => $ketua->id,
                 'peserta_id' => $anggota->id,
@@ -259,4 +279,5 @@ class PesertaController extends Controller
 
         return back()->with('success', 'Anggota tim berhasil ditambahkan.');
     }
+
 }
