@@ -48,6 +48,11 @@ Route::middleware('auth')->group(function () {
 
         Route::get('mbkm/staff/peserta/{peserta}/edit', [\App\Http\Controllers\PesertaController::class, 'edit'])->name('peserta.edit');
         Route::put('mbkm/staff/peserta/{peserta}', [\App\Http\Controllers\PesertaController::class, 'update'])->name('peserta.update');
+
+        Route::post('/peserta/{id}/upload/{type}', [\App\Http\Controllers\PesertaController::class, 'uploadDocument'])->name('peserta.upload');
+        Route::delete('/peserta/{id}/delete/{type}', [\App\Http\Controllers\PesertaController::class, 'destroyFile'])->name('peserta.destroyFile');
+        Route::post('/peserta/{id}/upload-multiple', [\App\Http\Controllers\PesertaController::class, 'uploadMultipleDocuments'])->name('peserta.uploadMultiple');
+
     });
 
     Route::middleware(['role:mitra'])->group(function () {
@@ -87,10 +92,7 @@ Route::middleware('auth')->group(function () {
         Route::delete('mbkm/staff/peserta/{peserta}', [\App\Http\Controllers\PesertaController::class, 'destroy'])->name('peserta.destroy');
         Route::post('mbkm/staff/peserta/json', [\App\Http\Controllers\PesertaController::class, 'json'])->name('peserta.json');
 
-        Route::post('/peserta/{id}/upload/{type}', [\App\Http\Controllers\PesertaController::class, 'uploadDocument'])->name('peserta.upload');
-        Route::delete('/peserta/{id}/delete/{type}', [\App\Http\Controllers\PesertaController::class, 'destroyFile'])->name('peserta.destroyFile');
-        Route::post('/peserta/{id}/upload-multiple', [\App\Http\Controllers\PesertaController::class, 'uploadMultipleDocuments'])->name('peserta.uploadMultiple');
-
+       
         Route::get('/staff/registrasi', [\App\Http\Controllers\RegistrasiController::class, 'index'])->name('staff.registrasiIndex');
         Route::put('/staff/registrasi/{id}', [\App\Http\Controllers\RegistrasiController::class, 'update'])->name('staff.updateRegistrasi');
         Route::put('/staff/registrasi/{id}/dospem', [\App\Http\Controllers\RegistrasiController::class, 'updateDospem'])->name('staff.updateDospem');
