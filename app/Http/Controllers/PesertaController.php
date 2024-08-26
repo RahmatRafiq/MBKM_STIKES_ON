@@ -299,9 +299,27 @@ class PesertaController extends Controller
 
     public function removeTeamMember($id)
     {
-        $teamMember = TeamMember::findOrFail($id);
-        $teamMember->peserta()->delete(); // Menghapus data terkait pada model Peserta
-        $teamMember->delete(); // Menghapus data di tabel team_members
+        DB::transaction(function () use ($id) {
+            $teamMember = TeamMember::findOrFail($id);
+            $peserta = $teamMember->peserta;
+
+            // Hapus aktivitas MBKM terkait
+            AktivitasMbkm::where('peserta_id', $peserta->id)->delete();
+
+            // Hapus registrasi terkait
+            Registrasi::where('peserta_id', $peserta->id)->delete();
+
+            // Hapus user terkait
+            if ($peserta->user) {
+                $peserta->user->delete();
+            }
+
+            // Hapus peserta terkait
+            $peserta->delete();
+
+            // Hapus team member
+            $teamMember->delete();
+        });
 
         return back()->with('success', 'Anggota tim berhasil dihapus.');
     }
