@@ -210,6 +210,24 @@ class PesertaController extends Controller
         return response()->json(['success' => 'File deleted successfully']);
     }
 
+    public function showAddTeamMemberForm(Peserta $ketua)
+    {
+        //just registration placement and where the lowongan has mitraprofile with type is Wirausaha Merdeka can access this
+        $registrasiPlacement = $ketua->registrationPlacement;
+
+        if (!$registrasiPlacement) {
+            return back()->withErrors('Ketua tidak memiliki registrasi dengan status placement.');
+        }
+
+        $lowongan = $registrasiPlacement->lowongan;
+
+        if ($lowongan->mitra->type !== 'Wirausaha Merdeka') {
+            return back()->withErrors('Hanya lowongan dengan tipe "Wirausaha Merdeka" yang dapat menambahkan anggota tim.');
+        }
+
+        return view('applications.mbkm.staff.registrasi-program.peserta.add-team-member', compact('ketua'));
+    }
+    
     public function addTeamMember(Request $request, Peserta $ketua)
     {
         // Validasi input
@@ -219,17 +237,23 @@ class PesertaController extends Controller
             'nim' => 'required|string|max:20|unique:peserta,nim',
             'password' => 'required|string|min:8|confirmed',
         ]);
-
-        // Mengambil lowongan yang terkait dengan ketua tim
-        $lowongan = $ketua->registrations->lowongan;
-
+    
+        // Mengambil lowongan dari registrasi yang berstatus 'placement'
+        $registrasiPlacement = $ketua->registrationPlacement;
+    
+        if (!$registrasiPlacement) {
+            return back()->withErrors('Ketua tidak memiliki registrasi dengan status placement.');
+        }
+    
+        $lowongan = $registrasiPlacement->lowongan;
+    
         // Periksa apakah tipe mitra dari lowongan adalah "Wirausaha Merdeka"
         if ($lowongan->mitra->type !== 'Wirausaha Merdeka') {
             return back()->withErrors('Hanya lowongan dengan tipe "Wirausaha Merdeka" yang dapat menambahkan anggota tim.');
         }
-
+    
         // Menggunakan transaksi untuk memastikan konsistensi data
-        DB::transaction(function () use ($request, $ketua, $lowongan) {
+        DB::transaction(function () use ($request, $ketua, $lowongan, $registrasiPlacement) {
             // 1. Membuat User baru untuk anggota tim
             $user = User::create([
                 'name' => $request->nama,
@@ -237,6 +261,9 @@ class PesertaController extends Controller
                 'password' => Hash::make($request->password),
             ]);
 
+            $role = Role::findByName('peserta');
+            $user->assignRole($role);
+    
             // 2. Membuat entri di tabel Peserta
             $anggota = Peserta::create([
                 'user_id' => $user->id,
@@ -247,37 +274,112 @@ class PesertaController extends Controller
                 'jurusan' => $request->jurusan ?? $ketua->jurusan,
                 'telepon' => $request->telepon ?? null,
                 'jenis_kelamin' => $request->jenis_kelamin ?? $ketua->jenis_kelamin,
-                'tahun_masuk' => $request->tahun_masuk ?? $ketua->tahun_masuk,
+                // 'tahun_masuk' => $request->tahun_masuk ?? $ketua->tahun_masuk,
                 'dospem_id' => $ketua->dospem_id,
             ]);
-
+    
             // 3. Membuat entri di tabel Registrasi dengan status "placement"
             $registrasi = Registrasi::create([
                 'peserta_id' => $anggota->id,
                 'lowongan_id' => $lowongan->id,
                 'status' => 'placement',
-                'dospem_id' => $ketua->dospem_id,
+                'dospem_id' => $registrasiPlacement->dospem_id,
                 'nama_peserta' => $anggota->nama,
                 'nama_lowongan' => $lowongan->name,
-                'batch_id' => $ketua->registrations->batch_id,
+                'batch_id' => $registrasiPlacement->batch_id,
             ]);
-
+    
             // 4. Membuat entri di tabel AktivitasMbkm untuk anggota
             AktivitasMbkm::create([
                 'peserta_id' => $anggota->id,
                 'lowongan_id' => $registrasi->lowongan_id,
                 'mitra_id' => $registrasi->lowongan->mitra_id,
-                'dospem_id' => $registrasi->dospem_id,
+                //dospem_id in registrastion on placement
+                'dospem_id' => $registrasiPlacement->dospem_id,
+                // 'dospem_id' => $registrasi->dospem_id,
             ]);
-
+    
             // 5. Menambahkan hubungan ke tabel pivot Team Members
             TeamMember::create([
-                'ketua_id' => $ketua->id,
+                //from peserta table for ketua_id
+                
+
+                'ketua_id' => $ketua->registrationPlacement->peserta_id,
                 'peserta_id' => $anggota->id,
             ]);
         });
-
+    
         return back()->with('success', 'Anggota tim berhasil ditambahkan.');
     }
+    
+    // public function addTeamMember(Request $request, Peserta $ketua)
+    // {
+    //     // Validasi input
+    //     $request->validate([
+    //         'nama' => 'required|string|max:255',
+    //         'email' => 'required|email|unique:users,email',
+    //         'nim' => 'required|string|max:20|unique:peserta,nim',
+    //         'password' => 'required|string|min:8|confirmed',
+    //     ]);
+
+    //     // Mengambil lowongan yang terkait dengan ketua tim
+    //     $lowongan = $ketua->registrations->lowongan;
+
+    //     // Periksa apakah tipe mitra dari lowongan adalah "Wirausaha Merdeka"
+    //     if ($lowongan->mitra->type !== 'Wirausaha Merdeka') {
+    //         return back()->withErrors('Hanya lowongan dengan tipe "Wirausaha Merdeka" yang dapat menambahkan anggota tim.');
+    //     }
+
+    //     // Menggunakan transaksi untuk memastikan konsistensi data
+    //     DB::transaction(function () use ($request, $ketua, $lowongan) {
+    //         // 1. Membuat User baru untuk anggota tim
+    //         $user = User::create([
+    //             'name' => $request->nama,
+    //             'email' => $request->email,
+    //             'password' => Hash::make($request->password),
+    //         ]);
+
+    //         // 2. Membuat entri di tabel Peserta
+    //         $anggota = Peserta::create([
+    //             'user_id' => $user->id,
+    //             'nim' => $request->nim,
+    //             'nama' => $request->nama,
+    //             'email' => $request->email,
+    //             'alamat' => $request->alamat ?? $ketua->alamat,
+    //             'jurusan' => $request->jurusan ?? $ketua->jurusan,
+    //             'telepon' => $request->telepon ?? null,
+    //             'jenis_kelamin' => $request->jenis_kelamin ?? $ketua->jenis_kelamin,
+    //             'tahun_masuk' => $request->tahun_masuk ?? $ketua->tahun_masuk,
+    //             'dospem_id' => $ketua->dospem_id,
+    //         ]);
+
+    //         // 3. Membuat entri di tabel Registrasi dengan status "placement"
+    //         $registrasi = Registrasi::create([
+    //             'peserta_id' => $anggota->id,
+    //             'lowongan_id' => $lowongan->id,
+    //             'status' => 'placement',
+    //             'dospem_id' => $ketua->dospem_id,
+    //             'nama_peserta' => $anggota->nama,
+    //             'nama_lowongan' => $lowongan->name,
+    //             'batch_id' => $ketua->registrations->batch_id,
+    //         ]);
+
+    //         // 4. Membuat entri di tabel AktivitasMbkm untuk anggota
+    //         AktivitasMbkm::create([
+    //             'peserta_id' => $anggota->id,
+    //             'lowongan_id' => $registrasi->lowongan_id,
+    //             'mitra_id' => $registrasi->lowongan->mitra_id,
+    //             'dospem_id' => $registrasi->dospem_id,
+    //         ]);
+
+    //         // 5. Menambahkan hubungan ke tabel pivot Team Members
+    //         TeamMember::create([
+    //             'ketua_id' => $ketua->id,
+    //             'peserta_id' => $anggota->id,
+    //         ]);
+    //     });
+
+    //     return back()->with('success', 'Anggota tim berhasil ditambahkan.');
+    // }
 
 }
