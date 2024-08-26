@@ -145,6 +145,18 @@
                 </ul>
             </li>
             @endcan
+
+            @if(auth()->user()->peserta && auth()->user()->peserta->canAddTeamMember())
+            <li class="{{ request()->routeIs('team.addMemberForm') ? 'active current-page' : '' }}">
+                <a href="{{ route('team.addMemberForm', ['ketua' => auth()->user()->peserta->id]) }}">
+                    <i class="bi bi-person-plus"></i> <!-- Ikon untuk Tambah Anggota Tim -->
+                    <span class="menu-text">Tambah Anggota Tim (Peserta)</span>
+                </a>
+            </li>
+            @endif
+
+
+
         </ul>
     </div>
 </nav>
