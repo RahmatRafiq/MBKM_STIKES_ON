@@ -3,9 +3,12 @@
 namespace App\Http\Controllers;
 
 use App\Helpers\DataTable;
+use App\Models\AktivitasMbkm;
 use App\Models\Peserta;
+use App\Models\Registrasi;
 use App\Models\Role;
 use App\Models\sisfo\Mahasiswa;
+use App\Models\TeamMember;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -206,4 +209,101 @@ class PesertaController extends Controller
         $peserta->clearMediaCollection($type);
         return response()->json(['success' => 'File deleted successfully']);
     }
+
+    public function showAddTeamMemberForm(Peserta $ketua)
+    {
+        if (!$ketua->canAddTeamMember()) {
+            return back()->withErrors('Hanya ketua dengan lowongan tipe "Wirausaha Merdeka" yang dapat mengakses halaman ini.');
+        }
+    
+        $anggotaTim = TeamMember::where('ketua_id', $ketua->id)->with('peserta')->get();
+        return view('applications.mbkm.staff.registrasi-program.peserta.add-team-member', compact('ketua', 'anggotaTim'));
+    }
+    
+    public function addTeamMember(Request $request, Peserta $ketua)
+    {
+        if (!$ketua->canAddTeamMember()) {
+            return back()->withErrors('Hanya ketua dengan lowongan tipe "Wirausaha Merdeka" yang dapat menambahkan anggota tim.');
+        }
+    
+        $request->validate([
+            'nama' => 'required|string|max:255',
+            'email' => 'required|email|unique:users,email',
+            'nim' => 'required|string|max:20|unique:peserta,nim',
+            'password' => 'required|string|min:8|confirmed',
+        ]);
+    
+        $registrasiPlacement = $ketua->registrationPlacement;
+    
+        DB::transaction(function () use ($request, $ketua, $registrasiPlacement) {
+            $user = User::create([
+                'name' => $request->nama,
+                'email' => $request->email,
+                'password' => Hash::make($request->password),
+            ]);
+    
+            $role = Role::findByName('peserta');
+            $user->assignRole($role);
+    
+            $anggota = Peserta::create([
+                'user_id' => $user->id,
+                'nim' => $request->nim,
+                'nama' => $request->nama,
+                'email' => $request->email,
+                'alamat' => $request->alamat ?? $ketua->alamat,
+                'jurusan' => $request->jurusan ?? $ketua->jurusan,
+                'telepon' => $request->telepon ?? null,
+                'jenis_kelamin' => $request->jenis_kelamin ?? $ketua->jenis_kelamin,
+                'dospem_id' => $ketua->dospem_id,
+            ]);
+    
+            $registrasi = Registrasi::create([
+                'peserta_id' => $anggota->id,
+                'lowongan_id' => $registrasiPlacement->lowongan->id,
+                'status' => 'placement',
+                'dospem_id' => $registrasiPlacement->dospem_id,
+                'nama_peserta' => $anggota->nama,
+                'nama_lowongan' => $registrasiPlacement->lowongan->name,
+                'batch_id' => $registrasiPlacement->batch_id,
+            ]);
+    
+            AktivitasMbkm::create([
+                'peserta_id' => $anggota->id,
+                'lowongan_id' => $registrasi->lowongan_id,
+                'mitra_id' => $registrasi->lowongan->mitra_id,
+                'dospem_id' => $registrasiPlacement->dospem_id,
+            ]);
+    
+            TeamMember::create([
+                'ketua_id' => $ketua->id,
+                'peserta_id' => $anggota->id,
+            ]);
+        });
+    
+        return back()->with('success', 'Anggota tim berhasil ditambahkan.');
+    }
+    
+
+    public function removeTeamMember($id)
+    {
+        DB::transaction(function () use ($id) {
+            $teamMember = TeamMember::findOrFail($id);
+            $peserta = $teamMember->peserta;
+
+            AktivitasMbkm::where('peserta_id', $peserta->id)->delete();
+
+            Registrasi::where('peserta_id', $peserta->id)->delete();
+
+            if ($peserta->user) {
+                $peserta->user->delete();
+            }
+
+            $peserta->delete();
+
+            $teamMember->delete();
+        });
+
+        return back()->with('success', 'Anggota tim berhasil dihapus.');
+    }
+
 }
