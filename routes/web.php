@@ -55,7 +55,7 @@ Route::middleware('auth')->group(function () {
 
         Route::get('peserta/{ketua}/team/add', [\App\Http\Controllers\PesertaController::class, 'showAddTeamMemberForm'])->name('team.addMemberForm');
         Route::post('peserta/{ketua}/team/add', [\App\Http\Controllers\PesertaController::class, 'addTeamMember'])->name('team.addMember');
-        
+        Route::delete('/team/member/{id}/remove', [\App\Http\Controllers\PesertaController::class, 'removeTeamMember'])->name('team.removeMember');        
         
         
 
