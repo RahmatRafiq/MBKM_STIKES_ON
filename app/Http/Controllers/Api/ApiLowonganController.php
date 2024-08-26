@@ -3,13 +3,14 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
-use App\Models\Lowongan;
 use App\Models\BatchMbkm;
+use App\Models\Lowongan;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
 class ApiLowonganController extends Controller
 {
+    // Mendapatkan daftar lowongan dengan filter (search dan tipe mitra)
     public function getLowongan(Request $request)
     {
         $search = $request->query('search');
@@ -35,6 +36,7 @@ class ApiLowonganController extends Controller
         ]);
     }
 
+    // Mendapatkan detail lowongan berdasarkan ID
     public function getLowonganDetail($id)
     {
         $lowongan = Lowongan::with('mitra')->findOrFail($id);
@@ -46,21 +48,26 @@ class ApiLowonganController extends Controller
         ]);
     }
 
+    // Mendaftarkan pengguna ke lowongan
     public function registerForLowongan(Request $request)
     {
+        // Cek apakah pengguna sudah login
         if (!Auth::check()) {
+            // Jika belum login, kembalikan respons 401 Unauthorized
             return response()->json(['message' => 'Silahkan login terlebih dahulu.'], 401);
         }
 
+        // Validasi data pendaftaran
         $request->validate([
             'lowongan_id' => 'required|exists:lowongans,id',
         ]);
 
+        // Ambil peserta dan batch aktif
         $peserta = Auth::user()->peserta;
         $lowonganId = $request->input('lowongan_id');
         $batchId = BatchMbkm::getActiveBatch()->id;
 
-        // Cek jika peserta sudah mendaftar di lowongan ini di batch aktif
+        // Cek apakah peserta sudah mendaftar di lowongan ini pada batch aktif
         $existingRegistration = $peserta->registrations()
             ->where('lowongan_id', $lowonganId)
             ->where('batch_id', $batchId)
