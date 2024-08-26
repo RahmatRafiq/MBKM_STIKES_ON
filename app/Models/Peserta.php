@@ -4,9 +4,8 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Spatie\MediaLibrary\InteractsWithMedia;
 use Spatie\MediaLibrary\HasMedia;
-
+use Spatie\MediaLibrary\InteractsWithMedia;
 
 class Peserta extends Model implements HasMedia
 {
@@ -47,7 +46,26 @@ class Peserta extends Model implements HasMedia
             ->whereDate('registrasi.created_at', '>=', $semesterStart)
             ->whereDate('registrasi.created_at', '<=', $semesterEnd);
     }
-    
+
+    public function isKetua()
+    {
+        return TeamMember::where('ketua_id', $this->id)->exists();
+    }
+
+    public function canAddTeamMember()
+    {
+        if (!$this->isKetua()) {
+            return false;
+        }
+
+        $registrasiPlacement = $this->registrationPlacement;
+
+        if ($registrasiPlacement) {
+            $lowongan = $registrasiPlacement->lowongan;
+            return $lowongan && $lowongan->mitra->type === 'Wirausaha Merdeka';
+        }
+
+        return false;
+    }
+
 }
-
-
