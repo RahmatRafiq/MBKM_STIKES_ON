@@ -53,6 +53,12 @@ Route::middleware('auth')->group(function () {
         Route::delete('/peserta/{id}/delete/{type}', [\App\Http\Controllers\PesertaController::class, 'destroyFile'])->name('peserta.destroyFile');
         Route::post('/peserta/{id}/upload-multiple', [\App\Http\Controllers\PesertaController::class, 'uploadMultipleDocuments'])->name('peserta.uploadMultiple');
 
+        Route::get('peserta/{ketua}/team/add', [\App\Http\Controllers\PesertaController::class, 'showAddTeamMemberForm'])->name('team.addMemberForm');
+        Route::post('peserta/{ketua}/team/add', [\App\Http\Controllers\PesertaController::class, 'addTeamMember'])->name('team.addMember');
+        
+        
+        
+
     });
 
     Route::middleware(['role:mitra'])->group(function () {
