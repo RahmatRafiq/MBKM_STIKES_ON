@@ -145,7 +145,6 @@
                 </ul>
             </li>
             @endcan
-
             @if(auth()->user()->peserta && auth()->user()->peserta->canAddTeamMember())
             <li class="{{ request()->routeIs('team.addMemberForm') ? 'active current-page' : '' }}">
                 <a href="{{ route('team.addMemberForm', ['ketua' => auth()->user()->peserta->id]) }}">
@@ -154,9 +153,6 @@
                 </a>
             </li>
             @endif
-
-
-
         </ul>
     </div>
 </nav>
