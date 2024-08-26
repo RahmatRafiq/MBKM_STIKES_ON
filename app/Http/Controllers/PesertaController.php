@@ -212,53 +212,42 @@ class PesertaController extends Controller
 
     public function showAddTeamMemberForm(Peserta $ketua)
     {
-        $registrasiPlacement = $ketua->registrationPlacement;
-
-        if (!$registrasiPlacement) {
-            return back()->withErrors('Ketua tidak memiliki registrasi dengan status placement.');
+        // Gunakan fungsi canAddTeamMember untuk validasi
+        if (!$ketua->canAddTeamMember()) {
+            return back()->withErrors('Hanya ketua dengan lowongan tipe "Wirausaha Merdeka" yang dapat mengakses halaman ini.');
         }
-
-        $lowongan = $registrasiPlacement->lowongan;
-
-        if ($lowongan->mitra->type !== 'Wirausaha Merdeka') {
-            return back()->withErrors('Hanya lowongan dengan tipe "Wirausaha Merdeka" yang dapat menambahkan anggota tim.');
-        }
-
-        // Ambil semua anggota tim yang diketuai oleh peserta ini
+    
         $anggotaTim = TeamMember::where('ketua_id', $ketua->id)->with('peserta')->get();
-
+    
         return view('applications.mbkm.staff.registrasi-program.peserta.add-team-member', compact('ketua', 'anggotaTim'));
     }
-
+    
     public function addTeamMember(Request $request, Peserta $ketua)
     {
+        // Gunakan fungsi canAddTeamMember untuk validasi
+        if (!$ketua->canAddTeamMember()) {
+            return back()->withErrors('Hanya ketua dengan lowongan tipe "Wirausaha Merdeka" yang dapat menambahkan anggota tim.');
+        }
+    
         $request->validate([
             'nama' => 'required|string|max:255',
             'email' => 'required|email|unique:users,email',
             'nim' => 'required|string|max:20|unique:peserta,nim',
             'password' => 'required|string|min:8|confirmed',
         ]);
+    
         $registrasiPlacement = $ketua->registrationPlacement;
-
-        if (!$registrasiPlacement) {
-            return back()->withErrors('Ketua tidak memiliki registrasi dengan status placement.');
-        }
-
-        $lowongan = $registrasiPlacement->lowongan;
-        if ($lowongan->mitra->type !== 'Wirausaha Merdeka') {
-            return back()->withErrors('Hanya lowongan dengan tipe "Wirausaha Merdeka" yang dapat menambahkan anggota tim.');
-        }
-
-        DB::transaction(function () use ($request, $ketua, $lowongan, $registrasiPlacement) {
+    
+        DB::transaction(function () use ($request, $ketua, $registrasiPlacement) {
             $user = User::create([
                 'name' => $request->nama,
                 'email' => $request->email,
                 'password' => Hash::make($request->password),
             ]);
-
+    
             $role = Role::findByName('peserta');
             $user->assignRole($role);
-
+    
             $anggota = Peserta::create([
                 'user_id' => $user->id,
                 'nim' => $request->nim,
@@ -270,32 +259,33 @@ class PesertaController extends Controller
                 'jenis_kelamin' => $request->jenis_kelamin ?? $ketua->jenis_kelamin,
                 'dospem_id' => $ketua->dospem_id,
             ]);
-
+    
             $registrasi = Registrasi::create([
                 'peserta_id' => $anggota->id,
-                'lowongan_id' => $lowongan->id,
+                'lowongan_id' => $registrasiPlacement->lowongan->id,
                 'status' => 'placement',
                 'dospem_id' => $registrasiPlacement->dospem_id,
                 'nama_peserta' => $anggota->nama,
-                'nama_lowongan' => $lowongan->name,
+                'nama_lowongan' => $registrasiPlacement->lowongan->name,
                 'batch_id' => $registrasiPlacement->batch_id,
             ]);
-
+    
             AktivitasMbkm::create([
                 'peserta_id' => $anggota->id,
                 'lowongan_id' => $registrasi->lowongan_id,
                 'mitra_id' => $registrasi->lowongan->mitra_id,
                 'dospem_id' => $registrasiPlacement->dospem_id,
             ]);
-
+    
             TeamMember::create([
-                'ketua_id' => $ketua->registrationPlacement->peserta_id,
+                'ketua_id' => $ketua->id,
                 'peserta_id' => $anggota->id,
             ]);
         });
-
+    
         return back()->with('success', 'Anggota tim berhasil ditambahkan.');
     }
+    
 
     public function removeTeamMember($id)
     {
