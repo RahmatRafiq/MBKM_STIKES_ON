@@ -213,19 +213,23 @@ class PesertaController extends Controller
     public function showAddTeamMemberForm(Peserta $ketua)
     {
         $registrasiPlacement = $ketua->registrationPlacement;
-
+    
         if (!$registrasiPlacement) {
             return back()->withErrors('Ketua tidak memiliki registrasi dengan status placement.');
         }
-
+    
         $lowongan = $registrasiPlacement->lowongan;
-
+    
         if ($lowongan->mitra->type !== 'Wirausaha Merdeka') {
             return back()->withErrors('Hanya lowongan dengan tipe "Wirausaha Merdeka" yang dapat menambahkan anggota tim.');
         }
-
-        return view('applications.mbkm.staff.registrasi-program.peserta.add-team-member', compact('ketua'));
+    
+        // Ambil semua anggota tim yang diketuai oleh peserta ini
+        $anggotaTim = TeamMember::where('ketua_id', $ketua->id)->with('peserta')->get();
+    
+        return view('applications.mbkm.staff.registrasi-program.peserta.add-team-member', compact('ketua', 'anggotaTim'));
     }
+    
     
     public function addTeamMember(Request $request, Peserta $ketua)
     {
