@@ -142,7 +142,7 @@
         document.querySelectorAll('.my-dropzone').forEach(function(dropzoneElement) {
             const key = 'dokumen';
             const files = [];
-            const urlStore = "{{ route('laporan.harian.upload') }}"; // Pastikan rute ini benar
+            const urlStore = "{{ route('laporan.harian.store') }}"; // Pastikan rute ini benar
             const csrf = "{{ csrf_token() }}";
             const acceptedFiles = 'image/*';
             const maxFiles = 2;
