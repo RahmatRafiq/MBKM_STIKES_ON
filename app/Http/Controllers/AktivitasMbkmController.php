@@ -278,21 +278,23 @@ class AktivitasMbkmController extends Controller
                 $query->where('batch_id', $this->activeBatch->id);
             })
             ->firstOrFail();
-
+    
         if ($laporanHarian->mitra->user_id != Auth::id() && $laporanHarian->dospem->user_id != Auth::id()) {
             return response()->json(['errors' => 'Anda tidak memiliki izin untuk memvalidasi laporan ini.'], 403);
         }
-
+    
         if ($request->action == 'validasi') {
             $laporanHarian->status = 'validasi';
         } elseif ($request->action == 'revisi') {
             $laporanHarian->status = 'revisi';
+            $laporanHarian->feedback = $request->feedback; // Menyimpan feedback
         }
-
+    
         $laporanHarian->save();
-
+    
         return response()->json(['success' => 'Laporan harian berhasil diperbarui.']);
     }
+    
 
     public function validateLaporanMingguan(Request $request, $id)
     {
