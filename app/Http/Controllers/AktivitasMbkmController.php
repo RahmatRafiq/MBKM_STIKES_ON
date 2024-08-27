@@ -180,26 +180,20 @@ class AktivitasMbkmController extends Controller
             'tanggal' => 'required|date',
             'isi_laporan' => 'required|string',
             'kehadiran' => 'required|string',
-            'dokumen' => 'nullable|file|mimes:pdf,doc,docx,image/*', // Validasi dokumen
+            'dokumen' => 'nullable|file|mimes:jpeg,jpg,png,bmp,gif,svg|max:2048',
         ]);
 
         $user = Auth::user();
-
-        $user->load(['peserta.registrationPlacement.lowongan']);
-
-        $laporanHarian = LaporanHarian::updateOrCreate(
-            [
-                'peserta_id' => $user->peserta->id,
-                'mitra_id' => $user->peserta->registrationPlacement->lowongan->mitra_id,
-                'dospem_id' => $user->peserta->registrationPlacement->dospem_id,
-                'tanggal' => $request->tanggal,
-            ],
-            [
-                'isi_laporan' => $request->isi_laporan,
-                'status' => 'pending',
-                'kehadiran' => $request->kehadiran,
-            ]
-        );
+        $laporanHarian = LaporanHarian::updateOrCreate([
+            'peserta_id' => $user->peserta->id,
+            'mitra_id' => $user->peserta->registrationPlacement->lowongan->mitra_id,
+            'dospem_id' => $user->peserta->registrationPlacement->dospem_id,
+            'tanggal' => $request->tanggal,
+        ], [
+            'isi_laporan' => $request->isi_laporan,
+            'status' => 'pending',
+            'kehadiran' => $request->kehadiran,
+        ]);
 
         // Simpan dokumen jika ada
         if ($request->hasFile('dokumen')) {
