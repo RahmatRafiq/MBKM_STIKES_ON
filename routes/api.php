@@ -1,20 +1,16 @@
 <?php
 
 use App\Http\Controllers\Api\ApiController;
+use App\Http\Controllers\Api\ApiLowonganController;
 use App\Http\Middleware\ApiKeyMiddleware;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
-Route::get('/user', function (Request $request) {
-    return $request->user();
-})->middleware('auth:sanctum');
+Route::group([], function () {
+    Route::get('/lowongan', [ApiLowonganController::class, 'getLowongan'])->name('api.lowongan.index');
 
-Route::name('api')->group(function () {
-    Route::post('/login', function (Request $request) {
-        $token = $request->user()->createToken($request->token_name);
+    Route::get('/lowongan/{id}', [ApiLowonganController::class, 'getLowonganDetail'])->name('api.lowongan.detail');
 
-        return ['token' => $token->plainTextToken];
-    })->name('login');
+    Route::post('/lowongan/register', [ApiLowonganController::class, 'registerForLowongan'])->name('api.lowongan.register');
 });
 
 Route::middleware([ApiKeyMiddleware::class])->group(function () {
@@ -23,9 +19,10 @@ Route::middleware([ApiKeyMiddleware::class])->group(function () {
     Route::get('/mahasiswa-sisfo/json', [ApiController::class, 'getDataMahasiswaSisfo']);
     Route::get('/matakuliah-sisfo/json', [ApiController::class, 'getDataMataKuliahSisfo']);
 });
+
 Route::fallback(function () {
     return response()->json([
         'status' => 'error',
-        'message' => 'Endpoint not found',
+        'message' => 'Endpoint tidak ditemukan',
     ], 404);
 });
