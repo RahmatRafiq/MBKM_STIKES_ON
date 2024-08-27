@@ -66,6 +66,7 @@
                                             <th>Tanggal</th>
                                             <th>Isi Laporan</th>
                                             <th>Status</th>
+                                            <th>Feedback</th> <!-- Tambahkan kolom ini -->
                                             <th>Aksi</th>
                                         </tr>
                                     </thead>
@@ -79,10 +80,11 @@
                                                     {{ ucfirst($laporan->status) }}
                                                 </span>
                                             </td>
+                                            <td>{{ $laporan->feedback ?? '-' }}</td> <!-- Tampilkan feedback jika ada -->
                                             <td>
                                                 @if ($laporan->status == 'pending')
                                                 <button class="btn btn-outline-success validate-btn mb-1" data-id="{{ $laporan->id }}" data-type="harian" data-action="validasi">Validasi</button>
-                                                <button class="btn btn-outline-danger validate-btn mb-1" data-id="{{ $laporan->id }}" data-type="harian" data-action="revisi">Revisi</button>
+                                                <button class="btn btn-outline-danger validate-btn mb-1" data-id="{{ $laporan->id }}" data-type="harian" data-action="revisi" data-toggle="modal" data-target="#feedbackModal-{{ $laporan->id }}">Revisi</button>
                                                 @endif
                                             </td>
                                         </tr>
@@ -105,6 +107,7 @@
                                             <th>Minggu Ke</th>
                                             <th>Isi Laporan</th>
                                             <th>Status</th>
+                                            <th>Feedback</th> <!-- Tambahkan kolom ini -->
                                             <th>Aksi</th>
                                         </tr>
                                     </thead>
@@ -118,10 +121,11 @@
                                                     {{ ucfirst($laporan->status) }}
                                                 </span>
                                             </td>
+                                            <td>{{ $laporan->feedback ?? '-' }}</td> <!-- Tampilkan feedback jika ada -->
                                             <td>
                                                 @if ($laporan->status == 'pending')
-                                                <button class="btn btn-outline-success validate-btn mb-1" data-id="{{ $laporan->id }}" data-type="harian" data-action="validasi">Validasi</button>
-                                                <button class="btn btn-outline-danger validate-btn mb-1" data-id="{{ $laporan->id }}" data-type="harian" data-action="revisi">Revisi</button>
+                                                <button class="btn btn-outline-success validate-btn mb-1" data-id="{{ $laporan->id }}" data-type="mingguan" data-action="validasi">Validasi</button>
+                                                <button class="btn btn-outline-danger validate-btn mb-1" data-id="{{ $laporan->id }}" data-type="mingguan" data-action="revisi" data-toggle="modal" data-target="#feedbackModal-{{ $laporan->id }}">Revisi</button>
                                                 @endif
                                             </td>
                                         </tr>
@@ -144,6 +148,7 @@
                                             <th>Dosen Pembimbing</th>
                                             <th>Isi Laporan</th>
                                             <th>Status</th>
+                                            <th>Feedback</th> <!-- Tambahkan kolom ini -->
                                             <th>Aksi</th>
                                         </tr>
                                     </thead>
@@ -157,10 +162,11 @@
                                                     {{ ucfirst($laporan->status) }}
                                                 </span>
                                             </td>
+                                            <td>{{ $laporan->feedback ?? '-' }}</td> <!-- Tampilkan feedback jika ada -->
                                             <td>
                                                 @if ($laporan->status == 'pending')
-                                                <button class="btn btn-outline-success validate-btn mb-1" data-id="{{ $laporan->id }}" data-type="harian" data-action="validasi">Validasi</button>
-                                                <button class="btn btn-outline-danger validate-btn mb-1" data-id="{{ $laporan->id }}" data-type="harian" data-action="revisi">Revisi</button>
+                                                <button class="btn btn-outline-success validate-btn mb-1" data-id="{{ $laporan->id }}" data-type="lengkap" data-action="validasi">Validasi</button>
+                                                <button class="btn btn-outline-danger validate-btn mb-1" data-id="{{ $laporan->id }}" data-type="lengkap" data-action="revisi" data-toggle="modal" data-target="#feedbackModal-{{ $laporan->id }}">Revisi</button>
                                                 @endif
                                             </td>
                                         </tr>
@@ -176,6 +182,29 @@
     </div>
     @endif
 </div>
+
+<!-- Modal untuk feedback -->
+@foreach (array_merge($laporanHarian->toArray(), $laporanMingguan->toArray(), $laporanLengkap->toArray()) as $laporan)
+<div class="modal fade" id="feedbackModal-{{ $laporan['id'] }}" tabindex="-1" role="dialog" aria-labelledby="feedbackModalLabel-{{ $laporan['id'] }}" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="feedbackModalLabel-{{ $laporan['id'] }}">Masukkan Feedback untuk Revisi</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <textarea id="feedback-{{ $laporan['id'] }}" class="form-control" rows="4" placeholder="Masukkan feedback..."></textarea>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Batal</button>
+                <button type="button" class="btn btn-primary submit-feedback" data-id="{{ $laporan['id'] }}" data-type="harian" data-action="revisi">Kirim Feedback</button>
+            </div>
+        </div>
+    </div>
+</div>
+@endforeach
 
 <link rel="stylesheet" href="{{ asset('assets/css/badges.css') }}">
 
@@ -196,6 +225,12 @@
                 url = '{{ url("laporan-mingguan/validate") }}/' + laporanId;
             } else if (type === 'lengkap') {
                 url = '{{ url("laporan-lengkap/validate") }}/' + laporanId;
+            }
+
+            if (action === 'revisi') {
+                // Show the modal for feedback
+                $('#feedbackModal-' + laporanId).modal('show');
+                return; // Prevent the default action
             }
 
             $.ajax({
@@ -237,6 +272,64 @@
                 },
                 error: function(xhr) {
                     // Display error message with Toastify
+                    Toastify({
+                        text: 'Terjadi kesalahan saat memperbarui status.',
+                        duration: 5000,
+                        close: true,
+                        gravity: "top",
+                        position: "right",
+                        backgroundColor: "#f5365c",
+                        stopOnFocus: true,
+                    }).showToast();
+                }
+            });
+        });
+
+        $('.submit-feedback').on('click', function() {
+            var button = $(this);
+            var laporanId = button.data('id');
+            var action = button.data('action');
+            var type = button.data('type');
+            var feedback = $('#feedback-' + laporanId).val();
+            var url = '';
+
+            if (type === 'harian') {
+                url = '{{ url("laporan-harian/validate") }}/' + laporanId;
+            } else if (type === 'mingguan') {
+                url = '{{ url("laporan-mingguan/validate") }}/' + laporanId;
+            } else if (type === 'lengkap') {
+                url = '{{ url("laporan-lengkap/validate") }}/' + laporanId;
+            }
+
+            $.ajax({
+                type: 'POST',
+                url: url,
+                data: {
+                    _token: '{{ csrf_token() }}',
+                    action: action,
+                    feedback: feedback
+                },
+                success: function(response) {
+                    if (response.success) {
+                        $('#feedbackModal-' + laporanId).modal('hide');
+
+                        var statusCell = button.closest('tr').find('.status');
+                        statusCell.html('<span class="badge badge-rejected">Revisi</span>');
+
+                        button.closest('td').find('button').remove();
+
+                        Toastify({
+                            text: response.success,
+                            duration: 5000,
+                            close: true,
+                            gravity: "top",
+                            position: "right",
+                            backgroundColor: "#2dce89",
+                            stopOnFocus: true,
+                        }).showToast();
+                    }
+                },
+                error: function(xhr) {
                     Toastify({
                         text: 'Terjadi kesalahan saat memperbarui status.',
                         duration: 5000,
