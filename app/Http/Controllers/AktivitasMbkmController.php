@@ -233,11 +233,11 @@ class AktivitasMbkmController extends Controller
         return back()->with('success', 'Laporan mingguan berhasil disimpan.');
     }
 
-// Tidak perlu lagi menyimpan 'tanggal' sebagai field terpisah
     public function storeLaporanLengkap(Request $request)
     {
         $request->validate([
             'isi_laporan' => 'required|string',
+            'dokumen' => 'nullable|file|mimes:pdf,doc,docx', // Validasi dokumen
         ]);
 
         $user = Auth::user();
@@ -258,6 +258,12 @@ class AktivitasMbkmController extends Controller
                 'status' => 'pending',
             ]
         );
+
+        // Jika dokumen diunggah, tambahkan ke media collection dan simpan di disk 'laporan-lengkap'
+        if ($request->hasFile('dokumen')) {
+            $laporanLengkap->addMedia($request->file('dokumen'))
+                ->toMediaCollection('laporan-lengkap', 'laporan-lengkap');
+        }
 
         $aktivitas->laporan_lengkap_id = $laporanLengkap->id;
         $aktivitas->save();
