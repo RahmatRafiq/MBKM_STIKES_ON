@@ -153,6 +153,38 @@ class RegistrasiController extends Controller
 
         return back()->with('success', 'Pendaftaran berhasil.');
     }
+    public function showDocuments($id)
+    {
+        $registrasi = Registrasi::findOrFail($id);
+        $peserta = $registrasi->peserta;
+    
+        // Daftar nama collection dan label yang ingin ditampilkan
+        $collections = [
+            'surat_rekomendasi' => 'Surat Rekomendasi',
+            'transkrip_nilai' => 'Transkrip Nilai',
+            'cv' => 'Curriculum Vitae (CV)',
+            'pakta_integritas' => 'Pakta Integritas',
+            'izin_orangtua' => 'Surat Izin Orangtua',
+            'surat_keterangan_sehat' => 'Surat Keterangan Sehat',
+        ];
+    
+        // Menggabungkan dokumen dari beberapa collection
+        $documents = collect();
+        foreach ($collections as $collection => $label) {
+            $mediaItems = $peserta->getMedia($collection);
+            foreach ($mediaItems as $mediaItem) {
+                $documents->push((object)[
+                    'label' => $label, // Nama dokumen deskriptif
+                    'file_name' => $mediaItem->file_name, // Nama file yang diunggah
+                    'url' => $mediaItem->getUrl(), // URL file
+                ]);
+            }
+        }
+    
+        return view('applications.mbkm.staff.registrasi-program.staff.show-document', compact('peserta', 'documents'));
+    }
+    
+    
 
     public function update(Request $request, $id)
     {
