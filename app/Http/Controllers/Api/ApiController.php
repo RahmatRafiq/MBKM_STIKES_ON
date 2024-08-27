@@ -18,7 +18,7 @@ class ApiController extends Controller
         if (!$activeBatch) {
             return response()->json(['error' => 'Tidak ada batch aktif yang sedang berjalan.'], 403);
         }
-
+    
         // Ambil laporan lengkap dengan status 'validasi' berdasarkan batch aktif
         $laporanLengkap = LaporanLengkap::with([
             'peserta.registrationPlacement.lowongan.mitra',
@@ -29,14 +29,17 @@ class ApiController extends Controller
             })
             ->where('status', 'validasi')
             ->get();
-
+    
         // Jika tidak ada data yang ditemukan
         if ($laporanLengkap->isEmpty()) {
             return response()->json(['message' => 'Tidak ada laporan lengkap dengan status validasi ditemukan.'], 404);
         }
-
+    
         // Transformasi data untuk kebutuhan API
         $data = $laporanLengkap->map(function ($laporan) use ($activeBatch) {
+            // Dapatkan URL dokumen jika ada
+            $dokumenUrl = $laporan->getFirstMediaUrl('laporan-lengkap') ?? null;
+    
             return [
                 'MhswID' => $laporan->peserta->nim, // Ganti NIM menjadi MhswID
                 'Nama Mahasiswa' => $laporan->peserta->nama,
@@ -48,9 +51,10 @@ class ApiController extends Controller
                 'Status' => $laporan->status,
                 'Tanggal Validasi' => $laporan->updated_at->format('Y-m-d'),
                 'Laporan Dibuat' => $laporan->created_at->format('Y-m-d'),
+                'Dokumen URL' => $dokumenUrl, // Tambahkan URL dokumen di sini
             ];
         });
-
+    
         // Kembalikan data dalam format JSON
         return response()->json([
             'status' => 'success',
@@ -58,6 +62,7 @@ class ApiController extends Controller
             'data' => $data,
         ]);
     }
+    
 
     public function getDataMataKuliahSisfo()
     {
