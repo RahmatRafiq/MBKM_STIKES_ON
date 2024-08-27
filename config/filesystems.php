@@ -57,6 +57,20 @@ return [
             'visibility' => 'public',
         ],
 
+        'laporan-harian' => [
+            'driver' => 'local',
+            'root' => storage_path('app/public/laporan-harian'),
+            'url' => env('APP_URL') . '/storage/laporan-harian',
+            'visibility' => 'public',
+        ],
+
+        'laporan-mingguan' => [
+            'driver' => 'local',
+            'root' => storage_path('app/public/laporan-mingguan'),
+            'url' => env('APP_URL') . '/storage/laporan-mingguan',
+            'visibility' => 'public',
+        ],
+
         'laporan-lengkap' => [
             'driver' => 'local',
             'root' => storage_path('app/public/laporan-lengkap'),
