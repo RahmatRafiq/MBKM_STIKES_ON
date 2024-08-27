@@ -90,8 +90,8 @@
             }
 
             if (action === 'revisi') {
-                // Tampilkan modal untuk feedback
-                $('#feedbackModalHarian-' + laporanId).modal('show');
+                // Tampilkan modal untuk feedback sesuai dengan jenis laporan
+                $('#feedbackModal' + capitalizeFirstLetter(type) + '-' + laporanId).modal('show');
                 return; // Mencegah aksi default
             }
 
@@ -114,7 +114,7 @@
                             badgeClass = 'badge-rejected';
                         }
 
-                        statusCell.html('<span class="badge ' + badgeClass + '">' + ucfirst(action) + '</span>');
+                        statusCell.html('<span class="badge ' + badgeClass + '">' + capitalizeFirstLetter(action) + '</span>');
                         button.closest('td').find('button').remove();
 
                         Toastify({
@@ -168,7 +168,7 @@
                 },
                 success: function(response) {
                     if (response.success) {
-                        $('#feedbackModalHarian-' + laporanId).modal('hide');
+                        $('#feedbackModal' + capitalizeFirstLetter(type) + '-' + laporanId).modal('hide');
 
                         var statusCell = button.closest('tr').find('.status');
                         statusCell.html('<span class="badge badge-rejected">Revisi</span>');
@@ -200,11 +200,10 @@
             });
         });
 
-        function ucfirst(str) {
-            return str.charAt(0).toUpperCase() + str.slice(1);
+        function capitalizeFirstLetter(string) {
+            return string.charAt(0).toUpperCase() + string.slice(1);
         }
     });
 </script>
-
 
 @endsection
