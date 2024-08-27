@@ -4,21 +4,22 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Spatie\MediaLibrary\HasMedia;
+use Spatie\MediaLibrary\InteractsWithMedia;
 
-class LaporanLengkap extends Model
+class LaporanLengkap extends Model implements HasMedia
 {
-    use HasFactory;
+    use HasFactory, InteractsWithMedia;
 
     protected $table = 'laporan_lengkap';
     protected $fillable = [
         'peserta_id',
-        'mitra_id', // Tambahkan mitra_id di sini
+        'mitra_id',
         'dospem_id',
-        'mitra_id', // Tambahkan mitra_id di sini
         'isi_laporan',
         'status',
         'feedback',
-        'batch_id', // Tambahkan batch_id
+        'batch_id',
     ];
 
     public function peserta()
@@ -41,7 +42,7 @@ class LaporanLengkap extends Model
         return $this->belongsTo(Lowongan::class);
     }
     
-    public static function getByUser($user, $pesertaId = null, $batchId = null) // Tambahkan batchId
+    public static function getByUser($user, $pesertaId = null, $batchId = null)
     {
         $query = self::with(['peserta', 'dospem'])
             ->whereHas('dospem', function ($query) use ($user) {
@@ -54,4 +55,3 @@ class LaporanLengkap extends Model
         return $query->get();
     }
 }
-

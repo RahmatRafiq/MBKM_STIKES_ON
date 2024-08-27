@@ -100,45 +100,91 @@ class RegistrasiController extends Controller
         $request->validate([
             'peserta_id' => 'required|exists:peserta,id',
             'lowongan_id' => 'required|exists:lowongans,id',
-            'batch_id' => 'required|exists:batch_mbkms,id', // Tambahkan validasi batch_id
+            'batch_id' => 'required|exists:batch_mbkms,id',
         ]);
 
         $pesertaId = $request->input('peserta_id');
         $lowonganId = $request->input('lowongan_id');
         $batchId = $request->input('batch_id');
 
+        // Cek pendaftaran yang sudah ada
         $existingRegistration = Registrasi::where('peserta_id', $pesertaId)
             ->where('lowongan_id', $lowonganId)
-            ->where('batch_id', $batchId) // Tambahkan pengecekan batch_id
+            ->where('batch_id', $batchId)
             ->first();
 
         if ($existingRegistration) {
             return back()->withErrors(['error' => 'Peserta sudah mendaftar pada lowongan ini di batch ini. Tidak dapat mendaftar lagi.']);
         }
 
+        // Ambil data peserta dan lowongan
         $peserta = Peserta::find($pesertaId);
         $lowongan = Lowongan::find($lowonganId);
 
+        // Cek pendaftaran yang diterima
         $existingAcceptedRegistration = Registrasi::where('peserta_id', $pesertaId)
             ->whereIn('status', ['accepted', 'accepted_offer'])
-            ->where('batch_id', $batchId) // Tambahkan pengecekan batch_id
+            ->where('batch_id', $batchId)
             ->first();
 
         if ($existingAcceptedRegistration) {
             return back()->withErrors(['Error' => 'Peserta sudah memiliki tawaran yang diterima di batch ini. Tidak dapat mendaftar di lowongan lain.']);
         }
 
+        // Tambahkan logika untuk mencegah pendaftaran jika peserta sudah memiliki lowongan dengan status placement di batch yang sama
+        $placementRegistration = Registrasi::where('peserta_id', $pesertaId)
+            ->where('batch_id', $batchId)
+            ->where('status', 'placement')
+            ->first();
+
+        if ($placementRegistration) {
+            return back()->withErrors(['error' => 'Peserta sudah memiliki lowongan dengan status "placement" di batch ini. Tidak dapat mendaftar untuk lowongan lain.']);
+        }
+
+        // Simpan pendaftaran baru
         Registrasi::create([
             'peserta_id' => $pesertaId,
             'lowongan_id' => $lowonganId,
             'status' => 'registered',
             'nama_peserta' => $peserta->nama,
             'nama_lowongan' => $lowongan->name,
-            'batch_id' => $batchId, // Simpan batch_id
+            'batch_id' => $batchId,
         ]);
 
         return back()->with('success', 'Pendaftaran berhasil.');
     }
+    public function showDocuments($id)
+    {
+        $registrasi = Registrasi::findOrFail($id);
+        $peserta = $registrasi->peserta;
+    
+        // Daftar nama collection dan label yang ingin ditampilkan
+        $collections = [
+            'surat_rekomendasi' => 'Surat Rekomendasi',
+            'transkrip_nilai' => 'Transkrip Nilai',
+            'cv' => 'Curriculum Vitae (CV)',
+            'pakta_integritas' => 'Pakta Integritas',
+            'izin_orangtua' => 'Surat Izin Orangtua',
+            'surat_keterangan_sehat' => 'Surat Keterangan Sehat',
+        ];
+    
+        // Menggabungkan dokumen dari beberapa collection
+        $documents = collect();
+        foreach ($collections as $collection => $label) {
+            $mediaItems = $peserta->getMedia($collection);
+            foreach ($mediaItems as $mediaItem) {
+                $documents->push((object)[
+                    'label' => $label, // Nama dokumen deskriptif
+                    'file_name' => $mediaItem->file_name, // Nama file yang diunggah
+                    'url' => $mediaItem->getUrl(), // URL file
+                ]);
+            }
+        }
+    
+        return view('applications.mbkm.staff.registrasi-program.staff.show-document', compact('peserta', 'documents'));
+    }
+    
+    
 
     public function update(Request $request, $id)
     {

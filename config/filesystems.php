@@ -57,7 +57,13 @@ return [
             'visibility' => 'public',
         ],
 
-        // temp
+        'laporan-lengkap' => [
+            'driver' => 'local',
+            'root' => storage_path('app/public/laporan-lengkap'),
+            'url' => env('APP_URL') . '/storage/laporan-lengkap',
+            'visibility' => 'public',
+        ],
+
         'temp' => [
             'driver' => 'local',
             'root' => storage_path('app/public/temp'),

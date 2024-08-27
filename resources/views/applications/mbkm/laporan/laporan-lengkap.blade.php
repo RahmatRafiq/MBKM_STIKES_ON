@@ -17,6 +17,9 @@
         <div class="card-body">
             @if ($aktivitas && $aktivitas->laporanLengkap)
                 <p>{{ $aktivitas->laporanLengkap->isi_laporan }}</p>
+                @if ($aktivitas->laporanLengkap->getFirstMediaUrl('laporan-lengkap'))
+                    <a href="{{ $aktivitas->laporanLengkap->getFirstMediaUrl('laporan-lengkap') }}" target="_blank">Lihat Dokumen</a>
+                @endif
                 @if ($aktivitas->laporanLengkap->status == 'revisi')
                     <div class="text-center mt-3">
                         <button class="btn btn-info" data-bs-toggle="modal" data-bs-target="#modalFormLaporanLengkap">Submit Ulang</button>
@@ -40,7 +43,7 @@
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
-                <form action="{{ route('laporan.lengkap.store') }}" method="POST">
+                <form action="{{ route('laporan.lengkap.store') }}" method="POST" enctype="multipart/form-data">
                     @csrf
                     <!-- Hidden field for the current date -->
                     <input type="hidden" name="tanggal" value="{{ now()->toDateString() }}">
@@ -49,6 +52,12 @@
                         <label for="isi_laporan_lengkap" class="form-label">Isi Laporan</label>
                         <textarea name="isi_laporan" id="isi_laporan_lengkap" class="form-control auto-resize" required>{{ old('isi_laporan', $aktivitas && $aktivitas->laporanLengkap ? $aktivitas->laporanLengkap->isi_laporan : '') }}</textarea>
                     </div>
+                    
+                    <div class="form-group mb-3">
+                        <label for="dokumen" class="form-label">Unggah Dokumen (Opsional)</label>
+                        <input type="file" name="dokumen" id="dokumen" class="form-control">
+                    </div>
+
                     <div class="text-center">
                         <button type="submit" class="btn btn-primary">Simpan</button>
                     </div>
