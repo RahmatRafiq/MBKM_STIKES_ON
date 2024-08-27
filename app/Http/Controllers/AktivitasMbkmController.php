@@ -180,6 +180,7 @@ class AktivitasMbkmController extends Controller
             'tanggal' => 'required|date',
             'isi_laporan' => 'required|string',
             'kehadiran' => 'required|string',
+            'dokumen' => 'nullable|file|mimes:pdf,doc,docx,image/*', // Validasi dokumen
         ]);
 
         $user = Auth::user();
@@ -199,6 +200,12 @@ class AktivitasMbkmController extends Controller
                 'kehadiran' => $request->kehadiran,
             ]
         );
+
+        // Simpan dokumen jika ada
+        if ($request->hasFile('dokumen')) {
+            $laporanHarian->addMedia($request->file('dokumen'))
+                ->toMediaCollection('laporan-harian', 'laporan-harian');
+        }
 
         return back()->with('success', 'Laporan harian berhasil disimpan.');
     }
