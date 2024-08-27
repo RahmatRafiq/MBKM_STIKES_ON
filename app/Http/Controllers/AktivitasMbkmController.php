@@ -287,6 +287,7 @@ class AktivitasMbkmController extends Controller
             $laporanHarian->status = 'validasi';
         } elseif ($request->action == 'revisi') {
             $laporanHarian->status = 'revisi';
+            $laporanHarian->feedback = $request->feedback; // Menyimpan feedback
         }
 
         $laporanHarian->save();
@@ -310,6 +311,7 @@ class AktivitasMbkmController extends Controller
             $laporanMingguan->status = 'validasi';
         } elseif ($request->action == 'revisi') {
             $laporanMingguan->status = 'revisi';
+            $laporanMingguan->feedback = $request->feedback; // Menyimpan feedback
         }
 
         $laporanMingguan->save();
@@ -333,6 +335,7 @@ class AktivitasMbkmController extends Controller
             $laporanLengkap->status = 'validasi';
         } elseif ($request->action == 'revisi') {
             $laporanLengkap->status = 'revisi';
+            $laporanLengkap->feedback = $request->feedback; // Menyimpan feedback
         }
 
         $laporanLengkap->save();
