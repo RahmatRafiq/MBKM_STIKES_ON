@@ -346,7 +346,8 @@ class AktivitasMbkmController extends Controller
 
     public function validateLaporanHarian(Request $request, $id)
     {
-        $laporanHarian = LaporanHarian::where('id', $id)
+        $laporanHarian = LaporanHarian::with('media') // Mengambil juga media terkait
+            ->where('id', $id)
             ->whereHas('peserta.registrationPlacement', function ($query) {
                 $query->where('batch_id', $this->activeBatch->id);
             })
@@ -365,7 +366,8 @@ class AktivitasMbkmController extends Controller
 
         $laporanHarian->save();
 
-        return response()->json(['success' => 'Laporan harian berhasil diperbarui.']);
+        // Return view with laporan harian data including media
+        return view('applications.mbkm.laporan.partial-validasi.validate_laporan_harian', compact('laporanHarian'));
     }
 
     public function validateLaporanMingguan(Request $request, $id)
