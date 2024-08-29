@@ -207,12 +207,17 @@ class AktivitasMbkmController extends Controller
     }
     public function uploadLaporanHarian(Request $request)
     {
+        \Log::info('uploadLaporanHarian method called'); // Log untuk memastikan method ini dipanggil
+
+        // Validasi request
         $request->validate([
-            'dokumen.*' => 'required|file|mimes:jpeg,jpg,png,bmp,gif,svg|max:2048', // Pastikan untuk memvalidasi sebagai array
+            'dokumen.*' => 'required|file|mimes:jpeg,jpg,png,bmp,gif,svg|max:2048',
             'tanggal' => 'required|date',
         ]);
 
         $user = Auth::user();
+
+        \Log::info('Request data:', $request->all()); // Log semua data yang diterima
 
         // Mencari atau membuat laporan harian
         $laporanHarian = LaporanHarian::updateOrCreate(
@@ -227,15 +232,35 @@ class AktivitasMbkmController extends Controller
             ]
         );
 
+        \Log::info('Laporan Harian ID:', [$laporanHarian->id]); // Log ID dari laporan harian yang dibuat
+
         // Menyimpan dokumen jika ada
         if ($request->hasFile('dokumen')) {
             foreach ($request->file('dokumen') as $file) {
+                \Log::info('Menyimpan file:', [$file->getClientOriginalName()]); // Log nama file
                 $laporanHarian->addMedia($file)
                     ->toMediaCollection('laporan-harian', 'laporan-harian');
             }
+        } else {
+            \Log::warning('Tidak ada file yang diunggah');
         }
 
+        // Mengembalikan respons sukses
         return response()->json(['message' => 'Dokumen berhasil diupload'], 200);
+    }
+    public function deleteDokumen(Request $request)
+    {
+        // Temukan laporan harian berdasarkan ID media
+        $laporanHarian = LaporanHarian::whereHas('media', function ($query) use ($request) {
+            $query->where('id', $request->id);
+        })->first();
+
+        if ($laporanHarian) {
+            $laporanHarian->deleteMedia($request->id); // Menghapus media menggunakan Spatie
+            return response()->json(['success' => 'File berhasil dihapus'], 200);
+        } else {
+            return response()->json(['error' => 'File tidak ditemukan'], 404);
+        }
     }
 
     public function storeLaporanMingguan(Request $request)
