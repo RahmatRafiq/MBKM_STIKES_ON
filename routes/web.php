@@ -39,6 +39,7 @@ Route::middleware('auth')->group(function () {
         Route::get('/laporan-harian', [\App\Http\Controllers\AktivitasMbkmController::class, 'createLaporanHarian'])->name('laporan.harian');
         Route::get('/laporan-harian/create', [\App\Http\Controllers\AktivitasMbkmController::class, 'createLaporanHarian'])->name('laporan.harian.create');
         Route::post('/laporan-harian/store', [\App\Http\Controllers\AktivitasMbkmController::class, 'storeLaporanHarian'])->name('laporan.harian.store');
+        Route::post('/laporan-harian/upload-dokumen', [\App\Http\Controllers\AktivitasMbkmController::class, 'uploadLaporanHarian'])->name('laporan.harian.uploadDokumen');
 
         Route::get('/laporan-mingguan/create', [\App\Http\Controllers\AktivitasMbkmController::class, 'createLaporanMingguan'])->name('laporan.mingguan.create');
         Route::post('/laporan-mingguan/store', [\App\Http\Controllers\AktivitasMbkmController::class, 'storeLaporanMingguan'])->name('laporan.mingguan.store');
