@@ -34,103 +34,102 @@
                                     class="badge bg-{{ $laporan->status == 'pending' ? 'warning' : ($laporan->status == 'validasi' ? 'success' : 'danger') }}">
                                     {{ ucfirst($laporan->status) }}
                                 </span>
-                                @endif
-                                <h5>Hari {{ $date->format('l') }}</h5>
-                                <p>{{ $formattedDate }}</p>
                             </div>
-                            <div class="card-body">
-                                @if ($laporan)
-                                <p>{{ $laporan->isi_laporan }}</p>
-                                @if ($laporan->status == 'revisi')
-                                <div class="d-flex justify-content-center">
-                                    <button class="btn btn-info" data-bs-toggle="modal"
-                                        data-bs-target="#modalForm_{{ $date->format('d') }}">Submit Ulang</button>
-                                </div>
-                                @endif
-                                @else
-                                @if ($date->lte($currentDate))
-                                <div class="d-flex justify-content-center">
-                                    <button class="btn btn-primary" data-bs-toggle="modal"
-                                        data-bs-target="#modalForm_{{ $date->format('d') }}">Isi Laporan</button>
-                                </div>
-                                @else
-                                <div class="text-center">
-                                    <p class="text-muted">Kamu Belum Bisa Mengisi Laporannya</p>
-                                </div>
-                                @endif
-                                @endif
+                            @endif
+                            <h5>Hari {{ $date->format('l') }}</h5>
+                            <p>{{ $formattedDate }}</p>
+                        </div>
+                        <div class="card-body">
+                            @if ($laporan)
+                            <p>{{ $laporan->isi_laporan }}</p>
+                            @if ($laporan->status == 'revisi')
+                            <div class="d-flex justify-content-center">
+                                <button class="btn btn-info" data-bs-toggle="modal"
+                                    data-bs-target="#modalForm_{{ $date->format('d') }}">Submit Ulang</button>
                             </div>
+                            @endif
+                            @else
+                            @if ($date->lte($currentDate))
+                            <div class="d-flex justify-content-center">
+                                <button class="btn btn-primary" data-bs-toggle="modal"
+                                    data-bs-target="#modalForm_{{ $date->format('d') }}">Isi Laporan</button>
+                            </div>
+                            @else
+                            <div class="text-center">
+                                <p class="text-muted">Kamu Belum Bisa Mengisi Laporannya</p>
+                            </div>
+                            @endif
+                            @endif
                         </div>
                     </div>
-
-                    <!-- Modal untuk Isi Laporan -->
-                    <div class="modal fade" id="modalForm_{{ $date->format('d') }}" tabindex="-1"
-                        aria-labelledby="modalLabel_{{ $date->format('d') }}" aria-hidden="true">
-                        <div class="modal-dialog">
-                            <div class="modal-content">
-                                <div class="modal-header">
-                                    <h5 class="modal-title" id="modalLabel_{{ $date->format('d') }}">Isi Laporan Hari {{
-                                        $date->format('l') }}</h5>
-                                    <button type="button" class="btn-close" data-bs-dismiss="modal"
-                                        aria-label="Close"></button>
-                                </div>
-                                <div class="modal-body">
-                                    <form action="{{ route('laporan.harian.store') }}" method="POST"
-                                        enctype="multipart/form-data">
-                                        @csrf
-                                        <div class="mb-3">
-                                            <label for="tanggal_{{ $date->format('d') }}"
-                                                class="form-label">Tanggal</label>
-                                            <input type="date" class="form-control"
-                                                id="tanggal_{{ $date->format('d') }}" name="tanggal"
-                                                value="{{ $formattedDate }}" required readonly>
-                                        </div>
-                                        <div class="mb-3">
-                                            <label for="kehadiran_{{ $date->format('d') }}"
-                                                class="form-label">Kehadiran</label>
-                                            <select class="form-select kehadiran"
-                                                id="kehadiran_{{ $date->format('d') }}" name="kehadiran" required>
-                                                <option value="hadir">Hadir</option>
-                                                <option value="libur nasional">Libur Nasional</option>
-                                                <option value="sakit">Sakit</option>
-                                                <option value="cuti">Cuti/Keperluan pribadi</option>
-                                                <option value="tidak ada operasional">Tidak ada operasional</option>
-                                                <option value="bencana">Bencana alam/Force majeure</option>
-                                            </select>
-                                        </div>
-                                        <div class="mb-3 isi-laporan-container">
-                                            <label for="isi_laporan_{{ $date->format('d') }}" class="form-label">Isi
-                                                Laporan</label>
-                                            <textarea class="form-control auto-resize"
-                                                id="isi_laporan_{{ $date->format('d') }}" name="isi_laporan"
-                                                required>{{ $laporan ? $laporan->isi_laporan : '' }}</textarea>
-                                        </div>
-                                        <div class="mb-3">
-                                            <label for="laporan_foto_{{ $date->format('d') }}" class="form-label">Upload
-                                                Foto</label>
-                                            <div class="dropzone my-dropzone"></div>
-                                        </div>
-                                        <button type="submit" class="btn btn-primary">Simpan</button>
-                                    </form>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    @endforeach
                 </div>
+
+                <!-- Modal untuk Isi Laporan -->
+                <div class="modal fade" id="modalForm_{{ $date->format('d') }}" tabindex="-1"
+                    aria-labelledby="modalLabel_{{ $date->format('d') }}" aria-hidden="true">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="modalLabel_{{ $date->format('d') }}">Isi Laporan Hari {{
+                                    $date->format('l') }}</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                    aria-label="Close"></button>
+                            </div>
+                            <div class="modal-body">
+                                <form action="{{ route('laporan.harian.store') }}" method="POST"
+                                    enctype="multipart/form-data">
+                                    @csrf
+                                    <div class="mb-3">
+                                        <label for="tanggal_{{ $date->format('d') }}" class="form-label">Tanggal</label>
+                                        <input type="date" class="form-control" id="tanggal_{{ $date->format('d') }}"
+                                            name="tanggal" value="{{ $formattedDate }}" required readonly>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="kehadiran_{{ $date->format('d') }}"
+                                            class="form-label">Kehadiran</label>
+                                        <select class="form-select kehadiran" id="kehadiran_{{ $date->format('d') }}"
+                                            name="kehadiran" required>
+                                            <option value="hadir">Hadir</option>
+                                            <option value="libur nasional">Libur Nasional</option>
+                                            <option value="sakit">Sakit</option>
+                                            <option value="cuti">Cuti/Keperluan pribadi</option>
+                                            <option value="tidak ada operasional">Tidak ada operasional</option>
+                                            <option value="bencana">Bencana alam/Force majeure</option>
+                                        </select>
+                                    </div>
+                                    <div class="mb-3 isi-laporan-container">
+                                        <label for="isi_laporan_{{ $date->format('d') }}" class="form-label">Isi
+                                            Laporan</label>
+                                        <textarea class="form-control auto-resize"
+                                            id="isi_laporan_{{ $date->format('d') }}" name="isi_laporan"
+                                            required>{{ $laporan ? $laporan->isi_laporan : '' }}</textarea>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="laporan_foto_{{ $date->format('d') }}" class="form-label">Upload
+                                            Foto</label>
+                                        <div class="dropzone my-dropzone"></div>
+                                    </div>
+                                    <button type="submit" class="btn btn-primary">Simpan</button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                @endforeach
             </div>
         </div>
     </div>
-    @endsection
+</div>
+@endsection
 
-    @push('head')
-    @vite(['resources/js/dropzoner.js'])
-    <script src="{{ asset('assets/vendor/toastify/toastify.js') }}"></script>
-    @endpush
+@push('head')
+@vite(['resources/js/dropzoner.js'])
+<script src="{{ asset('assets/vendor/toastify/toastify.js') }}"></script>
+@endpush
 
-    @push('javascript')
-    <script type="module">
-        document.addEventListener('DOMContentLoaded', function() {
+@push('javascript')
+<script type="module">
+    document.addEventListener('DOMContentLoaded', function() {
         document.querySelectorAll('.my-dropzone').forEach(function(dropzoneElement) {
             const csrf = "{{ csrf_token() }}";
 
@@ -175,6 +174,7 @@
             });
         });
 
+
         // Auto-resize textarea
         document.querySelectorAll('.auto-resize').forEach(function(textarea) {
             textarea.style.overflow = 'hidden';
@@ -201,5 +201,5 @@
             });
         });
     });
-    </script>
-    @endpush
+</script>
+@endpush
