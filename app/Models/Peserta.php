@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Models\Questionnaire\Response;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Spatie\MediaLibrary\HasMedia;
@@ -66,6 +67,10 @@ class Peserta extends Model implements HasMedia
         }
 
         return false;
+    }
+    public function responses()
+    {
+        return $this->hasMany(Response::class, 'peserta_id');
     }
 
 }
