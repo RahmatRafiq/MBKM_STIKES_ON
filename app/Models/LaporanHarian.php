@@ -4,11 +4,13 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Spatie\MediaLibrary\HasMedia;
+use Spatie\MediaLibrary\InteractsWithMedia;
 use Illuminate\Support\Facades\DB;
 
-class LaporanHarian extends Model
+class LaporanHarian extends Model implements HasMedia
 {
-    use HasFactory;
+    use HasFactory, InteractsWithMedia;
 
     protected $table = 'laporan_harian';
     protected $fillable = [
@@ -84,31 +86,4 @@ class LaporanHarian extends Model
 
         return $query->get();
     }
-    // public static function getByUser($user, $pesertaId = null)
-    // {
-    //     $query = self::with(['peserta', 'mitra', 'dospem'])
-    //         ->where(function ($query) use ($user) {
-    //             $query->whereHas('mitra', function ($query) use ($user) {
-    //                 $query->where('user_id', $user->id);
-    //             })->orWhereHas('dospem', function ($query) use ($user) {
-    //                 $query->where('user_id', $user->id);
-    //             });
-    //         });
-
-    //     if ($pesertaId) {
-    //         $query->where('peserta_id', $pesertaId);
-    //     }
-
-    //     $query->orderBy(
-    //         DB::raw('CASE
-    //             WHEN laporan_harian.status = "pending" THEN 1
-    //             WHEN laporan_harian.status = "revisi" THEN 2
-    //             WHEN laporan_harian.status = "validasi" THEN 3
-    //             ELSE 4 END'),
-    //         'asc'
-    //     );
-    //     $query->orderBy('updated_at', 'desc');
-
-    //     return $query->get();
-    // }
 }
