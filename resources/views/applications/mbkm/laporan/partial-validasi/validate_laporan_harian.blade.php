@@ -18,14 +18,14 @@
                         <tr id="laporan-harian-{{ $laporan->id }}">
                             <td>{{ $laporan->tanggal }}</td>
                             <td>{{ $laporan->isi_laporan }}</td>
-                         <td>
-    @foreach ($laporan->getMedia('laporan-harian') as $media)
-    <a href="{{ $media->getUrl() }}" target="_blank">
-        <img src="{{ $media->getUrl() }}" alt="{{ $media->name }}"
-            class="img-thumbnail" style="width: 100px; height: auto;">
-    </a>
-    @endforeach
-</td>
+                            <td>
+                                @foreach ($laporan->getMedia('laporan-harian') as $media)
+                                <a href="{{ $media->getUrl() }}" target="_blank">
+                                    <img src="{{ $media->getUrl() }}" alt="{{ $media->name }}" class="img-thumbnail"
+                                        style="width: 100px; height: auto;">
+                                </a>
+                                @endforeach
+                            </td>
 
                             <td class="status">
                                 <span
