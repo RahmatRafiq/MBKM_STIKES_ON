@@ -24,6 +24,7 @@
                 @php
                 $formattedDate = $date->format('Y-m-d');
                 $laporan = $laporanHarian->get($formattedDate);
+                $mediaFiles = $laporan ? $laporan->getMedia('laporan-harian') : collect();
                 @endphp
                 <div class="col-12 mb-3">
                     <div class="card">
@@ -107,7 +108,20 @@
                                     <div class="mb-3">
                                         <label for="laporan_foto_{{ $date->format('d') }}" class="form-label">Upload
                                             Foto</label>
-                                        <div class="dropzone my-dropzone"></div>
+                                        <div class="dropzone my-dropzone" data-url-destroy="{{ route('laporan.harian.deleteDokumen') }}">
+                                            <!-- Initialize Dropzone with files -->
+                                            @foreach($mediaFiles as $file)
+                                            <div class="dz-preview dz-file-preview">
+                                                <div class="dz-image">
+                                                    <img src="{{ $file->getFullUrl() }}" alt="{{ $file->file_name }}">
+                                                </div>
+                                                <div class="dz-details">
+                                                    <div class="dz-filename"><span>{{ $file->file_name }}</span></div>
+                                                </div>
+                                                <div class="dz-remove" data-dz-remove>Remove file</div>
+                                            </div>
+                                            @endforeach
+                                        </div>
                                     </div>
                                     <button type="submit" class="btn btn-primary">Simpan</button>
                                 </form>
@@ -132,7 +146,7 @@
     document.addEventListener('DOMContentLoaded', function() {
         document.querySelectorAll('.my-dropzone').forEach(function(dropzoneElement) {
             const csrf = "{{ csrf_token() }}";
-
+            const urlDestroy = dropzoneElement.getAttribute('data-url-destroy');
             const dropzoneInstance = Dropzoner(
                 dropzoneElement,
                 'dokumen[]', // Mengirimkan file sebagai array
@@ -172,32 +186,27 @@
                     backgroundColor: "green",
                 }).showToast();
             });
-        });
 
+            dropzoneInstance.on("removedfile", function(file) {
+                $.ajax({
+                    type: 'DELETE',
+                    url: urlDestroy,
+                    headers: {
+                        'X-CSRF-TOKEN': csrf
+                    },
+                    data: {
+                        filename: file.upload.filename // Nama file yang akan dihapus
+                    },
+                    success: function(response) {
+                        console.log(response.message);
+                    },
+                    error: function(e) {
+                        console.log(e.responseJSON.message);
+                    }
+                });
 
-        // Auto-resize textarea
-        document.querySelectorAll('.auto-resize').forEach(function(textarea) {
-            textarea.style.overflow = 'hidden';
-            textarea.style.height = 'auto';
-            textarea.style.height = textarea.scrollHeight + 'px';
-
-            textarea.addEventListener('input', function() {
-                this.style.height = 'auto';
-                this.style.height = this.scrollHeight + 'px';
-            });
-        });
-
-        // Mengatur perubahan pilihan Kehadiran
-        document.querySelectorAll('.kehadiran').forEach(function(selectElement) {
-            selectElement.addEventListener('change', function() {
-                const isiLaporanContainer = this.closest('.modal-body').querySelector('.isi-laporan-container');
-                if (['libur nasional', 'sakit', 'cuti', 'tidak ada operasional', 'bencana'].includes(this.value)) {
-                    isiLaporanContainer.querySelector('label').innerText = 'Keterangan';
-                    isiLaporanContainer.querySelector('textarea').setAttribute('placeholder', 'Isi keterangan alasan tidak hadir');
-                } else {
-                    isiLaporanContainer.querySelector('label').innerText = 'Isi Laporan';
-                    isiLaporanContainer.querySelector('textarea').removeAttribute('placeholder');
-                }
+                let _ref;
+                return (_ref = file.previewElement) != null ? _ref.parentNode.removeChild(file.previewElement) : void 0;
             });
         });
     });
