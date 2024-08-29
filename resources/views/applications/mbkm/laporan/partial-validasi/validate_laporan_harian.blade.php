@@ -7,6 +7,7 @@
                         <tr>
                             <th>Tanggal</th>
                             <th>Isi Laporan</th>
+                            <th>Dokumen</th> <!-- Tambahkan kolom untuk dokumen -->
                             <th>Status</th>
                             <th>Feedback</th>
                             <th>Aksi</th>
@@ -17,6 +18,15 @@
                         <tr id="laporan-harian-{{ $laporan->id }}">
                             <td>{{ $laporan->tanggal }}</td>
                             <td>{{ $laporan->isi_laporan }}</td>
+                         <td>
+    @foreach ($laporan->getMedia('laporan-harian') as $media)
+    <a href="{{ $media->getUrl() }}" target="_blank">
+        <img src="{{ $media->getUrl() }}" alt="{{ $media->name }}"
+            class="img-thumbnail" style="width: 100px; height: auto;">
+    </a>
+    @endforeach
+</td>
+
                             <td class="status">
                                 <span
                                     class="badge badge-{{ $laporan->status == 'pending' ? 'accepted_offer' : ($laporan->status == 'validasi' ? 'registered' : 'rejected') }}">
