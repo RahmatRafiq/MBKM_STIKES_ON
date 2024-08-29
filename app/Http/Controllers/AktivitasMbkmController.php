@@ -256,18 +256,15 @@ class AktivitasMbkmController extends Controller
 
     public function deleteDokumen(Request $request)
     {
-        $user = Auth::user();
-
-        // Temukan laporan harian berdasarkan nama file dan user ID
-        $laporanHarian = LaporanHarian::where('peserta_id', $user->peserta->id)
-            ->whereHas('media', function ($query) use ($request) {
-                $query->where('file_name', $request->filename);
-            })->first();
+        // Temukan laporan harian berdasarkan ID media
+        $laporanHarian = LaporanHarian::whereHas('media', function ($query) use ($request) {
+            $query->where('id', $request->id);
+        })->first();
 
         if ($laporanHarian) {
             // Hapus media dari Spatie Media Library
             $mediaItem = $laporanHarian->getMedia('laporan-harian')
-                ->where('file_name', $request->filename)
+                ->where('id', $request->id)
                 ->first();
 
             if ($mediaItem) {

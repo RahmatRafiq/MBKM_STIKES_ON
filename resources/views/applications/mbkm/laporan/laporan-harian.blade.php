@@ -112,7 +112,7 @@
                                             data-url-destroy="{{ route('laporan.harian.deleteDokumen') }}">
                                             <!-- Menampilkan file yang sudah diunggah sebelumnya -->
                                             @foreach($mediaFiles as $file)
-                                            <div class="dz-preview dz-file-preview">
+                                            <div class="dz-preview dz-file-preview" data-id="{{ $file->id }}">
                                                 <div class="dz-image">
                                                     <img src="{{ $file->getFullUrl() }}" alt="{{ $file->file_name }}">
                                                 </div>
@@ -161,6 +161,43 @@
                 }
             );
 
+            // Untuk file yang sudah ada
+            dropzoneElement.querySelectorAll('.dz-remove').forEach(function(removeButton) {
+                removeButton.addEventListener('click', function(e) {
+                    e.preventDefault();
+
+                    const fileElement = removeButton.closest('.dz-preview');
+                    const fileId = fileElement.getAttribute('data-id');
+
+                    $.ajax({
+                        type: 'DELETE',
+                        url: urlDestroy,
+                        headers: {
+                            'X-CSRF-TOKEN': csrf
+                        },
+                        data: {
+                            id: fileId, // Menggunakan ID file untuk penghapusan
+                        },
+                        success: function(response) {
+                            console.log(response.message);
+                            Toastify({
+                                text: "Dokumen berhasil dihapus",
+                                duration: 3000,
+                                close: true,
+                                gravity: "top",
+                                position: "right",
+                                backgroundColor: "red",
+                            }).showToast();
+
+                            fileElement.remove(); // Menghapus elemen file dari DOM
+                        },
+                        error: function(e) {
+                            console.log(e.responseJSON.message);
+                        }
+                    });
+                });
+            });
+
             dropzoneInstance.on("sending", function(file, xhr, formData) {
                 const dateInput = dropzoneElement.closest('.modal-body').querySelector('input[name="tanggal"]');
                 formData.append('dokumen[]', file); // Pastikan file ditambahkan ke FormData
@@ -188,6 +225,7 @@
                 }).showToast();
             });
 
+            // Untuk file yang baru diupload
             dropzoneInstance.on("removedfile", function(file) {
                 $.ajax({
                     type: 'DELETE',
@@ -196,10 +234,18 @@
                         'X-CSRF-TOKEN': csrf
                     },
                     data: {
-                        filename: file.upload.filename // Nama file yang akan dihapus
+                        filename: file.upload.filename, // Nama file yang akan dihapus
                     },
                     success: function(response) {
                         console.log(response.message);
+                        Toastify({
+                            text: "Dokumen berhasil dihapus",
+                            duration: 3000,
+                            close: true,
+                            gravity: "top",
+                            position: "right",
+                            backgroundColor: "red",
+                        }).showToast();
                     },
                     error: function(e) {
                         console.log(e.responseJSON.message);
@@ -210,7 +256,32 @@
                 return (_ref = file.previewElement) != null ? _ref.parentNode.removeChild(file.previewElement) : void 0;
             });
         });
+
+        // Auto-resize textarea
+        document.querySelectorAll('.auto-resize').forEach(function(textarea) {
+            textarea.style.overflow = 'hidden';
+            textarea.style.height = 'auto';
+            textarea.style.height = textarea.scrollHeight + 'px';
+
+            textarea.addEventListener('input', function() {
+                this.style.height = 'auto';
+                this.style.height = this.scrollHeight + 'px';
+            });
+        });
+
+        // Mengatur perubahan pilihan Kehadiran
+        document.querySelectorAll('.kehadiran').forEach(function(selectElement) {
+            selectElement.addEventListener('change', function() {
+                const isiLaporanContainer = this.closest('.modal-body').querySelector('.isi-laporan-container');
+                if (['libur nasional', 'sakit', 'cuti', 'tidak ada operasional', 'bencana'].includes(this.value)) {
+                    isiLaporanContainer.querySelector('label').innerText = 'Keterangan';
+                    isiLaporanContainer.querySelector('textarea').setAttribute('placeholder', 'Isi keterangan alasan tidak hadir');
+                } else {
+                    isiLaporanContainer.querySelector('label').innerText = 'Isi Laporan';
+                    isiLaporanContainer.querySelector('textarea').removeAttribute('placeholder');
+                }
+            });
+        });
     });
 </script>
-
 @endpush
