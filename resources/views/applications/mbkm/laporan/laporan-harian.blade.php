@@ -108,8 +108,9 @@
                                     <div class="mb-3">
                                         <label for="laporan_foto_{{ $date->format('d') }}" class="form-label">Upload
                                             Foto</label>
-                                        <div class="dropzone my-dropzone" data-url-destroy="{{ route('laporan.harian.deleteDokumen') }}">
-                                            <!-- Initialize Dropzone with files -->
+                                        <div class="dropzone my-dropzone"
+                                            data-url-destroy="{{ route('laporan.harian.deleteDokumen') }}">
+                                            <!-- Menampilkan file yang sudah diunggah sebelumnya -->
                                             @foreach($mediaFiles as $file)
                                             <div class="dz-preview dz-file-preview">
                                                 <div class="dz-image">
@@ -211,4 +212,5 @@
         });
     });
 </script>
+
 @endpush
