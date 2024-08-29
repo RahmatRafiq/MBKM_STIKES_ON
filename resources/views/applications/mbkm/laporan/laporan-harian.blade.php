@@ -43,13 +43,13 @@
                         <div class="card-body">
                             @if ($laporan)
                             <p>{{ $laporan->isi_laporan }}</p>
-                            <div class="row">
+                            {{-- <div class="row">
                                 @foreach ($thumbnails as $thumbnail)
                                 <div class="col-md-4 mb-3">
                                     <img src="{{ $thumbnail->getUrl('thumb') }}" class="img-fluid" alt="Thumbnail">
                                 </div>
                                 @endforeach
-                            </div>
+                            </div> --}}
                             @if ($laporan->status == 'revisi')
                             <div class="d-flex justify-content-center">
                                 <button class="btn btn-info" data-bs-toggle="modal"
@@ -138,55 +138,73 @@
 @push('javascript')
 <script type="module">
     document.addEventListener('DOMContentLoaded', function() {
-        // Menginisialisasi Dropzone untuk setiap elemen dengan kelas .my-dropzone
-        document.querySelectorAll('.my-dropzone').forEach(function(dropzoneElement) {
-            const key = 'dokumen';
-            const files = [];
-            const urlStore = "{{ route('laporan.harian.store') }}"; // Pastikan rute ini benar
-            const csrf = "{{ csrf_token() }}";
-            const acceptedFiles = 'image/*';
-            const maxFiles = 2;
-            const kind = 'image';
+    document.querySelectorAll('.my-dropzone').forEach(function(dropzoneElement) {
+        const csrf = "{{ csrf_token() }}";
 
-            Dropzoner(
-                dropzoneElement,
-                key,
-                {
-                    urlStore,
-                    csrf,
-                    acceptedFiles,
-                    files,
-                    maxFiles,
-                    kind,
-                }
-            );
+        const dropzoneInstance = Dropzoner(
+            dropzoneElement,
+            'dokumen[]', // Mengirimkan file sebagai array
+            {
+                urlStore: "{{ route('laporan.harian.uploadDokumen') }}",
+                csrf,
+                acceptedFiles: 'image/*',
+                maxFiles: 5, // Atur jumlah maksimal file yang diizinkan
+                kind: 'image',
+                autoProcessQueue: false // Mencegah upload otomatis
+            }
+        );
+
+        dropzoneInstance.on("sending", function(file, xhr, formData) {
+            const dateInput = dropzoneElement.closest('.modal-body').querySelector('input[name="tanggal"]');
+            formData.append('tanggal', dateInput.value);
         });
 
-        // JS untuk auto-resize textarea
-        document.querySelectorAll('.auto-resize').forEach(function(textarea) {
-            textarea.style.overflow = 'hidden';
-            textarea.style.height = 'auto';
-            textarea.style.height = textarea.scrollHeight + 'px';
-
-            textarea.addEventListener('input', function() {
-                this.style.height = 'auto';
-                this.style.height = this.scrollHeight + 'px';
-            });
+        dropzoneInstance.on("success", function(file, response) {
+            console.log("File uploaded successfully: ", response);
         });
 
-        // Mengatur perubahan pilihan Kehadiran
-        document.querySelectorAll('.kehadiran').forEach(function(selectElement) {
-            selectElement.addEventListener('change', function() {
-                const isiLaporanContainer = this.closest('.modal-body').querySelector('.isi-laporan-container');
-                if (['libur nasional', 'sakit', 'cuti', 'tidak ada operasional', 'bencana'].includes(this.value)) {
-                    isiLaporanContainer.querySelector('label').innerText = 'Keterangan';
-                    isiLaporanContainer.querySelector('textarea').setAttribute('placeholder', 'Isi keterangan alasan tidak hadir');
-                } else {
-                    isiLaporanContainer.querySelector('label').innerText = 'Isi Laporan';
-                    isiLaporanContainer.querySelector('textarea').removeAttribute('placeholder');
-                }
-            });
+        dropzoneInstance.on("error", function(file, errorMessage, xhr) {
+            dropzoneInstance.addFile(file);
+            console.error("Error saat upload: ", errorMessage);
+        });
+
+        dropzoneInstance.on("queuecomplete", function() {
+            Toastify({
+                text: "Dokumen berhasil diupload",
+                duration: 3000,
+                close: true,
+                gravity: "top",
+                position: "right",
+                backgroundColor: "green",
+            }).showToast();
         });
     });
+
+    // Auto-resize textarea
+    document.querySelectorAll('.auto-resize').forEach(function(textarea) {
+        textarea.style.overflow = 'hidden';
+        textarea.style.height = 'auto';
+        textarea.style.height = textarea.scrollHeight + 'px';
+
+        textarea.addEventListener('input', function() {
+            this.style.height = 'auto';
+            this.style.height = this.scrollHeight + 'px';
+        });
+    });
+
+    // Mengatur perubahan pilihan Kehadiran
+    document.querySelectorAll('.kehadiran').forEach(function(selectElement) {
+        selectElement.addEventListener('change', function() {
+            const isiLaporanContainer = this.closest('.modal-body').querySelector('.isi-laporan-container');
+            if (['libur nasional', 'sakit', 'cuti', 'tidak ada operasional', 'bencana'].includes(this.value)) {
+                isiLaporanContainer.querySelector('label').innerText = 'Keterangan';
+                isiLaporanContainer.querySelector('textarea').setAttribute('placeholder', 'Isi keterangan alasan tidak hadir');
+            } else {
+                isiLaporanContainer.querySelector('label').innerText = 'Isi Laporan';
+                isiLaporanContainer.querySelector('textarea').removeAttribute('placeholder');
+            }
+        });
+    });
+});
 </script>
 @endpush
