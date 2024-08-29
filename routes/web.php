@@ -55,9 +55,11 @@ Route::middleware('auth')->group(function () {
 
         Route::get('peserta/{ketua}/team/add', [\App\Http\Controllers\PesertaController::class, 'showAddTeamMemberForm'])->name('team.addMemberForm');
         Route::post('peserta/{ketua}/team/add', [\App\Http\Controllers\PesertaController::class, 'addTeamMember'])->name('team.addMember');
-        Route::delete('/team/member/{id}/remove', [\App\Http\Controllers\PesertaController::class, 'removeTeamMember'])->name('team.removeMember');        
-        
-        
+        Route::delete('/team/member/{id}/remove', [\App\Http\Controllers\PesertaController::class, 'removeTeamMember'])->name('team.removeMember');
+
+        Route::get('/questionnaire/{peserta_id}', [\App\Http\Controllers\QuestionnaireController::class, 'create'])->name('questionnaire.create');
+        Route::post('/questionnaire/{peserta_id}', [\App\Http\Controllers\QuestionnaireController::class, 'store'])->name('questionnaire.store');
+        Route::get('/thankyou', [\App\Http\Controllers\QuestionnaireController::class, 'thankyou'])->name('questionnaire.thankyou');
 
     });
 
@@ -98,13 +100,18 @@ Route::middleware('auth')->group(function () {
         Route::delete('mbkm/staff/peserta/{peserta}', [\App\Http\Controllers\PesertaController::class, 'destroy'])->name('peserta.destroy');
         Route::post('mbkm/staff/peserta/json', [\App\Http\Controllers\PesertaController::class, 'json'])->name('peserta.json');
 
-       
         Route::get('/staff/registrasi', [\App\Http\Controllers\RegistrasiController::class, 'index'])->name('staff.registrasiIndex');
         Route::put('/staff/registrasi/{id}', [\App\Http\Controllers\RegistrasiController::class, 'update'])->name('staff.updateRegistrasi');
         Route::put('/staff/registrasi/{id}/dospem', [\App\Http\Controllers\RegistrasiController::class, 'updateDospem'])->name('staff.updateDospem');
 
         Route::get('/staff/registrasi/{id}/documents', [\App\Http\Controllers\RegistrasiController::class, 'showDocuments'])->name('registrasi.documents');
 
+        Route::get('/questions', [\App\Http\Controllers\QuestionnaireController::class, 'index'])->name('questions.index');
+        Route::get('/questions/create', [\App\Http\Controllers\QuestionnaireController::class, 'createQuestion'])->name('questions.create');
+        Route::post('/questions', [\App\Http\Controllers\QuestionnaireController::class, 'storeQuestion'])->name('questions.store');
+        Route::get('/questions/{question}/edit', [\App\Http\Controllers\QuestionnaireController::class, 'editQuestion'])->name('questions.edit');
+        Route::put('/questions/{question}', [\App\Http\Controllers\QuestionnaireController::class, 'updateQuestion'])->name('questions.update');
+        Route::delete('/questions/{question}', [\App\Http\Controllers\QuestionnaireController::class, 'destroyQuestion'])->name('questions.destroy');
     });
 
     Route::middleware(['role:dosen|super admin'])->group(function () {
