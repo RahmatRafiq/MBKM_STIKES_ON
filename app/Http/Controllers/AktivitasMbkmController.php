@@ -176,14 +176,16 @@ class AktivitasMbkmController extends Controller
 
     public function storeLaporanHarian(Request $request)
     {
+        // Validasi form data
         $request->validate([
             'tanggal' => 'required|date',
             'isi_laporan' => 'required|string',
             'kehadiran' => 'required|string',
-            'dokumen' => 'nullable|file|mimes:jpeg,jpg,png,bmp,gif,svg|max:2048',
         ]);
 
         $user = Auth::user();
+
+        // Cek apakah laporan harian sudah ada
         $laporanHarian = LaporanHarian::updateOrCreate([
             'peserta_id' => $user->peserta->id,
             'mitra_id' => $user->peserta->registrationPlacement->lowongan->mitra_id,
@@ -202,6 +204,38 @@ class AktivitasMbkmController extends Controller
         }
 
         return back()->with('success', 'Laporan harian berhasil disimpan.');
+    }
+    public function uploadLaporanHarian(Request $request)
+    {
+        $request->validate([
+            'dokumen.*' => 'required|file|mimes:jpeg,jpg,png,bmp,gif,svg|max:2048', // Pastikan untuk memvalidasi sebagai array
+            'tanggal' => 'required|date',
+        ]);
+
+        $user = Auth::user();
+
+        // Mencari atau membuat laporan harian
+        $laporanHarian = LaporanHarian::updateOrCreate(
+            [
+                'peserta_id' => $user->peserta->id,
+                'mitra_id' => $user->peserta->registrationPlacement->lowongan->mitra_id,
+                'dospem_id' => $user->peserta->registrationPlacement->dospem_id,
+                'tanggal' => $request->tanggal,
+            ],
+            [
+                'status' => 'pending',
+            ]
+        );
+
+        // Menyimpan dokumen jika ada
+        if ($request->hasFile('dokumen')) {
+            foreach ($request->file('dokumen') as $file) {
+                $laporanHarian->addMedia($file)
+                    ->toMediaCollection('laporan-harian', 'laporan-harian');
+            }
+        }
+
+        return response()->json(['message' => 'Dokumen berhasil diupload'], 200);
     }
 
     public function storeLaporanMingguan(Request $request)
