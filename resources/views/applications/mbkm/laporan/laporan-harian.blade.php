@@ -111,7 +111,7 @@
                                         <div class="dropzone my-dropzone"
                                             data-url-destroy="{{ route('laporan.harian.deleteDokumen') }}">
                                             <!-- Menampilkan file yang sudah diunggah sebelumnya -->
-                                            @foreach($mediaFiles as $file)
+                                            @foreach($laporan->media as $file)
                                             <div class="dz-preview dz-file-preview" data-id="{{ $file->id }}">
                                                 <div class="dz-image">
                                                     <img src="{{ $file->getFullUrl() }}" alt="{{ $file->file_name }}">
@@ -122,6 +122,7 @@
                                                 <div class="dz-remove" data-dz-remove>Remove file</div>
                                             </div>
                                             @endforeach
+                                            
                                         </div>
                                     </div>
                                     <button type="submit" class="btn btn-primary">Simpan</button>
@@ -163,40 +164,40 @@
 
             // Untuk file yang sudah ada
             dropzoneElement.querySelectorAll('.dz-remove').forEach(function(removeButton) {
-                removeButton.addEventListener('click', function(e) {
-                    e.preventDefault();
+                    removeButton.addEventListener('click', function(e) {
+                        e.preventDefault();
 
-                    const fileElement = removeButton.closest('.dz-preview');
-                    const fileId = fileElement.getAttribute('data-id');
+                        const fileElement = removeButton.closest('.dz-preview');
+                        const fileId = fileElement.getAttribute('data-id');
 
-                    $.ajax({
-                        type: 'DELETE',
-                        url: urlDestroy,
-                        headers: {
-                            'X-CSRF-TOKEN': csrf
-                        },
-                        data: {
-                            id: fileId, // Menggunakan ID file untuk penghapusan
-                        },
-                        success: function(response) {
-                            console.log(response.message);
-                            Toastify({
-                                text: "Dokumen berhasil dihapus",
-                                duration: 3000,
-                                close: true,
-                                gravity: "top",
-                                position: "right",
-                                backgroundColor: "red",
-                            }).showToast();
+                        $.ajax({
+                            type: 'DELETE',
+                            url: urlDestroy, // URL untuk penghapusan
+                            headers: {
+                                'X-CSRF-TOKEN': csrf
+                            },
+                            data: {
+                                id: fileId // Menggunakan ID file untuk penghapusan
+                            },
+                            success: function(response) {
+                                console.log(response.message);
+                                Toastify({
+                                    text: "Dokumen berhasil dihapus",
+                                    duration: 3000,
+                                    close: true,
+                                    gravity: "top",
+                                    position: "right",
+                                    backgroundColor: "red",
+                                }).showToast();
 
-                            fileElement.remove(); // Menghapus elemen file dari DOM
-                        },
-                        error: function(e) {
-                            console.log(e.responseJSON.message);
-                        }
+                                fileElement.remove(); // Menghapus elemen file dari DOM
+                            },
+                            error: function(e) {
+                                console.log(e.responseJSON.message);
+                            }
+                        });
                     });
                 });
-            });
 
             dropzoneInstance.on("sending", function(file, xhr, formData) {
                 const dateInput = dropzoneElement.closest('.modal-body').querySelector('input[name="tanggal"]');
