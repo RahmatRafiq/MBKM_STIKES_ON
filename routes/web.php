@@ -73,6 +73,9 @@ Route::middleware('auth')->group(function () {
         Route::get('/laporan', [\App\Http\Controllers\AktivitasMbkmController::class, 'index'])->name('laporan.index');
         Route::post('/laporan-harian/validate/{id}', [\App\Http\Controllers\AktivitasMbkmController::class, 'validateLaporanHarian'])->name('laporan.harian.validate');
         Route::post('/laporan-mingguan/validate/{id}', [\App\Http\Controllers\AktivitasMbkmController::class, 'validateLaporanMingguan'])->name('laporan.mingguan.validate');
+
+        // Tambahkan rute untuk memuat media (gambar) laporan harian
+        Route::get('/laporan-harian/media/{id}', [\App\Http\Controllers\AktivitasMbkmController::class, 'getLaporanHarianMedia'])->name('laporan.harian.media');
     });
 
     Route::middleware(['role:staff|super admin|mitra'])->group(function () {
