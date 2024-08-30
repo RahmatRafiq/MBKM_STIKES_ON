@@ -111,7 +111,7 @@
                                         <div class="dropzone my-dropzone"
                                             data-url-destroy="{{ route('laporan.harian.deleteDokumen') }}">
                                             <!-- Menampilkan file yang sudah diunggah sebelumnya -->
-                                            @foreach($laporan->media as $file)
+                                            @foreach(optional($laporan)->media ?? [] as $file)
                                             <div class="dz-preview dz-file-preview" data-id="{{ $file->id }}">
                                                 <div class="dz-image">
                                                     <img src="{{ $file->getFullUrl() }}" alt="{{ $file->file_name }}">
@@ -122,7 +122,8 @@
                                                 <div class="dz-remove" data-dz-remove>Remove file</div>
                                             </div>
                                             @endforeach
-                                            
+
+
                                         </div>
                                     </div>
                                     <button type="submit" class="btn btn-primary">Simpan</button>

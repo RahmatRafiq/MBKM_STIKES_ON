@@ -262,24 +262,15 @@ class AktivitasMbkmController extends Controller
 
     public function deleteDokumen(Request $request)
     {
-        // Temukan laporan harian berdasarkan ID media
-        $laporanHarian = LaporanHarian::whereHas('media', function ($query) use ($request) {
-            $query->where('id', $request->id);
-        })->first();
+        $fileId = $request->input('id');
+        $media = \Spatie\MediaLibrary\MediaCollections\Models\Media::find($fileId);
 
-        if ($laporanHarian) {
-            // Hapus media dari Spatie Media Library
-            $mediaItem = $laporanHarian->getMedia('laporan-harian')
-                ->where('id', $request->id)
-                ->first();
-
-            if ($mediaItem) {
-                $mediaItem->delete(); // Menghapus media dari storage dan database
-                return response()->json(['message' => 'File berhasil dihapus'], 200);
-            }
+        if ($media) {
+            MediaLibrary::destroy($media->model, $media->collection_name); // Gunakan model dan nama koleksi dari media
+            return response()->json(['message' => 'Dokumen berhasil dihapus'], 200);
         }
 
-        return response()->json(['error' => 'File tidak ditemukan'], 404);
+        return response()->json(['message' => 'Dokumen tidak ditemukan'], 404);
     }
 
     public function storeLaporanMingguan(Request $request)
