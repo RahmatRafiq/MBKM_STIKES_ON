@@ -7,26 +7,25 @@
                         <tr>
                             <th>Tanggal</th>
                             <th>Isi Laporan</th>
-                            <th>Dokumen</th> <!-- Tambahkan kolom untuk dokumen -->
+                            <th>Foto</th>
                             <th>Status</th>
                             <th>Feedback</th>
                             <th>Aksi</th>
                         </tr>
                     </thead>
                     <tbody id="laporan-harian-tbody">
-                        @foreach ($laporanHarian as $laporan)
+                        @foreach($laporanHarian as $laporan)
                         <tr id="laporan-harian-{{ $laporan->id }}">
                             <td>{{ $laporan->tanggal }}</td>
                             <td>{{ $laporan->isi_laporan }}</td>
                             <td>
-                                @foreach ($laporan->getMedia('laporan-harian') as $media)
-                                <a href="{{ $media->getUrl() }}" target="_blank">
-                                    <img src="{{ $media->getUrl() }}" alt="{{ $media->name }}" class="img-thumbnail"
-                                        style="width: 100px; height: auto;">
+                                @foreach($laporan->media as $media)
+                                <a href="{{ $media->getFullUrl() }}" target="_blank">
+                                    <img src="{{ $media->getFullUrl() }}" alt="Foto Laporan" class="img-thumbnail"
+                                        style="max-width: 100px" loading="lazy">
                                 </a>
                                 @endforeach
                             </td>
-
                             <td class="status">
                                 <span
                                     class="badge badge-{{ $laporan->status == 'pending' ? 'accepted_offer' : ($laporan->status == 'validasi' ? 'registered' : 'rejected') }}">
@@ -75,8 +74,7 @@
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-dismiss="modal">Batal</button>
                 <button type="button" class="btn btn-primary submit-feedback" data-id="{{ $laporan->id }}"
-                    data-type="harian" data-action="revisi">Kirim Feedback
-                </button>
+                    data-type="harian" data-action="revisi">Kirim Feedback</button>
             </div>
         </div>
     </div>
