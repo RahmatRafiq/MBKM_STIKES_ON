@@ -150,9 +150,9 @@
             const urlDestroy = dropzoneElement.getAttribute('data-url-destroy');
             const dropzoneInstance = Dropzoner(
                 dropzoneElement,
-                'dokumen[]', // Mengirimkan file sebagai array
+                'dokumen', // Mengirimkan file sebagai array
                 {
-                    urlStore: "{{ route('laporan.harian.uploadDokumen') }}",
+                    urlStore: "{{ route('storage.store') }}",
                     csrf,
                     acceptedFiles: 'image/*',
                     maxFiles: 5,
