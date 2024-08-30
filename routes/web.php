@@ -78,7 +78,7 @@ Route::middleware('auth')->group(function () {
         Route::get('/laporan-harian/media/{id}', [\App\Http\Controllers\AktivitasMbkmController::class, 'getLaporanHarianMedia'])->name('laporan.harian.media');
     });
 
-    Route::middleware(['role:staff|super admin|mitra'])->group(function () {
+    Route::middleware(['role:staff|super admin|mitra|peserta'])->group(function () {
         Route::resource('mbkm/staff/mitra', \App\Http\Controllers\MitraProfileController::class)->only(['index', 'create', 'store', 'show', 'destroy']);
         Route::post('mbkm/staff/mitra/json', [\App\Http\Controllers\MitraProfileController::class, 'json'])->name('mitra.json');
         Route::post('mbkm/staff/mitra/create', [\App\Http\Controllers\MitraProfileController::class, 'storeMitraUser'])->name('mitra.user.store');
