@@ -44,6 +44,10 @@ class AktivitasMbkmController extends Controller
         $laporanMingguan = $pesertaId ? LaporanMingguan::getByUser($user, $pesertaId, $batchId) : collect();
         $laporanLengkap = $pesertaId ? LaporanLengkap::getByUser($user, $pesertaId, $batchId) : collect();
 
+        $gambar = LaporanHarian::with('media')->where('peserta_id', $pesertaId)
+        ->get()
+        ->keyBy('tanggal');
+        // dd($gambar);
         return view('applications.mbkm.laporan.index', compact('daftarPeserta', 'laporanHarian', 'laporanMingguan', 'laporanLengkap', 'pesertaId'));
     }
 
@@ -230,32 +234,6 @@ class AktivitasMbkmController extends Controller
 
         $user = Auth::user();
 
-        // \Log::info('Request data:', $request->all());
-
-        // Mencari atau membuat laporan harian
-        // $laporanHarian = LaporanHarian::updateOrCreate(
-        //     [
-        //         'peserta_id' => $user->peserta->id,
-        //         'mitra_id' => $user->peserta->registrationPlacement->lowongan->mitra_id,
-        //         'dospem_id' => $user->peserta->registrationPlacement->dospem_id,
-        //         'tanggal' => $request->tanggal,
-        //     ],
-        //     [
-        //         'status' => 'pending',
-        //     ]
-        // );
-
-        // \Log::info('Laporan Harian ID:', [$laporanHarian->id]);
-
-        // Menyimpan dokumen jika ada
-        // if ($request->hasFile('dokumen')) {
-        //     foreach ($request->file('dokumen') as $file) {
-        //         $laporanHarian->addMedia($file)
-        //             ->toMediaCollection('laporan-harian', 'laporan-harian');
-        //     }
-        // } else {
-        //     \Log::warning('Tidak ada file yang diunggah');
-        // }
 
         return response()->json(['message' => 'Dokumen berhasil diupload'], 200);
     }
@@ -343,8 +321,7 @@ class AktivitasMbkmController extends Controller
 
     public function validateLaporanHarian(Request $request, $id)
     {
-        $laporanHarian = LaporanHarian::with('media') // Mengambil juga media terkait
-            ->where('id', $id)
+        $laporanHarian = LaporanHarian::where('id', $id)
             ->whereHas('peserta.registrationPlacement', function ($query) {
                 $query->where('batch_id', $this->activeBatch->id);
             })
@@ -363,8 +340,7 @@ class AktivitasMbkmController extends Controller
 
         $laporanHarian->save();
 
-        // Return view with laporan harian data including media
-        return view('applications.mbkm.laporan.partial-validasi.validate_laporan_harian', compact('laporanHarian'));
+        return response()->json(['success' => 'Laporan harian berhasil diperbarui.']);
     }
 
     public function validateLaporanMingguan(Request $request, $id)
