@@ -14,10 +14,12 @@ return new class extends Migration {
             $table->id();
             $table->unsignedBigInteger('peserta_id');
             $table->unsignedBigInteger('mitra_id')->nullable();
+            $table->string('dospem_id');
             $table->integer('minggu_ke');
             $table->text('isi_laporan');
             $table->string('status');
             $table->string('kehadiran');
+            $table->string('feedback')->nullable();
             $table->timestamps();
         });
     }
