@@ -27,18 +27,35 @@ class QuestionnaireController extends Controller
     // Menyimpan pertanyaan baru ke database
     public function storeQuestion(Request $request)
     {
-        $request->validate([
-            'question_text' => 'required|string|max:255',
-            'question_type' => 'required|in:text,select,checkbox,radio',
-            'options' => 'required_if:question_type,select,checkbox,radio|array|min:1',
-            'options.*' => 'required_if:question_type,select,checkbox,radio|string|max:255',
-        ]);
+        // Jika tipe pertanyaan adalah 'text', lakukan validasi tanpa 'options'
+        if ($request->question_type == 'text') {
+            $request->validate([
+                'question_text' => 'required|string|max:255',
+                'question_type' => 'required|in:text,select,checkbox,radio',
+            ]);
+        } else {
+            // Filter opsi yang kosong jika tipe bukan 'text'
+            $filteredOptions = array_filter($request->options ?? [], function ($option) {
+                return !is_null($option) && $option !== '';
+            });
 
+            $request->merge(['options' => $filteredOptions]);
+
+            // Validasi jika tipe bukan 'text'
+            $request->validate([
+                'question_text' => 'required|string|max:255',
+                'question_type' => 'required|in:text,select,checkbox,radio',
+                'options' => 'required_if:question_type,select,checkbox,radio|array|min:1',
+                'options.*' => 'required_if:question_type,select,checkbox,radio|string|max:255',
+            ]);
+        }
+
+        // Buat pertanyaan
         $question = Question::create($request->only('question_text', 'question_type'));
 
-        // Menyimpan opsi jawaban jika tipe pertanyaan mendukung
-        if (in_array($request->question_type, ['select', 'checkbox', 'radio'])) {
-            foreach ($request->options as $option) {
+        // Simpan opsi jika ada dan tipe pertanyaan bukan 'text'
+        if ($request->question_type !== 'text' && !empty($filteredOptions)) {
+            foreach ($filteredOptions as $option) {
                 Option::create([
                     'question_id' => $question->id,
                     'option_text' => $option,
@@ -67,7 +84,6 @@ class QuestionnaireController extends Controller
 
         $question->update($request->only('question_text', 'question_type'));
 
-        // Hapus opsi jawaban lama dan tambahkan yang baru jika tipe pertanyaan mendukung
         $question->options()->delete();
 
         if (in_array($request->question_type, ['select', 'checkbox', 'radio'])) {
@@ -99,16 +115,22 @@ class QuestionnaireController extends Controller
     }
 
     // Menyimpan jawaban kuesioner
+    // Menyimpan jawaban kuesioner
     public function store(Request $request, $peserta_id)
     {
         $request->validate([
             'answers' => 'required|array',
-            'answers.*' => 'required|string',
+            'answers.*' => 'required', // Menghapus validasi string untuk memungkinkan array
         ]);
 
         $response = Response::create(['peserta_id' => $peserta_id]);
 
         foreach ($request->answers as $question_id => $answer) {
+            // Periksa apakah jawabannya berupa array (checkbox)
+            if (is_array($answer)) {
+                $answer = implode(', ', $answer); // Gabungkan jawaban menjadi string
+            }
+
             ResponseDetail::create([
                 'response_id' => $response->id,
                 'question_id' => $question_id,
