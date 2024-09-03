@@ -17,6 +17,7 @@ return new class extends Migration {
             $table->unsignedBigInteger('dospem_id');
             $table->text('isi_laporan');
             $table->string('status');
+            $table->string('feedback')->nullable();
             $table->timestamps();
         });
     }

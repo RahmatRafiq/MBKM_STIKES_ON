@@ -10,20 +10,20 @@ return new class extends Migration {
      */
     public function up(): void
     {
-        Schema::table('laporan_harian', function (Blueprint $table) {
-            $table->unsignedBigInteger('dospem_id')->nullable()->after('mitra_id');
-            $table->text('feedback')->nullable()->after('kehadiran');
-        });
+        // Schema::table('laporan_harian', function (Blueprint $table) {
+        //     $table->unsignedBigInteger('dospem_id')->nullable()->after('mitra_id');
+        //     $table->text('feedback')->nullable()->after('kehadiran');
+        // });
 
-        Schema::table('laporan_mingguan', function (Blueprint $table) {
-            $table->unsignedBigInteger('dospem_id')->nullable()->after('mitra_id');
-            $table->text('feedback')->nullable()->after('kehadiran');
-        });
+        // Schema::table('laporan_mingguan', function (Blueprint $table) {
+        //     $table->unsignedBigInteger('dospem_id')->nullable()->after('mitra_id');
+        //     $table->text('feedback')->nullable()->after('kehadiran');
+        // });
 
-        Schema::table('laporan_lengkap', function (Blueprint $table) {
-            $table->unsignedBigInteger('dospem_id')->nullable()->after('peserta_id');
-            $table->text('feedback')->nullable()->after('status');
-        });
+        // Schema::table('laporan_lengkap', function (Blueprint $table) {
+        //     $table->unsignedBigInteger('dospem_id')->nullable()->after('peserta_id');
+        //     $table->text('feedback')->nullable()->after('status');
+        // });
     }
 
     /**
@@ -31,19 +31,19 @@ return new class extends Migration {
      */
     public function down(): void
     {
-        Schema::table('laporan_harian', function (Blueprint $table) {
-            $table->dropColumn('dospem_id');
-            $table->dropColumn('feedback');
-        });
+        // Schema::table('laporan_harian', function (Blueprint $table) {
+        //     $table->dropColumn('dospem_id');
+        //     $table->dropColumn('feedback');
+        // });
 
-        Schema::table('laporan_mingguan', function (Blueprint $table) {
-            $table->dropColumn('dospem_id');
-            $table->dropColumn('feedback');
-        });
+        // Schema::table('laporan_mingguan', function (Blueprint $table) {
+        //     $table->dropColumn('dospem_id');
+        //     $table->dropColumn('feedback');
+        // });
 
-        Schema::table('laporan_lengkap', function (Blueprint $table) {
-            $table->dropColumn('dospem_id');
-            $table->dropColumn('feedback');
-        });
+        // Schema::table('laporan_lengkap', function (Blueprint $table) {
+        //     $table->dropColumn('dospem_id');
+        //     $table->dropColumn('feedback');
+        // });
     }
 };
