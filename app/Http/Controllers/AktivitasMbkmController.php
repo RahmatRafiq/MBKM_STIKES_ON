@@ -164,15 +164,22 @@ class AktivitasMbkmController extends Controller
     {
         $user = Auth::user();
         $peserta = Peserta::with('registrationPlacement')->where('user_id', $user->id)->first();
-
+    
         if (!$peserta || !$peserta->registrationPlacement || $peserta->registrationPlacement->batch_id != $this->activeBatch->id) {
             return response()->view('applications.mbkm.error-page.not-registered', ['message' => 'Anda tidak terdaftar dalam kegiatan MBKM apapun untuk batch ini.'], 403);
         }
+    
+        // Cari laporan lengkap berdasarkan peserta_id
+        $laporanLengkap = LaporanLengkap::where('peserta_id', $user->peserta->id)->first();
+        $laporanLengkapValid = $laporanLengkap->status === 'validasi';
 
-        $aktivitas = AktivitasMbkm::where('peserta_id', $user->id)->first();
-
-        return view('applications.mbkm.laporan.laporan-lengkap', compact('aktivitas'));
+        // Dump hasil pencarian untuk debugging
+        // dd($laporanLengkap, $laporanLengkapValid);
+    
+        // Jika `laporanLengkap` ditemukan, lanjutkan dengan view
+        return view('applications.mbkm.laporan.laporan-lengkap', compact('laporanLengkap'));
     }
+    
 
     public function storeLaporanHarian(Request $request)
     {
@@ -237,19 +244,13 @@ class AktivitasMbkmController extends Controller
     {
         $request->validate([
             'isi_laporan' => 'required|string',
-            'dokumen' => 'nullable|file|mimes:pdf,doc,docx', // Validasi dokumen
+            'dokumen' => 'required|file|mimes:pdf,doc,docx', // Validasi dokumen sebagai wajib
         ]);
-
+    
         $user = Auth::user();
-        $aktivitas = AktivitasMbkm::where('peserta_id', $user->peserta->id)->first();
-
-        if (!$aktivitas) {
-            return back()->withErrors(['error' => 'Aktivitas tidak ditemukan. Pastikan Anda terdaftar dalam kegiatan MBKM.']);
-        }
-
         $laporanLengkap = LaporanLengkap::updateOrCreate(
             [
-                'peserta_id' => $aktivitas->peserta_id,
+                'peserta_id' => $user->peserta->id,
                 'mitra_id' => $user->peserta->registrationPlacement->lowongan->mitra_id,
                 'dospem_id' => $user->peserta->registrationPlacement->dospem_id,
             ],
@@ -258,18 +259,21 @@ class AktivitasMbkmController extends Controller
                 'status' => 'pending',
             ]
         );
-
-        // Jika dokumen diunggah, tambahkan ke media collection dan simpan di disk 'laporan-lengkap'
+    
+        // Perbarui dokumen di media collection 'laporan-lengkap'
         if ($request->hasFile('dokumen')) {
+            // Hapus dokumen lama jika ada
+            if ($laporanLengkap->getFirstMedia('laporan-lengkap')) {
+                $laporanLengkap->clearMediaCollection('laporan-lengkap');
+            }
+            // Tambahkan dokumen baru
             $laporanLengkap->addMedia($request->file('dokumen'))
                 ->toMediaCollection('laporan-lengkap', 'laporan-lengkap');
         }
-
-        $aktivitas->laporan_lengkap_id = $laporanLengkap->id;
-        $aktivitas->save();
-
+    
         return back()->with('success', 'Laporan lengkap berhasil disimpan.');
     }
+    
 
     public function validateLaporanHarian(Request $request, $id)
     {
