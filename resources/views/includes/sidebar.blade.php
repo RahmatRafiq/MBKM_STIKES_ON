@@ -47,6 +47,11 @@
                     </li>
                     <li class="{{ request()->routeIs('batch-mbkms.index') ? 'active-sub' : '' }}">
                         <a href="{{ route('batch-mbkms.index') }}">Batch MBKM</a>
+                    </li>
+                    <li class="{{ request()->routeIs('questions.index') ? 'active-sub' : '' }}">
+                        <a href="{{ route('questions.index') }}">Quisioner</a>
+                    </li>
+
                 </ul>
             </li>
             @endcan
