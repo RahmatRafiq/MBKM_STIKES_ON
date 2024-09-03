@@ -70,6 +70,8 @@ Route::middleware('auth')->group(function () {
         Route::get('/questionnaire/{peserta_id}/create', [QuestionnaireController::class, 'create'])->name('questionnaire.create');
         Route::post('/questionnaire/{peserta_id}', [QuestionnaireController::class, 'store'])->name('questionnaire.store');
         Route::get('/questionnaire/thankyou', [QuestionnaireController::class, 'thankyou'])->name('questionnaire.thankyou');
+Route::get('/questionnaire/{peserta_id}/responses', [QuestionnaireController::class, 'collectResponses'])->name('questionnaire.responses');
+Route::get('/questionnaire/participants/{peserta_id?}', [QuestionnaireController::class, 'showQuestionnaire'])->name('questionnaire.participants');
 
 
     });
