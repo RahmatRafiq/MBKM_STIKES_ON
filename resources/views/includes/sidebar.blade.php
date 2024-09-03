@@ -55,7 +55,21 @@
                 </ul>
             </li>
             @endcan
-
+            <li class="treeview {{ request()->is('questionnaire*') ? 'active current-page open' : '' }}">
+                <a href="#" class="treeview-toggle">
+                    <i class="bi bi-journal-check"></i> <!-- Ikon baru untuk Kuisioner -->
+                    <span class="menu-text">Kuisioner</span>
+                </a>
+                <ul class="treeview-menu"
+                    style="{{ request()->is('questionnaire*') ? 'display: block;' : 'display: none;' }}">
+                    <li class="{{ request()->routeIs('questionnaire.participants') ? 'active-sub' : '' }}">
+                        <a href="{{ route('questionnaire.participants') }}">Daftar Peserta & Detail Kuisioner</a>
+                    </li>
+                    <li class="{{ request()->routeIs('questions.index') ? 'active-sub' : '' }}">
+                        <a href="{{ route('questions.index') }}">Kelola Pertanyaan</a>
+                    </li>
+                </ul>
+            </li>
             <li class="{{ request()->routeIs('profile.edit') ? 'active current-page' : '' }}">
                 <a href="{{ route('profile.edit') }}">
                     <i class="bi bi-person"></i> <!-- Ikon baru untuk Profil -->
