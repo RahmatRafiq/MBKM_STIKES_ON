@@ -38,7 +38,6 @@
             <div id="option-template" class="form-group mt-2" style="display: none;">
                 <input type="text" name="options[]" class="form-control">
             </div>
-            <!-- Tampilkan opsi yang sudah diinput jika ada -->
             @if(old('options'))
                 @foreach(old('options') as $option)
                     <div class="form-group">
@@ -51,6 +50,7 @@
         <button type="submit" class="btn btn-primary">Simpan</button>
     </form>
 
+    <!-- JavaScript untuk menambahkan opsi -->
     <script>
         document.getElementById('question_type').addEventListener('change', function () {
             var optionsContainer = document.getElementById('options-container');
@@ -70,6 +70,8 @@
             var template = document.getElementById('option-template');
             var clone = template.cloneNode(true);
             clone.style.display = 'block';
+
+            // Langsung tambahkan opsi tanpa memeriksa input sebelumnya
             document.getElementById('options-container').appendChild(clone);
         }
 
