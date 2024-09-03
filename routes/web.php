@@ -40,6 +40,8 @@ Route::middleware('auth')->group(function () {
         Route::get('/laporan-harian', [\App\Http\Controllers\AktivitasMbkmController::class, 'createLaporanHarian'])->name('laporan.harian');
         Route::get('/laporan-harian/create', [\App\Http\Controllers\AktivitasMbkmController::class, 'createLaporanHarian'])->name('laporan.harian.create');
         Route::post('/laporan-harian/store', [\App\Http\Controllers\AktivitasMbkmController::class, 'storeLaporanHarian'])->name('laporan.harian.store');
+        Route::post('/laporan-harian/upload-dokumen', [\App\Http\Controllers\AktivitasMbkmController::class, 'uploadLaporanHarian'])->name('laporan.harian.uploadDokumen');
+        Route::delete('/laporan-harian/delete-dokumen', [\App\Http\Controllers\AktivitasMbkmController::class, 'deleteDokumen'])->name('laporan.harian.deleteDokumen');
 
         Route::get('/laporan-mingguan/create', [\App\Http\Controllers\AktivitasMbkmController::class, 'createLaporanMingguan'])->name('laporan.mingguan.create');
         Route::post('/laporan-mingguan/store', [\App\Http\Controllers\AktivitasMbkmController::class, 'storeLaporanMingguan'])->name('laporan.mingguan.store');
@@ -58,6 +60,7 @@ Route::middleware('auth')->group(function () {
         Route::post('peserta/{ketua}/team/add', [\App\Http\Controllers\PesertaController::class, 'addTeamMember'])->name('team.addMember');
         Route::delete('/team/member/{id}/remove', [\App\Http\Controllers\PesertaController::class, 'removeTeamMember'])->name('team.removeMember');
 
+
         Route::get('/questions', [QuestionnaireController::class, 'index'])->name('questions.index');
         Route::get('/questions/create', [QuestionnaireController::class, 'createQuestion'])->name('questions.create');
         Route::post('/questions', [QuestionnaireController::class, 'storeQuestion'])->name('questions.store');
@@ -67,6 +70,7 @@ Route::middleware('auth')->group(function () {
         Route::get('/questionnaire/{peserta_id}/create', [QuestionnaireController::class, 'create'])->name('questionnaire.create');
         Route::post('/questionnaire/{peserta_id}', [QuestionnaireController::class, 'store'])->name('questionnaire.store');
         Route::get('/questionnaire/thankyou', [QuestionnaireController::class, 'thankyou'])->name('questionnaire.thankyou');
+
 
     });
 
@@ -82,9 +86,12 @@ Route::middleware('auth')->group(function () {
         Route::get('/laporan', [\App\Http\Controllers\AktivitasMbkmController::class, 'index'])->name('laporan.index');
         Route::post('/laporan-harian/validate/{id}', [\App\Http\Controllers\AktivitasMbkmController::class, 'validateLaporanHarian'])->name('laporan.harian.validate');
         Route::post('/laporan-mingguan/validate/{id}', [\App\Http\Controllers\AktivitasMbkmController::class, 'validateLaporanMingguan'])->name('laporan.mingguan.validate');
+
+        // Tambahkan rute untuk memuat media (gambar) laporan harian
+        Route::get('/laporan-harian/media/{id}', [\App\Http\Controllers\AktivitasMbkmController::class, 'getLaporanHarianMedia'])->name('laporan.harian.media');
     });
 
-    Route::middleware(['role:staff|super admin'])->group(function () {
+    Route::middleware(['role:staff|super admin|mitra|peserta'])->group(function () {
         Route::resource('mbkm/staff/mitra', \App\Http\Controllers\MitraProfileController::class)->only(['index', 'create', 'store', 'show', 'destroy']);
         Route::post('mbkm/staff/mitra/json', [\App\Http\Controllers\MitraProfileController::class, 'json'])->name('mitra.json');
         Route::post('mbkm/staff/mitra/create', [\App\Http\Controllers\MitraProfileController::class, 'storeMitraUser'])->name('mitra.user.store');
