@@ -1,7 +1,8 @@
-import {Navbar as NavbarBase, NavbarBrand, NavbarContent, NavbarItem, Link, Button} from "@nextui-org/react"
+import {Navbar as NavbarBase, NavbarBrand, NavbarContent, NavbarItem, Link, Button, NavbarMenuToggle, NavbarMenu, NavbarMenuItem} from "@nextui-org/react"
+import { useState } from "react"
 import { route } from "ziggy-js"
 
-const Menu = [
+const menuItems = [
   {
     label: 'Beranda',
     url: route('home'),
@@ -17,6 +18,8 @@ const Menu = [
 ]
 
 const Navbar = () => {
+  // const [isMenuOpen, setIsMenuOpen] = useState(false)
+
   return (
     <NavbarBase shouldHideOnScroll>
       <NavbarBrand>
@@ -26,14 +29,14 @@ const Navbar = () => {
       </NavbarBrand>
       <NavbarContent className="hidden sm:flex gap-4" justify="center">
         {
-          Menu.map((item, index) => (
+          menuItems.map((item, index) => (
             <NavbarItem key={index}>
               <Link href={item.url}>{item.label}</Link>
             </NavbarItem>
           ))
         }
       </NavbarContent>
-      <NavbarContent justify="end">
+      <NavbarContent justify="end" className="hidden sm:flex">
         <NavbarItem className="hidden lg:flex">
           <Link href="#">Login</Link>
         </NavbarItem>
@@ -43,6 +46,38 @@ const Navbar = () => {
           </Button>
         </NavbarItem>
       </NavbarContent>
+
+      <NavbarMenuToggle
+        className="sm:hidden"
+      />
+      <NavbarMenu>
+        {menuItems.map((item, index) => (
+          <NavbarMenuItem key={`${item}-${index}`}>
+            <Link
+              color={
+                index === 2 ? "primary" : index === menuItems.length - 1 ? "danger" : "foreground"
+              }
+              className="w-full"
+              href="#"
+              size="lg"
+            >
+              {item.label}
+            </Link>
+          </NavbarMenuItem>
+        ))}
+        <NavbarMenuItem>
+          <Button
+            className="w-full"
+            color="primary"
+            variant="flat"
+            size="lg"
+            as={Link}
+            href={route('login')}
+          >
+                Login
+          </Button>
+        </NavbarMenuItem>
+      </NavbarMenu>
     </NavbarBase>
   )
 }
