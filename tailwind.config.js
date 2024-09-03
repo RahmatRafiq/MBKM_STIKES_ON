@@ -1,5 +1,5 @@
-import { nextui } from '@nextui-org/react';
-import defaultTheme from 'tailwindcss/defaultTheme';
+import { nextui } from '@nextui-org/react'
+import defaultTheme from 'tailwindcss/defaultTheme'
 
 /** @type {import('tailwindcss').Config} */
 export default {
@@ -8,15 +8,17 @@ export default {
     './storage/framework/views/*.php',
     './resources/views/**/*.blade.php',
     "./node_modules/@nextui-org/theme/dist/**/*.{js,ts,jsx,tsx}",
+    './resources/js/**/*.{js,ts,jsx,tsx}',
   ],
 
   theme: {
     extend: {
       fontFamily: {
-        sans: ['Figtree', ...defaultTheme.fontFamily.sans],
+        sans: ['Plus Jakarta Sans', 'Figtree', ...defaultTheme.fontFamily.sans],
+        bossa: ['Bossa', 'Figtree', ...defaultTheme.fontFamily.sans],
       },
     },
   },
   darkMode: "class",
-  plugins: [nextui()],
-};
+  plugins: [nextui(), import('@tailwindcss/typography') ],
+}
