@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\QuestionnaireController;
 use Illuminate\Support\Facades\Route;
 
 Route::middleware('auth')->group(function () {
@@ -57,9 +58,15 @@ Route::middleware('auth')->group(function () {
         Route::post('peserta/{ketua}/team/add', [\App\Http\Controllers\PesertaController::class, 'addTeamMember'])->name('team.addMember');
         Route::delete('/team/member/{id}/remove', [\App\Http\Controllers\PesertaController::class, 'removeTeamMember'])->name('team.removeMember');
 
-        Route::get('/questionnaire/{peserta_id}', [\App\Http\Controllers\QuestionnaireController::class, 'create'])->name('questionnaire.create');
-        Route::post('/questionnaire/{peserta_id}', [\App\Http\Controllers\QuestionnaireController::class, 'store'])->name('questionnaire.store');
-        Route::get('/thankyou', [\App\Http\Controllers\QuestionnaireController::class, 'thankyou'])->name('questionnaire.thankyou');
+        Route::get('/questions', [QuestionnaireController::class, 'index'])->name('questions.index');
+        Route::get('/questions/create', [QuestionnaireController::class, 'createQuestion'])->name('questions.create');
+        Route::post('/questions', [QuestionnaireController::class, 'storeQuestion'])->name('questions.store');
+        Route::get('/questions/{question}/edit', [QuestionnaireController::class, 'editQuestion'])->name('questions.edit');
+        Route::put('/questions/{question}', [QuestionnaireController::class, 'updateQuestion'])->name('questions.update');
+        Route::delete('/questions/{question}', [QuestionnaireController::class, 'destroyQuestion'])->name('questions.destroy');
+        Route::get('/questionnaire/{peserta_id}/create', [QuestionnaireController::class, 'create'])->name('questionnaire.create');
+        Route::post('/questionnaire/{peserta_id}', [QuestionnaireController::class, 'store'])->name('questionnaire.store');
+        Route::get('/questionnaire/thankyou', [QuestionnaireController::class, 'thankyou'])->name('questionnaire.thankyou');
 
     });
 
