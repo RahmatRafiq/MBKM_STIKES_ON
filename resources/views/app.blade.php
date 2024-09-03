@@ -6,7 +6,7 @@
     @viteReactRefresh
     @vite('resources/js/react.tsx')
     @inertiaHead
-
+    @routes
     <script>
         // detect dark mode
         if (localStorage.theme === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {

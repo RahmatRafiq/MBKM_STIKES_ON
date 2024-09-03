@@ -1,8 +1,18 @@
-import {Navbar as NavbarBase, NavbarBrand, NavbarContent, NavbarItem, Link, Button} from "@nextui-org/react";
+import {Navbar as NavbarBase, NavbarBrand, NavbarContent, NavbarItem, Link, Button} from "@nextui-org/react"
+import { route } from "ziggy-js"
 
 const Menu = [
   {
     label: 'Beranda',
+    url: route('home'),
+  },
+  {
+    label: 'Program',
+    url: route('program.index'),
+  },
+  {
+    label: 'Butuh Bantuan?',
+    url: route('help.index'),
   }
 ]
 
@@ -15,21 +25,13 @@ const Navbar = () => {
         </Link>
       </NavbarBrand>
       <NavbarContent className="hidden sm:flex gap-4" justify="center">
-        <NavbarItem>
-          <Link color="foreground" href="#">
-                        Features
-          </Link>
-        </NavbarItem>
-        <NavbarItem isActive>
-          <Link href="#" aria-current="page">
-                        Customers
-          </Link>
-        </NavbarItem>
-        <NavbarItem>
-          <Link color="foreground" href="#">
-                        Integrations
-          </Link>
-        </NavbarItem>
+        {
+          Menu.map((item, index) => (
+            <NavbarItem key={index}>
+              <Link href={item.url}>{item.label}</Link>
+            </NavbarItem>
+          ))
+        }
       </NavbarContent>
       <NavbarContent justify="end">
         <NavbarItem className="hidden lg:flex">
@@ -37,12 +39,12 @@ const Navbar = () => {
         </NavbarItem>
         <NavbarItem>
           <Button as={Link} color="primary" href="#" variant="flat">
-                        Sign Up
+            Login
           </Button>
         </NavbarItem>
       </NavbarContent>
     </NavbarBase>
-  );
+  )
 }
 
-export default Navbar;
+export default Navbar
