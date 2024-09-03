@@ -1,7 +1,7 @@
-import globals from "globals";
-import pluginJs from "@eslint/js";
-import tseslint from "typescript-eslint";
-import pluginReact from "eslint-plugin-react";
+import globals from "globals"
+import pluginJs from "@eslint/js"
+import tseslint from "typescript-eslint"
+import pluginReact from "eslint-plugin-react"
 
 
 export default [
@@ -15,6 +15,7 @@ export default [
       ...pluginJs.configs.recommended.rules,
       'no-empty-pattern': 'warn',
       'indent': ['warn', 2],
+      'semi': ['warn', 'never'],
     }
   },
   ...tseslint.configs.recommended.map((config) => {
@@ -26,7 +27,7 @@ export default [
         '@typescript-eslint/no-unused-vars': 'warn',
         '@typescript-eslint/no-explicit-any': 'warn',
       }
-    };
+    }
   }),
   {
     ...pluginReact.configs.flat.recommended,
@@ -34,4 +35,4 @@ export default [
       "react/jsx-uses-vars": "warn",
     }
   }
-];
+]
