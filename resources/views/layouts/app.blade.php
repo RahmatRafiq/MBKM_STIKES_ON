@@ -30,7 +30,7 @@
   <!-- Toastify CSS -->
   <link rel="stylesheet" href="{{ asset('assets/vendor/toastify/toastify.css') }}" />
   <!-- Scripts -->
-  @vite(['resources/css/app.css', 'resources/js/app.js']) // TODO: Remove this line
+  @vite(['resources/css/app.css', 'resources/js/app.js']) {{--TODO: Remove this line--}}
   @yield('head')
   @stack('head')
   {{--
