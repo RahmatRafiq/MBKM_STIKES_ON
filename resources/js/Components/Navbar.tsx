@@ -38,10 +38,7 @@ const Navbar = () => {
       </NavbarContent>
       <NavbarContent justify="end" className="hidden sm:flex">
         <NavbarItem className="hidden lg:flex">
-          <Link href="#">Login</Link>
-        </NavbarItem>
-        <NavbarItem>
-          <Button as={Link} color="primary" href="#" variant="flat">
+          <Button as={Link} color="primary" href={route('login')} variant="flat">
             Login
           </Button>
         </NavbarItem>
