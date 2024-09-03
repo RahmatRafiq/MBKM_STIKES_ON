@@ -2,14 +2,15 @@ import Navbar from "@/Components/Navbar";
 
 type Props = {
   children: React.ReactNode;
+  className?: string;
 }
 
-const Guest = ({ children }: Props) => {
+const Guest = ({ children, className }: Props) => {
 
   return (
     <>
       <Navbar />
-      <main>
+      <main className={className}>
         {children}
       </main>
     </>
