@@ -7,6 +7,7 @@
     },
     "devDependencies": {
         "@tailwindcss/forms": "^0.5.2",
+        "@tailwindcss/typography": "^0.5.13",
         "@types/dropzone": "^5.7.8",
         "@types/toastify-js": "^1.12.3",
         "alpinejs": "^3.4.2",
