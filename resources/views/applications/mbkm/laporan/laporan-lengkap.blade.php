@@ -5,22 +5,22 @@
     <h2 class="text-center my-4">Isi Laporan Lengkap</h2>
     <div class="card">
         <div class="card-header">
-            @if ($aktivitas && $aktivitas->laporanLengkap)
+            @if ($laporanLengkap)
                 <div class="d-flex justify-content-end">
-                    <span class="badge bg-{{ $aktivitas->laporanLengkap->status == 'pending' ? 'warning' : ($aktivitas->laporanLengkap->status == 'validasi' ? 'success' : 'danger') }}">
-                        {{ ucfirst($aktivitas->laporanLengkap->status) }}
+                    <span class="badge bg-{{ $laporanLengkap->status == 'pending' ? 'warning' : ($laporanLengkap->status == 'validasi' ? 'success' : 'danger') }}">
+                        {{ ucfirst($laporanLengkap->status) }}
                     </span>
                 </div>
             @endif
             <h5>Laporan Lengkap</h5>
         </div>
         <div class="card-body">
-            @if ($aktivitas && $aktivitas->laporanLengkap)
-                <p>{{ $aktivitas->laporanLengkap->isi_laporan }}</p>
-                @if ($aktivitas->laporanLengkap->getFirstMediaUrl('laporan-lengkap'))
-                    <a href="{{ $aktivitas->laporanLengkap->getFirstMediaUrl('laporan-lengkap') }}" target="_blank">Lihat Dokumen</a>
+            @if ($laporanLengkap)
+                <p>{{ $laporanLengkap->isi_laporan }}</p>
+                @if ($laporanLengkap->getFirstMediaUrl('laporan-lengkap'))
+                    <a href="{{ $laporanLengkap->getFirstMediaUrl('laporan-lengkap') }}" target="_blank">Lihat Dokumen</a>
                 @endif
-                @if ($aktivitas->laporanLengkap->status == 'revisi')
+                @if ($laporanLengkap->status == 'revisi')
                     <div class="text-center mt-3">
                         <button class="btn btn-info" data-bs-toggle="modal" data-bs-target="#modalFormLaporanLengkap">Submit Ulang</button>
                     </div>
@@ -28,6 +28,13 @@
             @else
                 <div class="text-center mt-3">
                     <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modalFormLaporanLengkap">Isi Laporan Lengkap</button>
+                </div>
+            @endif
+
+            <!-- Tambahkan tombol untuk mengisi kuisioner jika laporan lengkap telah tervalidasi -->
+            @if ($laporanLengkap && $laporanLengkap->status == 'validasi')
+                <div class="text-center mt-3">
+                    <a href="{{ route('questionnaire.create', ['peserta_id' => $laporanLengkap->peserta_id]) }}" class="btn btn-success">Isi Kuisioner</a>
                 </div>
             @endif
         </div>
@@ -50,12 +57,12 @@
                     
                     <div class="form-group mb-3">
                         <label for="isi_laporan_lengkap" class="form-label">Isi Laporan</label>
-                        <textarea name="isi_laporan" id="isi_laporan_lengkap" class="form-control auto-resize" required>{{ old('isi_laporan', $aktivitas && $aktivitas->laporanLengkap ? $aktivitas->laporanLengkap->isi_laporan : '') }}</textarea>
+                        <textarea name="isi_laporan" id="isi_laporan_lengkap" class="form-control auto-resize" required>{{ old('isi_laporan', $laporanLengkap ? $laporanLengkap->isi_laporan : '') }}</textarea>
                     </div>
                     
                     <div class="form-group mb-3">
-                        <label for="dokumen" class="form-label">Unggah Dokumen (Opsional)</label>
-                        <input type="file" name="dokumen" id="dokumen" class="form-control">
+                        <label for="dokumen" class="form-label">Unggah Dokumen</label>
+                        <input type="file" name="dokumen" id="dokumen" class="form-control" required>
                     </div>
 
                     <div class="text-center">
