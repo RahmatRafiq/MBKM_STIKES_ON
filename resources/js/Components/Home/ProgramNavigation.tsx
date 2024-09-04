@@ -288,9 +288,13 @@ const ProgramNavigation = () => {
                     <h3>{item.description}</h3>
                   </div>
                   <div>
-                    <p className='text-gray-500'>
-                      {item.announcement}
-                    </p>
+                    {
+                      item.announcement ? (
+                        <div className='text-gray-500'>
+                          {item.announcement}
+                        </div>
+                      ) : <></>
+                    }
                     <div className="flex gap-3">
                       {
                         item.buttonLinks.map((buttonLink, index) => (
