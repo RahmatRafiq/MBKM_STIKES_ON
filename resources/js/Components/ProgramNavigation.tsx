@@ -1,6 +1,7 @@
-import { button, Button, ButtonVariantProps, Card, CardBody, Image, Link, Tab, Tabs } from "@nextui-org/react"
 import KampusMengajarLogo from '@/Images/kampus-mengajar.webp'
 import MagangLogo from '@/Images/msib-logo.webp'
+import PertukaranMahasiswaLogo from '@/Images/pmm.webp'
+import { Button, Card, CardBody, Image, Link, Tab, Tabs } from "@nextui-org/react"
 
 type TabType = {
   id: string;
@@ -10,9 +11,10 @@ type TabType = {
   buttonLinks: {
     label: string;
     url: string;
-    color?: 'default' | 'primary' | 'secondary' | 'success' | 'warning' |'danger';
+    color?: 'default' | 'primary' | 'secondary' | 'success' | 'warning' | 'danger';
     variant?: 'solid' | 'bordered' | 'light' | 'flat' | 'faded' | 'shadow' | 'ghost'
   }[]
+  announcement?: string | JSX.Element;
   menu?: {
     label: string;
     submenu: {
@@ -35,6 +37,16 @@ const tabs: TabType[] = [
         color: 'primary',
       }
     ],
+    announcement: (
+      <>
+        <p>
+          Pendaftaran:
+        </p>
+        <p>
+          Telah ditutup pada 30 Agustus 2021
+        </p>
+      </>
+    ),
     menu: [
       {
         label: 'Pendaftaran',
@@ -140,6 +152,120 @@ const tabs: TabType[] = [
         ]
       }
     ]
+  },
+  {
+    id: 'studi-independen',
+    title: 'Studi Independen Bersertifikat',
+    description: 'Jalankan proyek penelitian dengan studi kasus nyata dari para pelaku industri ternama.',
+    logo: MagangLogo,
+    buttonLinks: [
+      {
+        label: 'Cari Kelas Studi Independen',
+        url: '#',
+        color: 'primary',
+      },
+      {
+        label: 'Selengkapnya',
+        url: '#',
+        color: 'default',
+        variant: 'bordered'
+      },
+    ],
+    menu: [
+      {
+        label: 'Pendaftaran',
+        submenu: [
+          {
+            label: 'Cara Mendaftar',
+            url: '#'
+          },
+          {
+            label: 'Syarat & Ketentuan',
+            url: '#'
+          }
+        ]
+      },
+      {
+        label: 'Seleksi dan Penerimaan',
+        submenu: [
+          {
+            label: 'Cara Menerima Tawaran',
+            url: '#'
+          },
+          {
+            label: 'Cara Melihat Status Pendaftaran',
+            url: '#'
+          }
+        ]
+      },
+      {
+        label: 'Pelaksanaan Program',
+        submenu: [
+          {
+            label: 'Pengisian Logboook dan Laporan Aktif',
+            url: '#'
+          },
+          {
+            label: 'Laporan Akhir',
+            url: '#'
+          }
+        ]
+      }
+    ]
+  },
+  {
+    id: 'pertukaran-mahasiswa',
+    title: 'Pertukaran Mahasiswa Merdeka',
+    description: 'Program pertukaran dengan universitas lain dari seluruh Indonesia yang bertujuan untuk memperkaya khazanah budayamu.',
+    logo: PertukaranMahasiswaLogo,
+    buttonLinks: [
+      {
+        label: 'Selengkapnya',
+        url: '#',
+        color: 'primary',
+      }
+    ],
+    menu: [
+      {
+        label: 'Pendaftaran',
+        submenu: [
+          {
+            label: 'Cara Mendaftar',
+            url: '#'
+          },
+          {
+            label: 'Syarat & Ketentuan',
+            url: '#'
+          }
+        ]
+      },
+      {
+        label: 'Seleksi dan Penerimaan',
+        submenu: [
+          {
+            label: 'Skema Umum Program',
+            url: '#'
+          },
+          {
+            label: 'Proses Seleksi',
+            url: '#'
+          }
+        ]
+      },
+      {
+        label: 'Pelaksanaan Program',
+        submenu: [
+          {
+            label: 'Pengisian Laporan Bulanan',
+            url: '#'
+          },
+          {
+            label: 'Peraturan Program MBKM',
+            url: '#'
+          }
+        ]
+      }
+    ]
   }
 ]
 
@@ -149,12 +275,13 @@ const ProgramNavigation = () => {
       className="flex w-full flex-col p-3"
     >
       <Tabs aria-label="Dynamic tabs" items={tabs} classNames={{
-        base: 'mx-auto'
+        base: 'mx-auto w-full',
+        tabList: 'overflow-x-scroll mx-auto',
       }}>
         {(item) => (
           <Tab key={item.id} title={item.title}>
             <Card>
-              <CardBody className="flex flex-col">
+              <CardBody className="flex flex-col gap-3">
                 <Image width={'auto'} height={50} src={item.logo} alt={item.title} className="bg-white p-1" />
                 <h3>{item.description}</h3>
                 <div className="flex gap-3">
@@ -168,6 +295,9 @@ const ProgramNavigation = () => {
                     ))
                   }
                 </div>
+                <p className='text-gray-500'>
+                  {item.announcement}
+                </p>
                 <div className="py-3 divide-y flex flex-col gap-3">
                   {
                     item.menu?.map((menu, index) => (
