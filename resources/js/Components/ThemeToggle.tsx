@@ -20,6 +20,7 @@ function ThemeToggle() {
     <Tabs
       classNames={{
         panel: 'hidden',
+        tabList: 'bg-transparent border border-gray-200 dark:border-gray-700',
       }}
       onSelectionChange={(key) => {
         const theme = key as Mode
