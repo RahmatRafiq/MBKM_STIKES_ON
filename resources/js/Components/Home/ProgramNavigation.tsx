@@ -272,7 +272,7 @@ const tabs: TabType[] = [
 const ProgramNavigation = () => {
   return (
     <section id="program-navigation"
-      className="flex w-full flex-col p-3"
+      className="flex w-full flex-col p-3 max-w-screen-xl mx-auto"
     >
       <Tabs aria-label="Dynamic tabs" items={tabs} classNames={{
         base: 'mx-auto w-full',
