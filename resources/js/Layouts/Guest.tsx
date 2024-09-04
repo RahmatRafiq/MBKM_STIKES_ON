@@ -1,4 +1,5 @@
-import Navbar from "@/Components/Navbar";
+import Footer from "@/Components/Footer"
+import Navbar from "@/Components/Navbar"
 
 type Props = {
   children: React.ReactNode;
@@ -13,8 +14,9 @@ const Guest = ({ children, className }: Props) => {
       <main className={className}>
         {children}
       </main>
+      <Footer />
     </>
-  );
+  )
 }
 
-export default Guest;
+export default Guest
