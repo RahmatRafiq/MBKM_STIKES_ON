@@ -1,5 +1,5 @@
-import Onboarding from "@/Components/Onboarding"
-import ProgramNavigation from "@/Components/ProgramNavigation"
+import Onboarding from "@/Components/Home/Onboarding"
+import ProgramNavigation from "@/Components/Home/ProgramNavigation"
 import Guest from "@/Layouts/Guest"
 
 const Home = () => {
