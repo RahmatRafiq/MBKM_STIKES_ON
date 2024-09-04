@@ -281,24 +281,30 @@ const ProgramNavigation = () => {
         {(item) => (
           <Tab key={item.id} title={item.title}>
             <Card>
-              <CardBody className="flex flex-col gap-3">
-                <Image width={'auto'} height={50} src={item.logo} alt={item.title} className="bg-white p-1" />
-                <h3>{item.description}</h3>
-                <div className="flex gap-3">
-                  {
-                    item.buttonLinks.map((buttonLink, index) => (
-                      <a key={index} href={buttonLink.url}>
-                        <Button color={buttonLink.color} variant={buttonLink.variant}>
-                          {buttonLink.label}
-                        </Button>
-                      </a>
-                    ))
-                  }
+              <CardBody className="flex flex-col gap-3 lg:flex-row lg:p-10">
+                <div className='lg:w-96 flex flex-col'>
+                  <div>
+                    <Image width={'auto'} height={50} src={item.logo} alt={item.title} className="bg-white p-1" />
+                    <h3>{item.description}</h3>
+                  </div>
+                  <div>
+                    <p className='text-gray-500'>
+                      {item.announcement}
+                    </p>
+                    <div className="flex gap-3">
+                      {
+                        item.buttonLinks.map((buttonLink, index) => (
+                          <a key={index} href={buttonLink.url}>
+                            <Button color={buttonLink.color} variant={buttonLink.variant}>
+                              {buttonLink.label}
+                            </Button>
+                          </a>
+                        ))
+                      }
+                    </div>
+                  </div>
                 </div>
-                <p className='text-gray-500'>
-                  {item.announcement}
-                </p>
-                <div className="py-3 divide-y flex flex-col gap-3">
+                <div className="py-3 divide-y lg:divide-y-0 flex flex-col gap-3 lg:flex-row">
                   {
                     item.menu?.map((menu, index) => (
                       <div key={index} className="grid grid-cols-1 divide-slate-400/25 gap-3 pt-3">
