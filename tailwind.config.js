@@ -20,5 +20,24 @@ export default {
     },
   },
   darkMode: "class",
-  plugins: [nextui(), import('@tailwindcss/typography') ],
+  plugins: [
+    import('@tailwindcss/typography'),
+    nextui({
+      themes: {
+        light: {
+          colors: {
+            primary: {
+              DEFAULT: '#FFD73B',
+              foreground: '#000000',
+            },
+          }
+        },
+        dark: {
+          colors: {
+            primary: '#FFD73B'
+          }
+        },
+      }
+    }),
+  ],
 }

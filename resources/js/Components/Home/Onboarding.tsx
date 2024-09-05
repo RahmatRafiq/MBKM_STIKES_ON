@@ -8,8 +8,8 @@ const description = onboarding.description
 const Onboarding = () => {
   return (
     <section id="onboarding" className="relative">
-      <div className="flex flex-col max-w-screen-md mx-auto p-3 sm:py-32">
-        <div className="max-w-screen-sm">
+      <div className="flex flex-col max-w-screen-md mx-auto p-3 sm:py-32 gap-3">
+        <div className="max-w-screen-sm text-white">
           <h2 className="font-bossa text-2xl font-bold sm:text-5xl">
             {title}
           </h2>
