@@ -1,5 +1,4 @@
-import {Navbar as NavbarBase, NavbarBrand, NavbarContent, NavbarItem, Link, Button, NavbarMenuToggle, NavbarMenu, NavbarMenuItem} from "@nextui-org/react"
-import { useState } from "react"
+import { Button, Link, Navbar as NavbarBase, NavbarBrand, NavbarContent, NavbarItem, NavbarMenu, NavbarMenuItem, NavbarMenuToggle } from "@nextui-org/react"
 import { route } from "ziggy-js"
 
 const menuItems = [
@@ -21,7 +20,9 @@ const Navbar = () => {
   // const [isMenuOpen, setIsMenuOpen] = useState(false)
 
   return (
-    <NavbarBase shouldHideOnScroll>
+    <NavbarBase
+      shouldHideOnScroll
+    >
       <NavbarBrand>
         <Link href="#">
           <img src="/assets/images/mbkm.png" alt={import.meta.env.VITE_APP_NAME} className="h-10" />
@@ -31,14 +32,14 @@ const Navbar = () => {
         {
           menuItems.map((item, index) => (
             <NavbarItem key={index}>
-              <Link href={item.url}>{item.label}</Link>
+              <Link href={item.url} className="text-foreground">{item.label}</Link>
             </NavbarItem>
           ))
         }
       </NavbarContent>
       <NavbarContent justify="end" className="hidden sm:flex">
-        <NavbarItem className="hidden lg:flex">
-          <Button as={Link} color="primary" href={route('login')} variant="flat">
+        <NavbarItem>
+          <Button as={Link} color="default" href={route('login')} variant="bordered" className="border-foreground dark:border-foreground">
             Login
           </Button>
         </NavbarItem>

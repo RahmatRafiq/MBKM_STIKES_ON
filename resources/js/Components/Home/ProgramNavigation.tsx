@@ -1,7 +1,9 @@
 import KampusMengajarLogo from '@/Images/kampus-mengajar.webp'
 import MagangLogo from '@/Images/msib-logo.webp'
 import PertukaranMahasiswaLogo from '@/Images/pmm.webp'
-import { Button, Card, CardBody, Image, Link, Tab, Tabs } from "@nextui-org/react"
+import { Button, Card, CardBody, Dropdown, DropdownItem, DropdownMenu, DropdownTrigger, Image, Link, Tab, Tabs } from "@nextui-org/react"
+import { useState } from 'react'
+import { useMediaQuery } from 'usehooks-ts'
 
 type TabType = {
   id: string;
@@ -43,7 +45,7 @@ const tabs: TabType[] = [
           Pendaftaran:
         </p>
         <p>
-          Telah ditutup pada 30 Agustus 2021
+          Telah ditutup pada <span className="font-bold">30 Agustus 2021</span>
         </p>
       </>
     ),
@@ -270,24 +272,54 @@ const tabs: TabType[] = [
 ]
 
 const ProgramNavigation = () => {
+  const largeMatch = useMediaQuery('(min-width: 1024px)')
+  const [activeTab, setActiveTab] = useState(tabs[0].id)
+  console.log(largeMatch)
   return (
     <section id="program-navigation"
       className="flex w-full flex-col p-3 max-w-screen-xl mx-auto"
     >
-      <Tabs aria-label="Dynamic tabs" items={tabs} classNames={{
-        base: 'mx-auto w-full',
-        tabList: 'overflow-x-scroll mx-auto',
-      }}>
+      {
+        largeMatch ? <></> : (
+          <Dropdown>
+            <DropdownTrigger>
+              <Button variant="ghost" className="w-full">
+                Program: {tabs.find(tab => tab.id === activeTab)?.title}
+              </Button>
+            </DropdownTrigger>
+            <DropdownMenu>
+              {
+                tabs.map((tab) => (
+                  <DropdownItem
+                    key={tab.id}
+                    onClick={() => setActiveTab(tab.id)}
+                  >
+                    {tab.title}
+                  </DropdownItem>
+                ))
+              }
+            </DropdownMenu>
+          </Dropdown>
+        )
+      }
+      <Tabs
+        aria-label="Program Navigation"
+        items={tabs} classNames={{
+          base: 'mx-auto w-full' + (largeMatch ? '' : ' hidden'),
+          tabList: 'overflow-x-scroll mx-auto',
+        }}
+        selectedKey={largeMatch ? undefined : activeTab}
+      >
         {(item) => (
           <Tab key={item.id} title={item.title}>
             <Card>
               <CardBody className="flex flex-col gap-3 lg:flex-row lg:p-10">
-                <div className='lg:w-96 flex flex-col'>
+                <div className='lg:w-96 flex flex-col gap-3'>
                   <div>
                     <Image width={'auto'} height={50} src={item.logo} alt={item.title} className="bg-white p-1" />
                     <h3>{item.description}</h3>
                   </div>
-                  <div>
+                  <div className='flex flex-col gap-3'>
                     {
                       item.announcement ? (
                         <div className='text-gray-500'>
@@ -312,10 +344,10 @@ const ProgramNavigation = () => {
                   {
                     item.menu?.map((menu, index) => (
                       <div key={index} className="flex flex-col divide-slate-400/25 gap-3 pt-3">
-                        <h4 className="text-gray-400">{menu.label}</h4>
+                        <h4 className="font-bold">{menu.label}</h4>
                         {
                           menu.submenu.map((submenu, index) => (
-                            <Link key={index} href={submenu.url}>
+                            <Link key={index} href={submenu.url} className='text-blue-500 dark:text-primary' underline='always'>
                               {submenu.label}
                             </Link>
                           ))

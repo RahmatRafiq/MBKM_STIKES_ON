@@ -30,6 +30,6 @@ export default defineConfig({
     },
   },
   esbuild: {
-    drop: ['console', 'debugger']
+    drop: import.meta.env.APP_ENV === 'production' ? ['console', 'debugger'] : [],
   }
 })
