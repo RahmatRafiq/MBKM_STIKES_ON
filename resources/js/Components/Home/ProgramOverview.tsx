@@ -29,12 +29,19 @@ const ProgramOverview = () => {
     return (
         <section className="flex w-full flex-col p-3 max-w-screen-xl mx-auto">
             {/* Section Deskripsi Program */}
-            <div className="flex w-full flex-col p-3 max-w-screen-xl mx-auto">
+            <div className="flex flex-col lg:flex-row w-full p-3 max-w-screen-xl mx-auto lg:justify-center lg:items-center gap-8">
+                {/* Name and Description */}
                 <div className="max-w-lg text-gray-900 dark:text-white flex-grow">
-                    <h2 className="text-4xl font-bossa font-bold mb-4 break-words">{overviewData.name}</h2> {/* Nama program dari API */}
-                    <p className="text-lg break-words max-w-full">{overviewData.description}</p> {/* Deskripsi program dari API */}
+                    <h2 className="text-4xl font-bossa font-bold mb-4 break-words text-center lg:text-left">
+                        {overviewData.name}
+                    </h2> {/* Nama program dari API */}
+                    <p className="text-lg break-words max-w-full text-center lg:text-left">
+                        {overviewData.description}
+                    </p> {/* Deskripsi program dari API */}
                 </div>
-                <div className="flex justify-end w-full lg:w-auto">
+
+                {/* Program Image */}
+                <div className="flex justify-center lg:justify-end w-full lg:w-auto">
                     <Image
                         src={KampusMerLogo}
                         alt={overviewData.name}
@@ -45,10 +52,11 @@ const ProgramOverview = () => {
                 </div>
             </div>
 
-
             {/* Section Manfaat Program */}
-            <div className="text-gray-900 dark:text-white">
-                <h3 className="text-2xl font-bossa font-bold mb-6 text-center">Apa saja manfaat program Kampus Merdeka?</h3>
+            <div className="text-gray-900 dark:text-white mt-10">
+                <h3 className="text-2xl font-bossa font-bold mb-6 text-center">
+                    Apa saja manfaat program Kampus Merdeka?
+                </h3>
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
                     {/* Manfaat 1 */}
                     <div className="flex flex-col items-center text-center">
