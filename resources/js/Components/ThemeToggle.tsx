@@ -1,20 +1,12 @@
 import { Tab, Tabs } from "@nextui-org/react"
-import { useEffect, useState } from "react"
+import { useState } from "react"
 import { MdOutlineComputer, MdOutlineDarkMode, MdOutlineLightMode } from "react-icons/md"
 
-type Mode = 'light' | 'dark'
+type Mode = 'light' | 'dark' | 'system'
 
 function ThemeToggle() {
-  const systemTheme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'
-  const initialTheme = localStorage.getItem('theme') as Mode || systemTheme
+  const initialTheme = localStorage.getItem('theme') as Mode || 'system'
   const [theme, setTheme] = useState<Mode>(initialTheme)
-
-  // detect system theme
-
-  useEffect(() => {
-
-    setTheme(theme)
-  }, [])
 
   return (
     <Tabs
