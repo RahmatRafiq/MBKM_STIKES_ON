@@ -308,10 +308,10 @@ const ProgramNavigation = () => {
                     </div>
                   </div>
                 </div>
-                <div className="py-3 divide-y lg:divide-y-0 flex flex-col gap-3 lg:flex-row">
+                <div className="py-3 divide-y lg:divide-y-0 flex flex-col gap-3 lg:flex-row lg:py-0">
                   {
                     item.menu?.map((menu, index) => (
-                      <div key={index} className="grid grid-cols-1 divide-slate-400/25 gap-3 pt-3">
+                      <div key={index} className="flex flex-col divide-slate-400/25 gap-3 pt-3">
                         <h4 className="text-gray-400">{menu.label}</h4>
                         {
                           menu.submenu.map((submenu, index) => (
