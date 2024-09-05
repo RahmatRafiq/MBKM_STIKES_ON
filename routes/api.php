@@ -24,6 +24,7 @@ Route::middleware([ApiKeyMiddleware::class])->group(function () {
 
 Route::get('/programs', [ApiHomeController::class, 'getPrograms']);
 Route::get('/overview', [ApiHomeController::class, 'getOverviewData']);
+Route::get('/requirements', [ApiHomeController::class, 'getRequirementsData']);
 
 
 Route::fallback(function () {
