@@ -1,4 +1,5 @@
 import Onboarding from "@/Components/Home/Onboarding"
+import ProgramOverview from "@/Components/Home/ProgramOverview"
 import ProgramNavigation from "@/Components/Home/ProgramNavigation"
 import Requirements from "@/Components/Home/Requirements"
 import Guest from "@/Layouts/Guest"
@@ -8,6 +9,7 @@ const Home = () => {
   return (
     <Guest className="min-h-svh flex flex-col gap-8">
       <Onboarding />
+      <ProgramOverview />
       <ProgramNavigation />
       <Requirements />
     </Guest>
