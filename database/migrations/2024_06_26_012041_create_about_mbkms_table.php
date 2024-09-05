@@ -16,8 +16,8 @@ return new class extends Migration
             $table->string('program_name');
             $table->text('description');
             $table->string('duration')->nullable(); // Duration of the program
-            $table->string('eligibility')->nullable(); // Eligibility criteria for the program
-            $table->string('benefits')->nullable(); // Benefits of the program
+            $table->json('eligibility')->nullable(); // Eligibility criteria for the program
+            $table->json('benefits')->nullable(); // Benefits of the program
             $table->string('contact_email')->nullable(); // Contact email for inquiries
             $table->string('contact_phone')->nullable(); // Contact phone number for inquiries
             $table->string('contact_address')->nullable(); // Contact address for inquiries
