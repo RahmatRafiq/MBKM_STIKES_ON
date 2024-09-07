@@ -3,9 +3,11 @@
 use App\Http\Controllers\QuestionnaireController;
 use Illuminate\Support\Facades\Route;
 
-Route::get('/home', [\App\Http\Controllers\Landing\HomeController::class, 'home'])->name('home');
-Route::get('/program', [App\Http\Controllers\Landing\ProgramController::class, 'index'])->name('program.index');
-Route::get('/help', [App\Http\Controllers\Landing\HelpController::class, 'index'])->name('help.index');
+Route::middleware(['auth.optional', 'inertia'])->group(function () {
+    Route::get('/home', [\App\Http\Controllers\Landing\HomeController::class, 'home'])->name('home');
+    Route::get('/program', [App\Http\Controllers\Landing\ProgramController::class, 'index'])->name('program.index');
+    Route::get('/help', [App\Http\Controllers\Landing\HelpController::class, 'index'])->name('help.index');
+});
 
 Route::middleware('auth')->group(function () {
     Route::get('/', [\App\Http\Controllers\DashboardController::class, 'index'])->name('dashboard');
