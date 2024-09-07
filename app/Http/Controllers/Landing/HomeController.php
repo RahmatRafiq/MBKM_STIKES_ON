@@ -26,9 +26,17 @@ class HomeController extends Controller
             'description' => $aboutMbkm->description, // Deskripsi program
             'benefits' => json_decode($aboutMbkm->benefits), // Benefits sebagai array
         ];
+
+        $footer = [
+            'contact_email' => $aboutMbkm->contact_email,
+            'contact_phone' => $aboutMbkm->contact_phone,
+            'contact_address' => $aboutMbkm->contact_address,
+        ];
+
         return inertia('Home', [
             'programs' => $programs,
-            'overview' => $overview
+            'overview' => $overview,
+            'footer' => $footer,
         ]);
     }
 }
