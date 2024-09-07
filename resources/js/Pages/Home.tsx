@@ -17,7 +17,7 @@ const Home = (props: Props) => {
     <Guest className="min-h-svh flex flex-col gap-8">
       <Onboarding />
       <ProgramOverview data={props.overview} />
-      <ProgramNavigation />
+      <ProgramNavigation data={props.programs} />
       <Requirements />
     </Guest>
   )
