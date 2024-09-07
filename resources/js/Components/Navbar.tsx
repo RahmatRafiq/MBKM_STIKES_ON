@@ -48,6 +48,9 @@ const Navbar = () => {
               <Dropdown>
                 <DropdownTrigger>
                   <User
+                    classNames={{
+                      base: 'cursor-pointer'
+                    }}
                     name={pageProps.auth.user.name}
                     description={pageProps.auth.user.email}
                   />
