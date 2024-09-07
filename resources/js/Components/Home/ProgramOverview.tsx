@@ -8,12 +8,13 @@ type Props = {
 }
 
 const ProgramOverview = (props: Props) => {
-//   // State untuk menyimpan data overview dari API
-//   const [overviewData, setOverviewData] = useState({
-//     name: '',
-//     description: '',
-//     benefits: []
-//   })
+  console.log(props.data)
+  //   // State untuk menyimpan data overview dari API
+  //   const [overviewData, setOverviewData] = useState({
+  //     name: '',
+  //     description: '',
+  //     benefits: []
+  //   })
 
   //   // Menjemput data dari API ketika komponen pertama kali di-render
   //   useEffect(() => {
