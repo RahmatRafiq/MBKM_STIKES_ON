@@ -1,7 +1,7 @@
 import { usePage } from "@inertiajs/react"
 import { Button, Dropdown, DropdownItem, DropdownMenu, DropdownTrigger, Link, Navbar as NavbarBase, NavbarBrand, NavbarContent, NavbarItem, NavbarMenu, NavbarMenuItem, NavbarMenuToggle, User } from "@nextui-org/react"
-import { useEffect } from "react"
 import { route } from "ziggy-js"
+import { Link as InertiaLink } from "@inertiajs/react"
 
 const menuItems = [
   {
@@ -20,12 +20,18 @@ const menuItems = [
 
 
 const Navbar = () => {
-  const pageProps = usePage().props
-
+  const page = usePage()
+  const pageProps = page.props
 
   return (
     <NavbarBase
       shouldHideOnScroll
+      classNames={{
+        item: [
+          'data-[active="true"]:font-bold',
+          'data-[active="true"]:border-b-2',
+        ]
+      }}
     >
       <NavbarBrand>
         <Link href="#">
@@ -35,8 +41,14 @@ const Navbar = () => {
       <NavbarContent className="hidden sm:flex gap-4" justify="center">
         {
           menuItems.map((item, index) => (
-            <NavbarItem key={index}>
-              <Link href={item.url} className="text-foreground">{item.label}</Link>
+            <NavbarItem key={index}
+              isActive={page.url === new URL(item.url).pathname}
+            >
+              <Link
+                href={item.url}
+                className="text-foreground"
+                as={InertiaLink}
+              >{item.label}</Link>
             </NavbarItem>
           ))
         }
