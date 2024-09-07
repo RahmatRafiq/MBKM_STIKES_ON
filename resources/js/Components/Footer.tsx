@@ -8,6 +8,7 @@ const Footer = () => {
     contact_phone: string;
     contact_address: string;
   }
+  const currentYear = new Date().getFullYear()
 
   if (!footer) {
     return null
@@ -24,7 +25,6 @@ const Footer = () => {
       >
         <CardBody>
           <div className="grid grid-cols-6 md:grid-cols-12 gap-6 md:gap-4 items-center justify-center">
-            {/* Bagian Gambar */}
             <div className="relative col-span-6 md:col-span-4">
               <Image
                 alt="Logo MBKM"
@@ -35,13 +35,11 @@ const Footer = () => {
                 src="/assets/images/mbkm.png" // Path ke gambar logo MBKM
               />
             </div>
-
-            {/* Bagian Teks */}
             <div className="flex flex-col col-span-6 md:col-span-8">
               <div className="flex justify-between items-start">
                 <div className="flex flex-col gap-0">
                   <h3 className="font-semibold text-foreground/90 uppercase tracking-wide text-sm text-indigo-500 dark:text-indigo-300">
-                    Direktorat Jenderal Pendidikan Tinggi, Riset, dan Teknologi (Diktiristek)
+                  Program Kampus Merdeka STIKES Gunung Sari
                   </h3>
                   <p className="text-lg font-medium mt-2 text-black dark:text-white">
                     Email: <a href={`mailto:${footer.contact_email}`} className="text-blue-400 dark:text-blue-300 hover:underline">{footer.contact_email}</a>
@@ -58,12 +56,8 @@ const Footer = () => {
           </div>
         </CardBody>
       </Card>
-
-
-
-      {/* Bagian Footer Bawah */}
       <div className="flex justify-between items-center flex-col-reverse sm:flex-row text-center text-sm mt-5 px-8 space-x-4">
-        <span className="text-gray-500 dark:text-gray-400">&copy; 2022 Kementerian Pendidikan dan Kebudayaan RI</span>
+        <span className="text-gray-500 dark:text-gray-400">&copy; {currentYear} STIKES Gunung Sari</span>
         <div className="mt-3 sm:mt-0">
           <ThemeToggle />
         </div>
@@ -71,5 +65,4 @@ const Footer = () => {
     </footer>
   )
 }
-
 export default Footer
