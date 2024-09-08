@@ -9,7 +9,7 @@
     @routes
     <script>
         // detect dark mode
-        if (window.localStorage.getItem('theme') == 'dark' || window.matchMedia('(prefers-color-scheme: dark)').matches) {
+        if (window.localStorage.getItem('theme') == 'dark') {
             document.documentElement.classList.add('dark')
         } else {
             document.documentElement.classList.remove('dark')

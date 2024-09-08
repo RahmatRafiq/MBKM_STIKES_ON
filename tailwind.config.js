@@ -1,5 +1,6 @@
 import { nextui } from '@nextui-org/react'
 import defaultTheme from 'tailwindcss/defaultTheme'
+import typography from '@tailwindcss/typography'
 
 /** @type {import('tailwindcss').Config} */
 export default {
@@ -20,5 +21,24 @@ export default {
     },
   },
   darkMode: "class",
-  plugins: [nextui(), import('@tailwindcss/typography') ],
+  plugins: [
+    typography,
+    nextui({
+      themes: {
+        light: {
+          colors: {
+            primary: {
+              DEFAULT: '#FFD73B',
+              foreground: '#000000',
+            },
+          }
+        },
+        dark: {
+          colors: {
+            primary: '#FFD73B'
+          }
+        },
+      }
+    }),
+  ],
 }

@@ -1,6 +1,7 @@
 import { defineConfig } from 'vite'
 import laravel from 'laravel-vite-plugin'
 import react from '@vitejs/plugin-react'
+import process from 'process'
 
 
 export default defineConfig({
@@ -30,6 +31,6 @@ export default defineConfig({
     },
   },
   esbuild: {
-    drop: ['console', 'debugger']
+    drop: process.env.APP_ENV === 'production' ? ['console', 'debugger'] : [],
   }
 })

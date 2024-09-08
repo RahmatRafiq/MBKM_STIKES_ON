@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Models\BatchMbkm;
 use App\Models\Lowongan;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -15,9 +16,13 @@ class ApiLowonganController extends Controller
     {
         $search = $request->query('search');
         $type = $request->query('type');
-        $query = Lowongan::with(['mitra' => function($query) {
-            $query->select('id', 'name', 'type'); // Ambil kolom yang diperlukan
-        }]);
+        $page = $request->query('page', 1);
+
+        $query = Lowongan::with([
+            'mitra' => function ($query) {
+                $query->select('id', 'name', 'type'); // Ambil kolom yang diperlukan
+            }
+        ]);
 
         if ($search) {
             $query->where('name', 'like', "%{$search}%");
@@ -29,7 +34,9 @@ class ApiLowonganController extends Controller
             });
         }
 
-        $lowongans = $query->paginate(10);
+        $lowongans = $query
+            ->inRandomOrder(now()->hour)
+            ->paginate(10, page: $page);
 
         // Map untuk menambahkan URL gambar dari koleksi mitra
         $lowongans->getCollection()->transform(function ($lowongan) {
@@ -45,6 +52,7 @@ class ApiLowonganController extends Controller
                 'experience_required' => $lowongan->experience_required,
                 'start_date' => $lowongan->start_date,
                 'end_date' => $lowongan->end_date,
+                'month_duration' => (Carbon::parse($lowongan->start_date)->diffInMonths($lowongan->end_date, 1)) . ' bulan',
                 'mitra' => [
                     'id' => $lowongan->mitra->id,
                     'name' => $lowongan->mitra->name,
@@ -68,7 +76,7 @@ class ApiLowonganController extends Controller
 
         // Periksa apakah pengguna sudah login
         $isLoggedIn = Auth::check();
-
+        $peserta = auth()->user()->peserta;
         return response()->json([
             'status' => 'success',
             'message' => 'Detail lowongan berhasil diambil.',
@@ -84,12 +92,28 @@ class ApiLowonganController extends Controller
                 'experience_required' => $lowongan->experience_required,
                 'start_date' => $lowongan->start_date,
                 'end_date' => $lowongan->end_date,
-                'mitra' => [
-                    'id' => $lowongan->mitra->id,
-                    'name' => $lowongan->mitra->name,
-                    'type' => $lowongan->mitra->type,
-                    'image_url' => $lowongan->mitra->getFirstMediaUrl('images') // Ambil URL gambar
-                ],
+                'month_duration' => (Carbon::parse($lowongan->start_date)->diffInMonths($lowongan->end_date, 1)) . ' bulan',
+                'is_registered' => $lowongan->registrations->contains('peserta_id', $peserta->id),
+                'mitra' => array_merge(
+                    $lowongan->mitra->toArray(),
+                    [
+                        'image_url' => $lowongan->mitra->getFirstMediaUrl('images'),
+                        'others' => $lowongan->mitra->lowongan->map(function ($item) {
+                            return [
+                                'id' => $item->id,
+                                'name' => $item->name,
+                                'location' => $item->location,
+                                'month_duration' => Carbon::parse($item->start_date)->diffInMonths($item->end_date, 1) . ' bulan',
+                                'mitra' => [
+                                    'id' => $item->mitra->id,
+                                    'name' => $item->mitra->name,
+                                    'type' => $item->mitra->type,
+                                    'image_url' => $item->mitra->getFirstMediaUrl('images')
+                                ]
+                            ];
+                        })
+                    ]
+                ),
                 'can_register' => $isLoggedIn, // Tambahkan informasi apakah user bisa mendaftar atau tidak
             ]
         ]);
@@ -123,11 +147,15 @@ class ApiLowonganController extends Controller
             return response()->json(['message' => 'Anda sudah mendaftar di lowongan ini.'], 400);
         }
 
+        $lowongan = Lowongan::find($lowonganId);
+
         // Simpan pendaftaran baru
         $peserta->registrations()->create([
             'lowongan_id' => $lowonganId,
             'status' => 'registered',
             'batch_id' => $batchId,
+            'nama_peserta' => $peserta->nama,
+            'nama_lowongan' => $lowongan->name,
         ]);
 
         return response()->json(['message' => 'Pendaftaran berhasil.'], 201);

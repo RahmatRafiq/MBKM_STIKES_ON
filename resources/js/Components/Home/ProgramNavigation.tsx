@@ -1,8 +1,9 @@
 import KampusMengajarLogo from '@/Images/kampus-mengajar.webp'
 import MagangLogo from '@/Images/msib-logo.webp'
 import PertukaranMahasiswaLogo from '@/Images/pmm.webp'
-import { Button, Card, CardBody, Image, Link, Tab, Tabs } from '@nextui-org/react'
-import TypeProgram from '@/types/type-program'
+import { Button, Card, CardBody, Dropdown, DropdownItem, DropdownMenu, DropdownTrigger, Image, Link, Tab, Tabs } from "@nextui-org/react"
+import { useState } from 'react'
+import { useMediaQuery } from 'usehooks-ts'
 
 // Definisikan TabType untuk menjaga konsistensi tipe data
 type TabType = {
@@ -102,6 +103,7 @@ const ProgramNavigation = (props: Props) => {
   // Cek jika props.data ada dan panjangnya sesuai dengan staticTabs
   if (!props.data || props.data.length === 0) {
     return <p>Loading data...</p> // Bisa diganti dengan spinner atau loader lainnya
+
   }
 
   // Map the static data with the dynamic titles and descriptions from props
@@ -120,12 +122,13 @@ const ProgramNavigation = (props: Props) => {
           base: 'mx-auto w-full',
           tabList: 'overflow-x-scroll mx-auto',
         }}
+
       >
         {(item) => (
           <Tab key={item.id} title={item.title}>
             <Card>
               <CardBody className="flex flex-col gap-3 lg:flex-row lg:p-10">
-                <div className="lg:w-96 flex flex-col">
+                <div className='lg:w-96 flex flex-col gap-3'>
                   <div>
                     <Image
                       width="auto"
@@ -136,12 +139,16 @@ const ProgramNavigation = (props: Props) => {
                     />
                     <h3>{item.description}</h3> {/* Dynamic description */}
                   </div>
-                  <div>
-                    {item.announcement ? (
-                      <div className="text-gray-500">
-                        {item.announcement}
-                      </div>
-                    ) : null}
+
+                  <div className='flex flex-col gap-3'>
+                    {
+                      item.announcement ? (
+                        <div className='text-gray-500'>
+                          {item.announcement}
+                        </div>
+                      ) : <></>
+                    }
+
                     <div className="flex gap-3">
                       {item.buttonLinks.map((buttonLink, index) => (
                         <a key={index} href={buttonLink.url}>
@@ -153,17 +160,22 @@ const ProgramNavigation = (props: Props) => {
                     </div>
                   </div>
                 </div>
-                <div className="py-3 divide-y lg:divide-y-0 flex flex-col gap-3 lg:flex-row lg:py-0">
-                  {item.menu?.map((menu, index) => (
-                    <div key={index} className="flex flex-col divide-slate-400/25 gap-3 pt-3">
-                      <h4 className="text-gray-400">{menu.label}</h4>
-                      {menu.submenu.map((submenu, index) => (
-                        <Link key={index} href={submenu.url}>
-                          {submenu.label}
-                        </Link>
-                      ))}
-                    </div>
-                  ))}
+
+                <div className="py-3 divide-y lg:divide-y-0 flex flex-col gap-3 lg:flex-row lg:py-0 ">
+                  {
+                    item.menu?.map((menu, index) => (
+                      <div key={index} className="flex flex-col divide-slate-400/25 gap-3 pt-3">
+                        <h4 className="font-bold">{menu.label}</h4>
+                        {
+                          menu.submenu.map((submenu, index) => (
+                            <Link key={index} href={submenu.url} className='text-blue-500 dark:text-primary' underline='always'>
+                              {submenu.label}
+                            </Link>
+                          ))
+                        }
+                      </div>
+                    ))
+                  }
                 </div>
               </CardBody>
             </Card>

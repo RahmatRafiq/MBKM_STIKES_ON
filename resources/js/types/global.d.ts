@@ -7,6 +7,6 @@ declare global {
     interface Window {
         axios: AxiosInstance;
     }
-    // export const route: typeof ziggyRoute
+    export const route: typeof ziggyRoute
 }
 
