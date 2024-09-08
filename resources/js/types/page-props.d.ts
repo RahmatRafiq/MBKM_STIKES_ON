@@ -8,6 +8,7 @@ declare module '@inertiajs/core' {
             permissions: string[];
         };
     }
+    csrf_token: string;
   }
 }
 
