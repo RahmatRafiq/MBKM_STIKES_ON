@@ -1,5 +1,6 @@
 import { nextui } from '@nextui-org/react'
 import defaultTheme from 'tailwindcss/defaultTheme'
+import typography from '@tailwindcss/typography'
 
 /** @type {import('tailwindcss').Config} */
 export default {
@@ -21,7 +22,7 @@ export default {
   },
   darkMode: "class",
   plugins: [
-    import('@tailwindcss/typography'),
+    typography,
     nextui({
       themes: {
         light: {
