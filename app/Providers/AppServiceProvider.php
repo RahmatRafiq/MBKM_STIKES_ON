@@ -25,5 +25,7 @@ class AppServiceProvider extends ServiceProvider
         $router = $this->app->make(Router::class);
         $router->aliasMiddleware('role', RoleMiddleware::class);
         $router->aliasMiddleware('permission', PermissionMiddleware::class);
+
+        $router->aliasMiddleware('api.key', \App\Http\Middleware\ApiKeyMiddleware::class);
     }
 }

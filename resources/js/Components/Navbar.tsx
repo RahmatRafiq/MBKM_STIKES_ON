@@ -1,5 +1,7 @@
-import { Button, Link, Navbar as NavbarBase, NavbarBrand, NavbarContent, NavbarItem, NavbarMenu, NavbarMenuItem, NavbarMenuToggle } from "@nextui-org/react"
+import { usePage } from "@inertiajs/react"
+import { Button, Dropdown, DropdownItem, DropdownMenu, DropdownTrigger, Link, Navbar as NavbarBase, NavbarBrand, NavbarContent, NavbarItem, NavbarMenu, NavbarMenuItem, NavbarMenuToggle, User } from "@nextui-org/react"
 import { route } from "ziggy-js"
+import { Link as InertiaLink } from "@inertiajs/react"
 
 const menuItems = [
   {
@@ -16,12 +18,20 @@ const menuItems = [
   }
 ]
 
+
 const Navbar = () => {
-  // const [isMenuOpen, setIsMenuOpen] = useState(false)
+  const page = usePage()
+  const pageProps = page.props
 
   return (
     <NavbarBase
       shouldHideOnScroll
+      classNames={{
+        item: [
+          'data-[active="true"]:font-bold',
+          'data-[active="true"]:border-b-2',
+        ]
+      }}
     >
       <NavbarBrand>
         <Link href="#">
@@ -31,17 +41,47 @@ const Navbar = () => {
       <NavbarContent className="hidden sm:flex gap-4" justify="center">
         {
           menuItems.map((item, index) => (
-            <NavbarItem key={index}>
-              <Link href={item.url} className="text-foreground">{item.label}</Link>
+            <NavbarItem key={index}
+              isActive={page.url === new URL(item.url).pathname}
+            >
+              <Link
+                href={item.url}
+                className="text-foreground"
+                as={InertiaLink}
+              >{item.label}</Link>
             </NavbarItem>
           ))
         }
       </NavbarContent>
       <NavbarContent justify="end" className="hidden sm:flex">
         <NavbarItem>
-          <Button as={Link} color="default" href={route('login')} variant="bordered" className="border-foreground dark:border-foreground">
+          {
+            pageProps.auth.user ? (
+              <Dropdown>
+                <DropdownTrigger>
+                  <User
+                    classNames={{
+                      base: 'cursor-pointer'
+                    }}
+                    name={pageProps.auth.user.name}
+                    description={pageProps.auth.user.email}
+                  />
+                </DropdownTrigger>
+                <DropdownMenu variant="faded" aria-label="Dropdown menu with description">
+                  <DropdownItem
+                    key="kegiatan"
+                    href={route('dashboard')} // TODO: Change this to the correct route
+                  >
+                    Kegiatanku
+                  </DropdownItem>
+                </DropdownMenu>
+              </Dropdown>
+            ) : (
+              <Button as={Link} color="default" href={route('login')} variant="bordered" className="border-foreground dark:border-foreground">
             Login
-          </Button>
+              </Button>
+            )
+          }
         </NavbarItem>
       </NavbarContent>
 
@@ -53,7 +93,7 @@ const Navbar = () => {
           <NavbarMenuItem key={`${item}-${index}`}>
             <Link
               color={
-                index === 2 ? "primary" : index === menuItems.length - 1 ? "danger" : "foreground"
+                index === menuItems.length - 1 ? "secondary" : "foreground"
               }
               className="w-full"
               href="#"
@@ -63,18 +103,32 @@ const Navbar = () => {
             </Link>
           </NavbarMenuItem>
         ))}
-        <NavbarMenuItem>
-          <Button
-            className="w-full"
-            color="primary"
-            variant="flat"
-            size="lg"
-            as={Link}
-            href={route('login')}
-          >
+        {
+          pageProps.auth.user ? (
+            <NavbarMenuItem>
+              <Link
+                color="foreground"
+                className="w-full"
+                href={route('dashboard')}
+                size="lg"
+              >
+                Kegiatanku
+              </Link>
+            </NavbarMenuItem>
+          ) : (
+            <NavbarMenuItem>
+              <Button
+                as={Link}
+                color="default"
+                href={route('login')}
+                variant="bordered"
+                className="border-foreground dark:border-foreground"
+              >
                 Login
-          </Button>
-        </NavbarMenuItem>
+              </Button>
+            </NavbarMenuItem>
+          )
+        }
       </NavbarMenu>
     </NavbarBase>
   )

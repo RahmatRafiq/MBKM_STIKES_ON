@@ -7,6 +7,7 @@ type Props = {
 }
 
 const Guest = ({ children, className }: Props) => {
+  className = className || 'container mx-auto px-4 min-h-svh'
 
   return (
     <>

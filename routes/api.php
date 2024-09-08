@@ -5,7 +5,7 @@ use App\Http\Controllers\Api\ApiLowonganController;
 use App\Http\Middleware\ApiKeyMiddleware;
 use Illuminate\Support\Facades\Route;
 
-Route::group([], function () {
+Route::middleware(['auth.optional'])->group(function () {
     Route::get('/lowongan', [ApiLowonganController::class, 'getLowongan'])->name('api.lowongan.index');
 
     Route::get('/lowongan/{id}', [ApiLowonganController::class, 'getLowonganDetail'])->name('api.lowongan.detail');
