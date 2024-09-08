@@ -8,3 +8,26 @@
         src: url(/assets/fonts/Bossa-Bold.dbe4b9ea.woff2) format('woff2');
     }
 }
+
+/* Chrome, Safari and Opera */
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+.no-scrollbar {
+  -ms-overflow-style: none;  /* IE and Edge */
+  scrollbar-width: none;  /* Firefox */
+}
+
+.swal2-popup {
+  @apply !bg-content2 !text-content2-foreground
+}
+
+/* swal2 progress bar */
+.swal2-timer-progress-bar {
+  @apply !bg-primary
+}
+
+.swal2-confirm{
+    @apply !bg-primary !text-primary-foreground
+}
