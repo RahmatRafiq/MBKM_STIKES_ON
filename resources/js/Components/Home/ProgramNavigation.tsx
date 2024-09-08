@@ -1,9 +1,8 @@
 import KampusMengajarLogo from '@/Images/kampus-mengajar.webp'
 import MagangLogo from '@/Images/msib-logo.webp'
 import PertukaranMahasiswaLogo from '@/Images/pmm.webp'
-import { Button, Card, CardBody, Dropdown, DropdownItem, DropdownMenu, DropdownTrigger, Image, Link, Tab, Tabs } from "@nextui-org/react"
-import { useState } from 'react'
-import { useMediaQuery } from 'usehooks-ts'
+import { Button, Card, CardBody, Image, Link, Tab, Tabs } from '@nextui-org/react'
+import TypeProgram from '@/types/type-program'
 
 // Definisikan TabType untuk menjaga konsistensi tipe data
 type TabType = {
