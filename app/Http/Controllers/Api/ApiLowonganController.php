@@ -21,7 +21,7 @@ class ApiLowonganController extends Controller
         $query = Lowongan::with([
             'mitra' => function ($query) {
                 $query->select('id', 'name', 'type'); // Ambil kolom yang diperlukan
-            }
+            },
         ]);
 
         if ($search) {
@@ -57,8 +57,8 @@ class ApiLowonganController extends Controller
                     'id' => $lowongan->mitra->id,
                     'name' => $lowongan->mitra->name,
                     'type' => $lowongan->mitra->type,
-                    'image_url' => $lowongan->mitra->getFirstMediaUrl('images') // Ambil URL gambar pertama
-                ]
+                    'image_url' => $lowongan->mitra->getFirstMediaUrl('images'), // Ambil URL gambar pertama
+                ],
             ];
         });
 
@@ -71,55 +71,54 @@ class ApiLowonganController extends Controller
 
     // Mendapatkan detail lowongan berdasarkan ID
     public function getLowonganDetail($id)
-{
-    $lowongan = Lowongan::with('mitra')->findOrFail($id);
+    {
+        $lowongan = Lowongan::with('mitra')->findOrFail($id);
 
-    // Periksa apakah pengguna sudah login
-    $isLoggedIn = Auth::check();
-    $peserta = $isLoggedIn ? auth()->user()->peserta : null;
+        // Periksa apakah pengguna sudah login
+        $isLoggedIn = Auth::check();
+        $peserta = $isLoggedIn ? auth()->user()->peserta : null;
 
-    return response()->json([
-        'status' => 'success',
-        'message' => 'Detail lowongan berhasil diambil.',
-        'data' => [
-            'id' => $lowongan->id,
-            'name' => $lowongan->name,
-            'description' => $lowongan->description,
-            'quota' => $lowongan->quota,
-            'is_open' => $lowongan->is_open,
-            'location' => $lowongan->location,
-            'gpa' => $lowongan->gpa,
-            'semester' => $lowongan->semester,
-            'experience_required' => $lowongan->experience_required,
-            'start_date' => $lowongan->start_date,
-            'end_date' => $lowongan->end_date,
-            'month_duration' => (Carbon::parse($lowongan->start_date)->diffInMonths($lowongan->end_date, 1)) . ' bulan',
-            'is_registered' => $peserta ? $lowongan->registrations->contains('peserta_id', $peserta->id) : false,
-            'mitra' => array_merge(
-                $lowongan->mitra->toArray(),
-                [
-                    'image_url' => $lowongan->mitra->getFirstMediaUrl('images'),
-                    'others' => $lowongan->mitra->lowongan->map(function ($item) {
-                        return [
-                            'id' => $item->id,
-                            'name' => $item->name,
-                            'location' => $item->location,
-                            'month_duration' => Carbon::parse($item->start_date)->diffInMonths($item->end_date, 1) . ' bulan',
-                            'mitra' => [
-                                'id' => $item->mitra->id,
-                                'name' => $item->mitra->name,
-                                'type' => $item->mitra->type,
-                                'image_url' => $item->mitra->getFirstMediaUrl('images')
-                            ]
-                        ];
-                    })
-                ]
-            ),
-            'can_register' => $isLoggedIn, // Tambahkan informasi apakah user bisa mendaftar atau tidak
-        ]
-    ]);
-}
-
+        return response()->json([
+            'status' => 'success',
+            'message' => 'Detail lowongan berhasil diambil.',
+            'data' => [
+                'id' => $lowongan->id,
+                'name' => $lowongan->name,
+                'description' => $lowongan->description,
+                'quota' => $lowongan->quota,
+                'is_open' => $lowongan->is_open,
+                'location' => $lowongan->location,
+                'gpa' => $lowongan->gpa,
+                'semester' => $lowongan->semester,
+                'experience_required' => $lowongan->experience_required,
+                'start_date' => $lowongan->start_date,
+                'end_date' => $lowongan->end_date,
+                'month_duration' => (Carbon::parse($lowongan->start_date)->diffInMonths($lowongan->end_date, 1)) . ' bulan',
+                'is_registered' => $peserta ? $lowongan->registrations->contains('peserta_id', $peserta->id) : false,
+                'mitra' => array_merge(
+                    $lowongan->mitra->toArray(),
+                    [
+                        'image_url' => $lowongan->mitra->getFirstMediaUrl('images'),
+                        'others' => $lowongan->mitra->lowongan->map(function ($item) {
+                            return [
+                                'id' => $item->id,
+                                'name' => $item->name,
+                                'location' => $item->location,
+                                'month_duration' => Carbon::parse($item->start_date)->diffInMonths($item->end_date, 1) . ' bulan',
+                                'mitra' => [
+                                    'id' => $item->mitra->id,
+                                    'name' => $item->mitra->name,
+                                    'type' => $item->mitra->type,
+                                    'image_url' => $item->mitra->getFirstMediaUrl('images'),
+                                ],
+                            ];
+                        }),
+                    ]
+                ),
+                'can_register' => $isLoggedIn, // Tambahkan informasi apakah user bisa mendaftar atau tidak
+            ],
+        ]);
+    }
 
     // Mendaftarkan pengguna ke lowongan
     public function registerForLowongan(Request $request)
