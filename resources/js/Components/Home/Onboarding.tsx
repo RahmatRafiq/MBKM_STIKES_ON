@@ -23,16 +23,16 @@ const Onboarding = () => {
 
         <div className="flex flex-col sm:flex-row gap-3">
           {/* Tombol Telusuri Program menggunakan InertiaLink */}
-          <InertiaLink href={route('program.index')}>
+          <InertiaLink href={route('program.index')} className="inline-block">
             <Button color="primary">
               Telusuri Program
             </Button>
           </InertiaLink>
 
           {/* Tombol Daftar Sekarang mengarahkan ke halaman Kegiatanku jika sudah login, jika belum login ke halaman Login */}
-          <InertiaLink href={isAuthenticated ? route('dashboard') : route('login')}>
+          <InertiaLink href={isAuthenticated ? route('dashboard') : route('login')} className="inline-block">
             <Button color="default">
-              Daftar Sekarang
+              {isAuthenticated ? "Kegiatanku" : "Daftar Sekarang"}
             </Button>
           </InertiaLink>
         </div>

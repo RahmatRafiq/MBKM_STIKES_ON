@@ -85,21 +85,23 @@ const Navbar = () => {
                 />
               </DropdownTrigger>
               <DropdownMenu variant="faded" aria-label="Dropdown menu with description">
-                <DropdownItem key="kegiatan" href={route("dashboard")}>
+                <DropdownItem key="kegiatan" as={InertiaLink} href={route("dashboard")}>
                   Kegiatanku
                 </DropdownItem>
               </DropdownMenu>
             </Dropdown>
           ) : (
-            // Menggunakan InertiaLink tanpa membungkus di Button untuk navigasi login
-            <InertiaLink href={route('login')}>
-              <Button
-                color="default"
-                variant="bordered"
-                className="border-foreground dark:border-foreground"
-              >
-                Login
-              </Button>
+            // Perbaikan utama: Gunakan <a> tag di dalam InertiaLink dengan Button
+            <InertiaLink href={route('login')} className="inline-block">
+              <a>
+                <Button
+                  color="default"
+                  variant="bordered"
+                  className="border-foreground dark:border-foreground"
+                >
+                  Login
+                </Button>
+              </a>
             </InertiaLink>
           )}
         </NavbarItem>
@@ -111,21 +113,23 @@ const Navbar = () => {
         {menuItems.map((item, index) => (
           <NavbarMenuItem key={`${item}-${index}`}>
             {/* Menggunakan Button di dalam InertiaLink agar style tetap konsisten */}
-            <Button as={InertiaLink} href={item.url} className="w-full">
-              {item.label}
-            </Button>
+            <InertiaLink href={item.url} className="w-full inline-block">
+              <Button className="w-full">
+                {item.label}
+              </Button>
+            </InertiaLink>
           </NavbarMenuItem>
         ))}
         {
           pageProps.auth.user ? (
             <NavbarMenuItem>
-              <InertiaLink href={route('dashboard')} className="w-full">
+              <InertiaLink href={route('dashboard')} className="w-full inline-block">
                 Kegiatanku
               </InertiaLink>
             </NavbarMenuItem>
           ) : (
             <NavbarMenuItem>
-              <InertiaLink href={route('login')} className="w-full">
+              <InertiaLink href={route('login')} className="w-full inline-block">
                 <Button
                   color="default"
                   variant="bordered"
