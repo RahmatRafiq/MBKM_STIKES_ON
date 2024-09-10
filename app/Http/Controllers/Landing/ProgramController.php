@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Landing;
 use App\Http\Controllers\Controller;
 use App\Models\Lowongan;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\Auth;
 
 class ProgramController extends Controller
 {
@@ -15,16 +16,10 @@ class ProgramController extends Controller
 
     public function show(Lowongan $lowongan)
     {
-        if (!auth()->check()) {
-            return redirect('/login');
-        }
-
-        $peserta = auth()->user()->peserta;
-
-        if (is_null($peserta)) {
-            return back()->with('error', 'Anda tidak terdaftar sebagai peserta');
-        }
-
+        // Mengambil data peserta jika pengguna sudah login, jika tidak tetap null
+        $peserta = auth()->check() ? auth()->user()->peserta : null;
+    
+        // Meload data mitra dan lowongan terkait
         $lowongan->load([
             'mitra',
             'mitra.lowongan' => function ($query) {
@@ -33,7 +28,8 @@ class ProgramController extends Controller
                     ->whereDate('end_date', '>=', now());
             }
         ]);
-
+    
+        // Return data ke Inertia tetap, meskipun peserta null
         return inertia('ProgramShow', [
             'data' => [
                 'id' => $lowongan->id,
@@ -48,7 +44,8 @@ class ProgramController extends Controller
                 'start_date' => Carbon::parse($lowongan->start_date)->format('d F Y'),
                 'end_date' => Carbon::parse($lowongan->end_date)->format('d F Y'),
                 'month_duration' => Carbon::parse($lowongan->start_date)->diffInMonths($lowongan->end_date, 1) . ' bulan',
-                'is_registered' => $lowongan->registrations->contains('peserta_id', $peserta->id),
+                // Set is_registered ke false jika peserta null
+                'is_registered' => $peserta ? $lowongan->registrations->contains('peserta_id', $peserta->id) : false,
                 'mitra' => array_merge(
                     $lowongan->mitra->toArray(),
                     [
@@ -72,4 +69,5 @@ class ProgramController extends Controller
             ]
         ]);
     }
+    
 }
