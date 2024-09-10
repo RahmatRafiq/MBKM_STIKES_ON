@@ -3,6 +3,15 @@
 use App\Http\Controllers\QuestionnaireController;
 use Illuminate\Support\Facades\Route;
 
+Route::middleware(['auth.optional', 'inertia'])->group(function () {
+    Route::get('/home', [\App\Http\Controllers\Landing\HomeController::class, 'home'])->name('home');
+    Route::get('/program', [App\Http\Controllers\Landing\ProgramController::class, 'index'])->name('program.index');
+    Route::get('/program/{id}/json', [App\Http\Controllers\Api\ApiLowonganController::class, 'getLowonganDetail'])->name('program.show.json');
+    Route::get('/program/{lowongan}', [App\Http\Controllers\Landing\ProgramController::class, 'show'])->name('program.show');
+    Route::post('/program/registrasi', [App\Http\Controllers\Api\ApiLowonganController::class, 'registerForLowongan'])->name('program.registrasi');
+    Route::get('/help', [App\Http\Controllers\Landing\HelpController::class, 'index'])->name('help.index');
+});
+
 Route::middleware('auth')->group(function () {
     Route::get('/', [\App\Http\Controllers\DashboardController::class, 'index'])->name('dashboard');
     Route::get('mbkm/profile', [\App\Http\Controllers\ProfileController::class, 'edit'])->name('profile.edit');
@@ -70,6 +79,8 @@ Route::middleware('auth')->group(function () {
         Route::get('/questionnaire/{peserta_id}/create', [QuestionnaireController::class, 'create'])->name('questionnaire.create');
         Route::post('/questionnaire/{peserta_id}', [QuestionnaireController::class, 'store'])->name('questionnaire.store');
         Route::get('/questionnaire/thankyou', [QuestionnaireController::class, 'thankyou'])->name('questionnaire.thankyou');
+Route::get('/questionnaire/{peserta_id}/responses', [QuestionnaireController::class, 'collectResponses'])->name('questionnaire.responses');
+Route::get('/questionnaire/participants/{peserta_id?}', [QuestionnaireController::class, 'showQuestionnaire'])->name('questionnaire.participants');
 
 
     });

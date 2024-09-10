@@ -24,7 +24,7 @@ class MitraProfile extends Model implements HasMedia
     ];
     public function lowongan()
     {
-        return $this->hasMany(Lowongan::class);
+        return $this->hasMany(Lowongan::class, 'mitra_id');
     }
 
     public function user()

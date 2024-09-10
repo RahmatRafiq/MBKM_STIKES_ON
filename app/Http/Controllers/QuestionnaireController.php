@@ -134,4 +134,94 @@ class QuestionnaireController extends Controller
     {
         return view('applications.mbkm.questionnaire.thankyou');
     }
+    // public function listParticipants()
+    // {
+    //     $participants = Peserta::whereHas('responses')->get();
+    //     return view('applications.mbkm.questionnaire.participants.index', compact('participants'));
+    // }
+
+    // public function collectResponses($peserta_id)
+    // {
+    //     // Mengambil data peserta beserta mitra, lowongan yang ditempati, dan response kuesioner
+    //     $peserta = Peserta::with(['registrationPlacement.lowongan.mitra', 'responses.details.question'])
+    //         ->findOrFail($peserta_id);
+
+    //     // Mendapatkan detail mitra dan lowongan yang ditempati
+    //     $mitra = $peserta->registrationPlacement->lowongan->mitra ?? null;
+    //     $lowongan = $peserta->registrationPlacement->lowongan ?? null;
+
+    //     // Mengumpulkan data respon dan detail jawaban kuesioner
+    //     $responses = $peserta->responses->map(function ($response) {
+    //         return [
+    //             'question' => $response->details->map(function ($detail) {
+    //                 return $detail->question->question_text;
+    //             }),
+    //             'answer' => $response->details->map(function ($detail) {
+    //                 return $detail->answer;
+    //             }),
+    //             'created_at' => $response->created_at->format('Y-m-d H:i:s'),
+    //         ];
+    //     });
+
+    //     // Membangun struktur data yang akan dikembalikan
+    //     $data = [
+    //         'nama_peserta' => $peserta->nama,
+    //         'nim' => $peserta->nim,
+    //         'jurusan' => $peserta->jurusan,
+    //         'jenis_kelamin' => $peserta->jenis_kelamin,
+    //         'email' => $peserta->email,
+    //         'mitra' => $mitra ? $mitra->name : 'N/A',
+    //         'lowongan' => $lowongan ? $lowongan->name : 'N/A',
+    //         'responses' => $responses,
+    //     ];
+
+    //     return view('applications.mbkm.questionnaire.questions.responses', compact('data'));
+    // }
+    public function showQuestionnaire(Request $request, $peserta_id = null)
+{
+    // Mengambil daftar peserta yang sudah mengisi kuisioner
+    $participants = Peserta::whereHas('responses')->get();
+
+    // Jika $peserta_id ada, ambil detail kuisionernya
+    $data = null;
+    if ($peserta_id) {
+        $peserta = Peserta::with(['registrationPlacement.lowongan.mitra', 'responses.details.question'])
+            ->findOrFail($peserta_id);
+
+        $mitra = $peserta->registrationPlacement->lowongan->mitra ?? null;
+        $lowongan = $peserta->registrationPlacement->lowongan ?? null;
+
+        $responses = $peserta->responses->map(function ($response) {
+            return [
+                'question' => $response->details->map(function ($detail) {
+                    return $detail->question->question_text;
+                }),
+                'answer' => $response->details->map(function ($detail) {
+                    return $detail->answer;
+                }),
+                'created_at' => $response->created_at->format('Y-m-d H:i:s'),
+            ];
+        });
+
+        $data = [
+            'nama_peserta' => $peserta->nama,
+            'nim' => $peserta->nim,
+            'jurusan' => $peserta->jurusan,
+            'jenis_kelamin' => $peserta->jenis_kelamin,
+            'email' => $peserta->email,
+            'mitra' => $mitra ? $mitra->name : 'N/A',
+            'lowongan' => $lowongan ? $lowongan->name : 'N/A',
+            'responses' => $responses,
+        ];
+    }
+
+    // Jika request adalah AJAX, kembalikan data sebagai JSON
+    if ($request->ajax()) {
+        return response()->json($data);
+    }
+
+    return view('applications.mbkm.questionnaire.participants', compact('participants', 'data'));
+}
+
+
 }

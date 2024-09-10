@@ -1,11 +1,12 @@
 <?php
 
 use App\Http\Controllers\Api\ApiController;
+use App\Http\Controllers\API\ApiHomeController;
 use App\Http\Controllers\Api\ApiLowonganController;
 use App\Http\Middleware\ApiKeyMiddleware;
 use Illuminate\Support\Facades\Route;
 
-Route::group([], function () {
+Route::middleware(['auth.optional'])->group(function () {
     Route::get('/lowongan', [ApiLowonganController::class, 'getLowongan'])->name('api.lowongan.index');
 
     Route::get('/lowongan/{id}', [ApiLowonganController::class, 'getLowonganDetail'])->name('api.lowongan.detail');
@@ -19,6 +20,12 @@ Route::middleware([ApiKeyMiddleware::class])->group(function () {
     Route::get('/mahasiswa-sisfo/json', [ApiController::class, 'getDataMahasiswaSisfo']);
     Route::get('/matakuliah-sisfo/json', [ApiController::class, 'getDataMataKuliahSisfo']);
 });
+
+
+// Route::get('/programs', [\App\Http\Controllers\API\ApiHomeController::class, 'getPrograms']);
+// Route::get('/overview', [ApiHomeController::class, 'getOverviewData']);
+// Route::get('/requirements', [ApiHomeController::class, 'getRequirementsData']);
+
 
 Route::fallback(function () {
     return response()->json([

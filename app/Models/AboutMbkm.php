@@ -20,9 +20,9 @@ class AboutMbkm extends Model
         'contact_address',
     ];
 
-    // Cast kolom 'eligibility' dan 'benefits' ke tipe array
+
     protected $casts = [
-        'eligibility' => 'array', // Laravel akan otomatis mengonversi JSON ke array
-        'benefits' => 'array', // Laravel akan otomatis mengonversi JSON ke array
+        'benefits' => 'array',
+        'eligibility' => 'array',
     ];
 }
