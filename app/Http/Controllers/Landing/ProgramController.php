@@ -17,6 +17,11 @@ class ProgramController extends Controller
 
     public function show(Lowongan $lowongan)
     {
+        // Ensure the user is authenticated
+        if (!auth()->check()) {
+            return redirect()->route('login');
+        }
+
         $lowongan->load([
             'mitra',
             'mitra.lowongan' => function ($query) {
