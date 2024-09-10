@@ -27,24 +27,3 @@ export interface Mitra {
     image_url?: string
     others?: Lowongan[]
 }
-
-export interface LowonganApiResponse {
-    current_page: number;
-    data: Lowongan[]; // Array dari objek Lowongan
-    first_page_url: string;
-    from: number;
-    last_page: number;
-    last_page_url: string;
-    next_page_url: string | null;
-    path: string;
-    per_page: number;
-    prev_page_url: string | null;
-    to: number;
-    total: number;
-}
-
-export interface FilterLowonganResponse {
-    status: string;
-    message: string;
-    data: LowonganApiResponse;
-}

@@ -72,30 +72,31 @@ const SearchFilterSection = ({ onFilterChange }: Props) => {
         className="border p-2 w-full"
         isClearable
       />
-
-      <Tabs
-        aria-label="Mitra Filter"
-        selectedKey={selectedMitra || ""}
-        onSelectionChange={(key) => handleMitraChange(key as string)}
-      >
-        <Tab key="" title="Semua Mitra">
+  
+      {/* Tambahkan class untuk memusatkan Tabs */}
+      <div className="flex justify-center items-center">
+        <Tabs
+          aria-label="Mitra Filter"
+          selectedKey={selectedMitra || ""}
+          onSelectionChange={(key) => handleMitraChange(key as string)}
+          variant="solid"
+          className="mx-auto"
+        >
+          <Tab key="" title="Semua Mitra">
           Semua Mitra
-        </Tab>
-        {mitraList.length > 0 ? (
+          </Tab>
+          {mitraList.length > 0 &&
           mitraList.map((type) => (
             <Tab key={type} title={type}>
               {type}
             </Tab>
-          ))
-        ) : (
-          <Tab key="empty" title="No mitra types available">
-            No mitra types available
-          </Tab>
-        )}
-      </Tabs>
-
+          ))}
+        </Tabs>
+      </div>
+  
       {isLoading && <Spinner />}
     </div>
+  
   )
 }
 
