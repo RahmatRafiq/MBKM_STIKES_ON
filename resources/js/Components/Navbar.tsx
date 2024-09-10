@@ -1,23 +1,37 @@
 import { usePage } from "@inertiajs/react"
-import { Button, Dropdown, DropdownItem, DropdownMenu, DropdownTrigger, Link, Navbar as NavbarBase, NavbarBrand, NavbarContent, NavbarItem, NavbarMenu, NavbarMenuItem, NavbarMenuToggle, User } from "@nextui-org/react"
-import { route } from "ziggy-js"
-import { Link as InertiaLink } from "@inertiajs/react"
+import {
+  Button,
+  Dropdown,
+  DropdownItem,
+  DropdownMenu,
+  DropdownTrigger,
+  Link,
+  Navbar as NavbarBase,
+  NavbarBrand,
+  NavbarContent,
+  NavbarItem,
+  NavbarMenu,
+  NavbarMenuItem,
+  NavbarMenuToggle,
+  User,
+} from "@nextui-org/react"
+import { route } from "ziggy-js" // Menggunakan Ziggy untuk route
+import { Link as InertiaLink } from "@inertiajs/react" // Menggunakan InertiaLink untuk navigasi tanpa reload
 
 const menuItems = [
   {
-    label: 'Beranda',
-    url: route('home'),
+    label: "Beranda",
+    url: route("home"),
   },
   {
-    label: 'Program',
-    url: route('program.index'),
+    label: "Program",
+    url: route("program.index"), // Menu Program ke halaman Program
   },
   {
-    label: 'Butuh Bantuan?',
-    url: route('help.index'),
-  }
+    label: "Butuh Bantuan?",
+    url: route("help.index"),
+  },
 ]
-
 
 const Navbar = () => {
   const page = usePage()
@@ -30,102 +44,100 @@ const Navbar = () => {
         item: [
           'data-[active="true"]:font-bold',
           'data-[active="true"]:border-b-2',
-        ]
+        ],
       }}
     >
       <NavbarBrand>
         <Link href="#">
-          <img src="/assets/images/mbkm.png" alt={import.meta.env.VITE_APP_NAME} className="h-10" />
+          <img
+            src="/assets/images/mbkm.png"
+            alt={import.meta.env.VITE_APP_NAME}
+            className="h-10"
+          />
         </Link>
       </NavbarBrand>
+
       <NavbarContent className="hidden sm:flex gap-4" justify="center">
-        {
-          menuItems.map((item, index) => (
-            <NavbarItem key={index}
-              isActive={page.url === new URL(item.url).pathname}
-            >
-              <Link
-                href={item.url}
-                className="text-foreground"
-                as={InertiaLink}
-              >{item.label}</Link>
-            </NavbarItem>
-          ))
-        }
+        {menuItems.map((item, index) => (
+          <NavbarItem
+            key={index}
+            isActive={page.url === new URL(item.url).pathname}
+          >
+            {/* Menggunakan InertiaLink untuk navigasi tanpa reload halaman */}
+            <InertiaLink href={item.url} className="text-foreground">
+              {item.label}
+            </InertiaLink>
+          </NavbarItem>
+        ))}
       </NavbarContent>
+
       <NavbarContent justify="end" className="hidden sm:flex">
         <NavbarItem>
-          {
-            pageProps.auth.user ? (
-              <Dropdown>
-                <DropdownTrigger>
-                  <User
-                    classNames={{
-                      base: 'cursor-pointer'
-                    }}
-                    name={pageProps.auth.user.name}
-                    description={pageProps.auth.user.email}
-                  />
-                </DropdownTrigger>
-                <DropdownMenu variant="faded" aria-label="Dropdown menu with description">
-                  <DropdownItem
-                    key="kegiatan"
-                    href={route('dashboard')} // TODO: Change this to the correct route
-                  >
-                    Kegiatanku
-                  </DropdownItem>
-                </DropdownMenu>
-              </Dropdown>
-            ) : (
-              <Button as={Link} color="default" href={route('login')} variant="bordered" className="border-foreground dark:border-foreground">
-            Login
-              </Button>
-            )
-          }
+          {pageProps.auth.user ? (
+            <Dropdown>
+              <DropdownTrigger>
+                <User
+                  classNames={{
+                    base: "cursor-pointer",
+                  }}
+                  name={pageProps.auth.user.name}
+                  description={pageProps.auth.user.email}
+                />
+              </DropdownTrigger>
+              <DropdownMenu variant="faded" aria-label="Dropdown menu with description">
+                <DropdownItem key="kegiatan" as={InertiaLink} href={route("dashboard")}>
+                  Kegiatanku
+                </DropdownItem>
+              </DropdownMenu>
+            </Dropdown>
+          ) : (
+            // Perbaikan utama: Gunakan <a> tag di dalam InertiaLink dengan Button
+            <InertiaLink href={route('login')} className="inline-block">
+              <a>
+                <Button
+                  color="default"
+                  variant="bordered"
+                  className="border-foreground dark:border-foreground"
+                >
+                  Login
+                </Button>
+              </a>
+            </InertiaLink>
+          )}
         </NavbarItem>
       </NavbarContent>
 
-      <NavbarMenuToggle
-        className="sm:hidden"
-      />
+      <NavbarMenuToggle className="sm:hidden" />
+
       <NavbarMenu>
         {menuItems.map((item, index) => (
           <NavbarMenuItem key={`${item}-${index}`}>
-            <Link
-              color={
-                index === menuItems.length - 1 ? "secondary" : "foreground"
-              }
-              className="w-full"
-              href="#"
-              size="lg"
-            >
-              {item.label}
-            </Link>
+            {/* Menggunakan Button di dalam InertiaLink agar style tetap konsisten */}
+            <InertiaLink href={item.url} className="w-full inline-block">
+              <Button className="w-full">
+                {item.label}
+              </Button>
+            </InertiaLink>
           </NavbarMenuItem>
         ))}
         {
           pageProps.auth.user ? (
             <NavbarMenuItem>
-              <Link
-                color="foreground"
-                className="w-full"
-                href={route('dashboard')}
-                size="lg"
-              >
+              <InertiaLink href={route('dashboard')} className="w-full inline-block">
                 Kegiatanku
-              </Link>
+              </InertiaLink>
             </NavbarMenuItem>
           ) : (
             <NavbarMenuItem>
-              <Button
-                as={Link}
-                color="default"
-                href={route('login')}
-                variant="bordered"
-                className="border-foreground dark:border-foreground"
-              >
-                Login
-              </Button>
+              <InertiaLink href={route('login')} className="w-full inline-block">
+                <Button
+                  color="default"
+                  variant="bordered"
+                  className="border-foreground dark:border-foreground"
+                >
+                  Login
+                </Button>
+              </InertiaLink>
             </NavbarMenuItem>
           )
         }
