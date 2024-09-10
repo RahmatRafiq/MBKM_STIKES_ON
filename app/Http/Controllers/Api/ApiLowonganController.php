@@ -5,13 +5,13 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Models\BatchMbkm;
 use App\Models\Lowongan;
+use App\Models\MitraProfile;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
 class ApiLowonganController extends Controller
 {
-    // Mendapatkan daftar lowongan dengan gambar mitra
     public function getLowongan(Request $request)
     {
         $search = $request->query('search');
@@ -20,7 +20,7 @@ class ApiLowonganController extends Controller
 
         $query = Lowongan::with([
             'mitra' => function ($query) {
-                $query->select('id', 'name', 'type'); // Ambil kolom yang diperlukan
+                $query->select('id', 'name', 'type'); 
             },
         ]);
 
@@ -38,7 +38,6 @@ class ApiLowonganController extends Controller
             ->inRandomOrder(now()->hour)
             ->paginate(10, page: $page);
 
-        // Map untuk menambahkan URL gambar dari koleksi mitra
         $lowongans->getCollection()->transform(function ($lowongan) {
             return [
                 'id' => $lowongan->id,
@@ -57,7 +56,7 @@ class ApiLowonganController extends Controller
                     'id' => $lowongan->mitra->id,
                     'name' => $lowongan->mitra->name,
                     'type' => $lowongan->mitra->type,
-                    'image_url' => $lowongan->mitra->getFirstMediaUrl('images'), // Ambil URL gambar pertama
+                    'image_url' => $lowongan->mitra->getFirstMediaUrl('images'),
                 ],
             ];
         });
@@ -68,13 +67,20 @@ class ApiLowonganController extends Controller
             'data' => $lowongans,
         ]);
     }
+    public function getMitraTypes()
+    {
+        $types = MitraProfile::select('type')->distinct()->get(); 
 
-    // Mendapatkan detail lowongan berdasarkan ID
+        return response()->json([
+            'status' => 'success',
+            'data' => $types,
+        ]);
+    }
+
     public function getLowonganDetail($id)
     {
         $lowongan = Lowongan::with('mitra')->findOrFail($id);
 
-        // Periksa apakah pengguna sudah login
         $isLoggedIn = Auth::check();
         $peserta = $isLoggedIn ? auth()->user()->peserta : null;
 
@@ -115,30 +121,25 @@ class ApiLowonganController extends Controller
                         }),
                     ]
                 ),
-                'can_register' => $isLoggedIn, // Tambahkan informasi apakah user bisa mendaftar atau tidak
+                'can_register' => $isLoggedIn, 
             ],
         ]);
     }
 
-    // Mendaftarkan pengguna ke lowongan
     public function registerForLowongan(Request $request)
     {
-        // Cek apakah pengguna sudah login
         if (!Auth::check()) {
             return response()->json(['message' => 'Silahkan login terlebih dahulu.'], 401);
         }
 
-        // Validasi data pendaftaran
         $request->validate([
             'lowongan_id' => 'required|exists:lowongans,id',
         ]);
 
-        // Ambil peserta dan batch aktif
         $peserta = Auth::user()->peserta;
         $lowonganId = $request->input('lowongan_id');
         $batchId = BatchMbkm::getActiveBatch()->id;
 
-        // Cek apakah peserta sudah mendaftar di lowongan ini pada batch aktif
         $existingRegistration = $peserta->registrations()
             ->where('lowongan_id', $lowonganId)
             ->where('batch_id', $batchId)
@@ -150,7 +151,6 @@ class ApiLowonganController extends Controller
 
         $lowongan = Lowongan::find($lowonganId);
 
-        // Simpan pendaftaran baru
         $peserta->registrations()->create([
             'lowongan_id' => $lowonganId,
             'status' => 'registered',
