@@ -1,63 +1,100 @@
-import { useState } from "react"
+import { useState, useEffect } from "react"
+import axios from "axios"
+import debounce from "lodash.debounce"
+import { Input, Spinner, Tab, Tabs } from "@nextui-org/react"
 import Lowongan from "@/types/lowongan"
 
 type Props = {
-  lowongan: Lowongan[] // Data lowongan dari props
-  mitraList: string[]  // Daftar nama mitra untuk filter
-  onFilterChange: (filteredData: Lowongan[]) => void // Fungsi untuk mengirimkan hasil pencarian dan filter
-}
-console.log('props')
-const SearchFilterSection = ({ lowongan, mitraList, onFilterChange }: Props) => {
+  onFilterChange: (filteredData: Lowongan[]) => void;
+};
+
+const SearchFilterSection = ({ onFilterChange }: Props) => {
   const [searchKeyword, setSearchKeyword] = useState<string>("")
   const [selectedMitra, setSelectedMitra] = useState<string | undefined>(undefined)
+  const [isLoading, setIsLoading] = useState(false)
+  const [mitraList, setMitraList] = useState<string[]>([])
 
-  // Fungsi untuk melakukan filter berdasarkan pencarian dan mitra
-  const handleFilter = () => {
-    const filteredLowongan = lowongan.filter((item) => {
-      const matchesSearch = item.name?.toLowerCase().includes(searchKeyword.toLowerCase())
-      const matchesMitra = selectedMitra ? item.mitra?.name === selectedMitra : true
-      return matchesSearch && matchesMitra
-    })
+  const fetchFilteredLowongan = async () => {
+    setIsLoading(true)
+    try {
+      const response = await axios.get("/api/lowongan", {
+        params: {
+          search: searchKeyword,
+          type: selectedMitra,
+        },
+      })
 
-    // Kirim hasil filter ke komponen induk
-    onFilterChange(filteredLowongan)
+      onFilterChange(response.data.data.data)
+    } catch (error) {
+      console.error("Error fetching filtered lowongan:", error)
+    } finally {
+      setIsLoading(false)
+    }
   }
 
-  // Lakukan filter saat keyword atau mitra berubah
+  const fetchMitraList = async () => {
+    try {
+      const response = await axios.get("/mitra/types")
+      const types = response.data.data.map((item: any) => item.type)
+      setMitraList(types)
+    } catch (error) {
+      console.error("Error fetching mitra types:", error)
+    }
+  }
+
+  useEffect(() => {
+    fetchMitraList()
+  }, [])
+
+  const debouncedFetchLowongan = debounce(() => {
+    fetchFilteredLowongan()
+  }, 300)
+
   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSearchKeyword(e.target.value)
-    handleFilter()
+    debouncedFetchLowongan()
   }
 
-  const handleMitraChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    setSelectedMitra(e.target.value)
-    handleFilter()
+  const handleMitraChange = (value: string) => {
+    setSelectedMitra(value)
   }
+
+  useEffect(() => {
+    fetchFilteredLowongan()
+  }, [selectedMitra])
 
   return (
     <div className="flex flex-col gap-4 mb-4">
-      {/* Input untuk Pencarian */}
-      <input
-        type="text"
+      <Input
         placeholder="Cari lowongan..."
         value={searchKeyword}
         onChange={handleSearchChange}
         className="border p-2 w-full"
+        isClearable
       />
 
-      {/* Dropdown untuk Filter Mitra */}
-      <select
-        value={selectedMitra}
-        onChange={handleMitraChange}
-        className="border p-2 w-full"
+      <Tabs
+        aria-label="Mitra Filter"
+        selectedKey={selectedMitra || ""}
+        onSelectionChange={(key) => handleMitraChange(key as string)}
       >
-        <option value="">Semua Mitra</option>
-        {mitraList.map((mitra, index) => (
-          <option key={index} value={mitra}>
-            {mitra}
-          </option>
-        ))}
-      </select>
+        <Tab key="" title="Semua Mitra">
+          Semua Mitra
+        </Tab>
+        {mitraList.length > 0 ? (
+          mitraList.map((type) => (
+            <Tab key={type} title={type}>
+              {type}
+            </Tab>
+          ))
+        ) : (
+          <Tab key="empty" title="No mitra types available">
+            No mitra types available
+          </Tab>
+        )}
+      </Tabs>
+
+      {isLoading && <Spinner />}
     </div>
   )
 }
