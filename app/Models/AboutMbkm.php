@@ -20,6 +20,7 @@ class AboutMbkm extends Model
         'contact_address',
     ];
 
+
     protected $casts = [
         'benefits' => 'array',
         'eligibility' => 'array',
