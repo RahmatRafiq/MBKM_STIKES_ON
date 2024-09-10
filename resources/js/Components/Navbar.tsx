@@ -85,7 +85,7 @@ const Navbar = () => {
                 />
               </DropdownTrigger>
               <DropdownMenu variant="faded" aria-label="Dropdown menu with description">
-                <DropdownItem key="kegiatan" as={InertiaLink} href={route("dashboard")}>
+                <DropdownItem href={route('dashboard')}>
                   Kegiatanku
                 </DropdownItem>
               </DropdownMenu>
