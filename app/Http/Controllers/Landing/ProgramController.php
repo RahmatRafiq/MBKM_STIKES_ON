@@ -4,8 +4,6 @@ namespace App\Http\Controllers\Landing;
 
 use App\Http\Controllers\Controller;
 use App\Models\Lowongan;
-use App\Models\Registrasi;
-use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
 
 class ProgramController extends Controller
@@ -17,9 +15,14 @@ class ProgramController extends Controller
 
     public function show(Lowongan $lowongan)
     {
-        // Ensure the user is authenticated
         if (!auth()->check()) {
-            return redirect()->route('login');
+            return redirect('/login');
+        }
+
+        $peserta = auth()->user()->peserta;
+
+        if (is_null($peserta)) {
+            return back()->with('error', 'Anda tidak terdaftar sebagai peserta');
         }
 
         $lowongan->load([
@@ -30,7 +33,7 @@ class ProgramController extends Controller
                     ->whereDate('end_date', '>=', now());
             }
         ]);
-        $peserta = auth()->user()->peserta;
+
         return inertia('ProgramShow', [
             'data' => [
                 'id' => $lowongan->id,
