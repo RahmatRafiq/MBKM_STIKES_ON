@@ -19,14 +19,14 @@ import axios from "axios"
 import { useEffect, useState } from "react"
 import { useAsyncList } from "react-stately"
 import { useMediaQuery } from "usehooks-ts"
-import SearchFilterSection from "@/Components/Program/SearchFilterSection" // Import SearchFilterSection
+import SearchFilterSection from "@/Components/Program/SearchFilterSection"
 
 const Program = () => {
   const [isLoading, setIsLoading] = useState(false)
   const [hasMore, setHasMore] = useState(true)
   const [lowongans, setLowongans] = useState<Lowongan[]>([]) // State untuk menyimpan hasil pencarian dan filter
-  const smallMatch = useMediaQuery("(min-width: 640px)")
-  const [active, setActive] = useState<number | null>(null) // Untuk menyimpan ID lowongan yang dipilih
+  const smallMatch = useMediaQuery("(min-width: 640px)") // Menentukan apakah layar desktop atau mobile
+  const [active, setActive] = useState<number | null>(null) // Menyimpan ID lowongan yang dipilih
 
   // Fungsi untuk menangani perubahan hasil filter dan pencarian dari SearchFilterSection
   const handleFilterChange = (filteredData: Lowongan[]) => {
@@ -122,9 +122,9 @@ const Program = () => {
                   aria-label="Lowongan"
                   onClick={() => {
                     if (smallMatch) {
-                      setActive(item.id!)
+                      setActive(item.id!) // Set aktif untuk desktop
                     } else {
-                      router.visit(`/program/${item.id}`)
+                      router.visit(`/program/${item.id}`) // Alihkan halaman di mode mobile
                     }
                   }}
                 >
@@ -153,7 +153,7 @@ const Program = () => {
           </TableBody>
         </Table>
 
-        {/* Bagian detail Lowongan */}
+        {/* Bagian detail Lowongan, hanya tampilkan di desktop */}
         {smallMatch && active ? (
           <Card classNames={{ base: "w-full h-max" }}>
             <CardBody>
@@ -161,13 +161,15 @@ const Program = () => {
             </CardBody>
           </Card>
         ) : (
-          <Card classNames={{ base: "w-full h-[calc(100vh-6rem)]" }}>
-            <CardBody>
-              <div className="flex justify-center items-center h-full">
-                <span>Pilih lowongan program untuk melihat detail</span>
-              </div>
-            </CardBody>
-          </Card>
+          smallMatch && (
+            <Card classNames={{ base: "w-full h-[calc(100vh-6rem)]" }}>
+              <CardBody>
+                <div className="flex justify-center items-center h-full">
+                  <span>Pilih lowongan program untuk melihat detail</span>
+                </div>
+              </CardBody>
+            </Card>
+          )
         )}
       </section>
     </Guest>
