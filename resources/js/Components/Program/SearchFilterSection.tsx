@@ -1,67 +1,38 @@
-import { useState, useEffect } from "react"
-import axios from "axios"
-import debounce from "lodash.debounce"
+import { useState } from "react"
 import { Input, Spinner, Tab, Tabs } from "@nextui-org/react"
 import Lowongan from "@/types/lowongan"
 
 type Props = {
+  lowongans: Lowongan[];  // Menerima data lowongan sebagai props
   onFilterChange: (filteredData: Lowongan[]) => void;
 };
 
-const SearchFilterSection = ({ onFilterChange }: Props) => {
+const SearchFilterSection = ({ lowongans, onFilterChange }: Props) => {
   const [searchKeyword, setSearchKeyword] = useState<string>("")
   const [selectedMitra, setSelectedMitra] = useState<string | undefined>(undefined)
   const [isLoading, setIsLoading] = useState(false)
-  const [mitraList, setMitraList] = useState<string[]>([])
 
-  const fetchFilteredLowongan = async () => {
+  // Function to handle the search and filter logic
+  const filterLowongan = () => {
     setIsLoading(true)
-    try {
-      const response = await axios.get("/api/lowongan", {
-        params: {
-          search: searchKeyword,
-          type: selectedMitra,
-        },
-      })
-
-      onFilterChange(response.data.data.data)
-    } catch (error) {
-      console.error("Error fetching filtered lowongan:", error)
-    } finally {
-      setIsLoading(false)
-    }
+    const filtered = lowongans.filter((lowongan) => {
+      const matchKeyword = lowongan.name?.toLowerCase().includes(searchKeyword.toLowerCase())
+      const matchMitra = selectedMitra ? lowongan.mitra?.type === selectedMitra : true
+      return matchKeyword && matchMitra
+    })
+    onFilterChange(filtered)
+    setIsLoading(false)
   }
-
-  const fetchMitraList = async () => {
-    try {
-      const response = await axios.get("/mitra/types")
-      const types = response.data.data.map((item: any) => item.type)
-      setMitraList(types)
-    } catch (error) {
-      console.error("Error fetching mitra types:", error)
-    }
-  }
-
-  useEffect(() => {
-    fetchMitraList()
-  }, [])
-
-  const debouncedFetchLowongan = debounce(() => {
-    fetchFilteredLowongan()
-  }, 300)
 
   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSearchKeyword(e.target.value)
-    debouncedFetchLowongan()
+    filterLowongan()
   }
 
   const handleMitraChange = (value: string) => {
     setSelectedMitra(value)
+    filterLowongan()
   }
-
-  useEffect(() => {
-    fetchFilteredLowongan()
-  }, [selectedMitra])
 
   return (
     <div className="flex flex-col gap-4 mb-4">
@@ -81,17 +52,11 @@ const SearchFilterSection = ({ onFilterChange }: Props) => {
         <Tab key="" title="Semua Mitra">
           Semua Mitra
         </Tab>
-        {mitraList.length > 0 ? (
-          mitraList.map((type) => (
-            <Tab key={type} title={type}>
-              {type}
-            </Tab>
-          ))
-        ) : (
-          <Tab key="empty" title="No mitra types available">
-            No mitra types available
+        {Array.from(new Set(lowongans.map((lowongan) => lowongan.mitra?.type))).map((type) => (
+          <Tab key={type || "unknown"} title={type || "Unknown"}>
+            {type}
           </Tab>
-        )}
+        ))}
       </Tabs>
 
       {isLoading && <Spinner />}

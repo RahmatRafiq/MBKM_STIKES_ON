@@ -82,7 +82,10 @@ const Program = () => {
   return (
     <Guest>
       {/* Bagian SearchFilterSection */}
-      <SearchFilterSection onFilterChange={handleFilterChange} />
+      <SearchFilterSection
+        lowongans={data.items} // Mengirimkan data lowongans dari API
+        onFilterChange={handleFilterChange}
+      />
 
       <section className="p-3 grid grid-cols-1 sm:grid-cols-[300px_minmax(0,_1fr)] w-full gap-3 h-max">
         {/* Tabel Lowongan */}
