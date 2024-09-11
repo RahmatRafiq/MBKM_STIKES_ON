@@ -20,7 +20,7 @@ class ApiLowonganController extends Controller
 
         $query = Lowongan::with([
             'mitra' => function ($query) {
-                $query->select('id', 'name', 'type'); 
+                $query->select('id', 'name', 'type');
             },
         ]);
 
@@ -69,7 +69,7 @@ class ApiLowonganController extends Controller
     }
     public function getMitraTypes()
     {
-        $types = MitraProfile::select('type')->distinct()->get(); 
+        $types = MitraProfile::select('type')->distinct()->get();
 
         return response()->json([
             'status' => 'success',
@@ -121,25 +121,29 @@ class ApiLowonganController extends Controller
                         }),
                     ]
                 ),
-                'can_register' => $isLoggedIn, 
+                'can_register' => $isLoggedIn,
             ],
         ]);
     }
 
     public function registerForLowongan(Request $request)
     {
+        // Cek apakah pengguna sudah login
         if (!Auth::check()) {
             return response()->json(['message' => 'Silahkan login terlebih dahulu.'], 401);
         }
 
+        // Validasi input
         $request->validate([
             'lowongan_id' => 'required|exists:lowongans,id',
         ]);
 
+        // Ambil data peserta dari user yang login
         $peserta = Auth::user()->peserta;
         $lowonganId = $request->input('lowongan_id');
         $batchId = BatchMbkm::getActiveBatch()->id;
 
+        // Pengecekan 1: Cek jika peserta sudah mendaftar di lowongan ini dalam batch ini
         $existingRegistration = $peserta->registrations()
             ->where('lowongan_id', $lowonganId)
             ->where('batch_id', $batchId)
@@ -149,6 +153,27 @@ class ApiLowonganController extends Controller
             return response()->json(['message' => 'Anda sudah mendaftar di lowongan ini.'], 400);
         }
 
+        // Pengecekan 2: Cek jika peserta sudah diterima di lowongan lain pada batch ini
+        $existingAcceptedRegistration = $peserta->registrations()
+            ->whereIn('status', ['accepted', 'accepted_offer'])
+            ->where('batch_id', $batchId)
+            ->first();
+
+        if ($existingAcceptedRegistration) {
+            return response()->json(['message' => 'Anda sudah diterima di lowongan lain dalam batch ini.'], 400);
+        }
+
+        // Pengecekan 3: Cek jika peserta sudah memiliki status placement di lowongan lain dalam batch ini
+        $placementRegistration = $peserta->registrations()
+            ->where('batch_id', $batchId)
+            ->where('status', 'placement')
+            ->first();
+
+        if ($placementRegistration) {
+            return response()->json(['message' => 'Anda sudah memiliki lowongan dengan status "placement" dalam batch ini.'], 400);
+        }
+
+        // Jika semua validasi lolos, simpan pendaftaran baru
         $lowongan = Lowongan::find($lowonganId);
 
         $peserta->registrations()->create([
@@ -161,4 +186,5 @@ class ApiLowonganController extends Controller
 
         return response()->json(['message' => 'Pendaftaran berhasil.'], 201);
     }
+
 }
