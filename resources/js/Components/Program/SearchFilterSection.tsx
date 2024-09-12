@@ -1,63 +1,72 @@
-import { useState } from "react"
+import { useState, useEffect } from "react"
+import { Input, Spinner, Tab, Tabs } from "@nextui-org/react"
 import Lowongan from "@/types/lowongan"
+import debounce from "lodash.debounce"
 
 type Props = {
-  lowongan: Lowongan[] // Data lowongan dari props
-  mitraList: string[]  // Daftar nama mitra untuk filter
-  onFilterChange: (filteredData: Lowongan[]) => void // Fungsi untuk mengirimkan hasil pencarian dan filter
-}
-console.log('props')
-const SearchFilterSection = ({ lowongan, mitraList, onFilterChange }: Props) => {
+  lowongans: Lowongan[];  // Menerima data lowongan sebagai props
+  onFilterChange: (filteredData: Lowongan[]) => void;
+};
+
+const SearchFilterSection = ({ lowongans, onFilterChange }: Props) => {
   const [searchKeyword, setSearchKeyword] = useState<string>("")
   const [selectedMitra, setSelectedMitra] = useState<string | undefined>(undefined)
+  const [isLoading, setIsLoading] = useState(false)
 
-  // Fungsi untuk melakukan filter berdasarkan pencarian dan mitra
-  const handleFilter = () => {
-    const filteredLowongan = lowongan.filter((item) => {
-      const matchesSearch = item.name?.toLowerCase().includes(searchKeyword.toLowerCase())
-      const matchesMitra = selectedMitra ? item.mitra?.name === selectedMitra : true
-      return matchesSearch && matchesMitra
+  // Debounced filter function to avoid unnecessary repeated calls
+  const filterLowonganDebounced = debounce(() => {
+    setIsLoading(true)
+    const filtered = lowongans.filter((lowongan) => {
+      const matchKeyword = lowongan.name?.toLowerCase().includes(searchKeyword.toLowerCase())
+      const matchMitra = selectedMitra ? lowongan.mitra?.type === selectedMitra : true
+      return matchKeyword && matchMitra
     })
+    onFilterChange(filtered)
+    setIsLoading(false)
+  }, 300) // Debounce for 300ms
 
-    // Kirim hasil filter ke komponen induk
-    onFilterChange(filteredLowongan)
-  }
+  // useEffect to trigger filtering whenever searchKeyword or selectedMitra changes
+  useEffect(() => {
+    filterLowonganDebounced()
+    // Clean up debounce on unmount
+    return () => {
+      filterLowonganDebounced.cancel()
+    }
+  }, [searchKeyword, selectedMitra]) // Dependencies: searchKeyword and selectedMitra
 
-  // Lakukan filter saat keyword atau mitra berubah
   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSearchKeyword(e.target.value)
-    handleFilter()
   }
 
-  const handleMitraChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    setSelectedMitra(e.target.value)
-    handleFilter()
+  const handleMitraChange = (value: string) => {
+    setSelectedMitra(value)
   }
 
   return (
     <div className="flex flex-col gap-4 mb-4">
-      {/* Input untuk Pencarian */}
-      <input
-        type="text"
+      <Input
         placeholder="Cari lowongan..."
         value={searchKeyword}
         onChange={handleSearchChange}
-        className="border p-2 w-full"
+        isClearable
       />
 
-      {/* Dropdown untuk Filter Mitra */}
-      <select
-        value={selectedMitra}
-        onChange={handleMitraChange}
-        className="border p-2 w-full"
+      <Tabs
+        aria-label="Mitra Filter"
+        selectedKey={selectedMitra || ""}
+        onSelectionChange={(key) => handleMitraChange(key as string)}
       >
-        <option value="">Semua Mitra</option>
-        {mitraList.map((mitra, index) => (
-          <option key={index} value={mitra}>
-            {mitra}
-          </option>
+        <Tab key="" title="Semua Mitra">
+          Semua Mitra
+        </Tab>
+        {Array.from(new Set(lowongans.map((lowongan) => lowongan.mitra?.type))).map((type) => (
+          <Tab key={type || "unknown"} title={type || "Unknown"}>
+            {type}
+          </Tab>
         ))}
-      </select>
+      </Tabs>
+
+      {isLoading && <Spinner />}
     </div>
   )
 }

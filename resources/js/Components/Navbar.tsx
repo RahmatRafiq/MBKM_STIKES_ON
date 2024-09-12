@@ -63,10 +63,10 @@ const Navbar = () => {
             key={index}
             isActive={page.url === new URL(item.url).pathname}
           >
-            {/* Menggunakan InertiaLink untuk navigasi tanpa reload halaman */}
-            <InertiaLink href={item.url} className="text-foreground">
+            {/* Tetap menggunakan Link dari NextUI untuk desktop */}
+            <Link href={item.url} className="text-foreground" as={InertiaLink}>
               {item.label}
-            </InertiaLink>
+            </Link>
           </NavbarItem>
         ))}
       </NavbarContent>
@@ -85,7 +85,7 @@ const Navbar = () => {
                 />
               </DropdownTrigger>
               <DropdownMenu variant="faded" aria-label="Dropdown menu with description">
-                <DropdownItem key="kegiatan" as={InertiaLink} href={route("dashboard")}>
+                <DropdownItem href={route('dashboard')}>
                   Kegiatanku
                 </DropdownItem>
               </DropdownMenu>
@@ -112,32 +112,37 @@ const Navbar = () => {
       <NavbarMenu>
         {menuItems.map((item, index) => (
           <NavbarMenuItem key={`${item}-${index}`}>
-            {/* Menggunakan Button di dalam InertiaLink agar style tetap konsisten */}
-            <InertiaLink href={item.url} className="w-full inline-block">
-              <Button className="w-full">
+            <Button color="primary" variant="bordered">
+              <InertiaLink href={item.url} className="w-full inline-block" >
                 {item.label}
-              </Button>
-            </InertiaLink>
+              </InertiaLink>
+            </Button>
           </NavbarMenuItem>
         ))}
         {
           pageProps.auth.user ? (
             <NavbarMenuItem>
-              <InertiaLink href={route('dashboard')} className="w-full inline-block">
-                Kegiatanku
-              </InertiaLink>
-            </NavbarMenuItem>
-          ) : (
-            <NavbarMenuItem>
-              <InertiaLink href={route('login')} className="w-full inline-block">
+              <a href={route('dashboard')} className="w-full inline-block">
                 <Button
                   color="default"
                   variant="bordered"
                   className="border-foreground dark:border-foreground"
                 >
-                  Login
+              Kegiatanku
                 </Button>
-              </InertiaLink>
+              </a>
+            </NavbarMenuItem>
+          ) : (
+            <NavbarMenuItem>
+              <a href={route('login')} className="w-full inline-block">
+                <Button
+                  color="default"
+                  variant="bordered"
+                  className="border-foreground dark:border-foreground"
+                >
+                Login
+                </Button>
+              </a>
             </NavbarMenuItem>
           )
         }

@@ -1,15 +1,16 @@
 <?php
 
-use App\Http\Controllers\QuestionnaireController;
 use Illuminate\Support\Facades\Route;
 
 Route::middleware(['auth.optional', 'inertia'])->group(function () {
+    Route::get('/help', [App\Http\Controllers\Landing\HelpController::class, 'index'])->name('help.index');
     Route::get('/home', [\App\Http\Controllers\Landing\HomeController::class, 'home'])->name('home');
     Route::get('/program', [App\Http\Controllers\Landing\ProgramController::class, 'index'])->name('program.index');
-    Route::get('/program/{id}/json', [App\Http\Controllers\Api\ApiLowonganController::class, 'getLowonganDetail'])->name('program.show.json');
     Route::get('/program/{lowongan}', [App\Http\Controllers\Landing\ProgramController::class, 'show'])->name('program.show');
+    Route::get('/program/{id}/json', [App\Http\Controllers\Api\ApiLowonganController::class, 'getLowonganDetail'])->name('program.show.json');
     Route::post('/program/registrasi', [App\Http\Controllers\Api\ApiLowonganController::class, 'registerForLowongan'])->name('program.registrasi');
-    Route::get('/help', [App\Http\Controllers\Landing\HelpController::class, 'index'])->name('help.index');
+    Route::get('/mitra/types', [App\Http\Controllers\Api\ApiLowonganController::class, 'getMitraTypes'])->name('mitra.types');
+
 });
 
 Route::middleware('auth')->group(function () {
@@ -69,18 +70,15 @@ Route::middleware('auth')->group(function () {
         Route::post('peserta/{ketua}/team/add', [\App\Http\Controllers\PesertaController::class, 'addTeamMember'])->name('team.addMember');
         Route::delete('/team/member/{id}/remove', [\App\Http\Controllers\PesertaController::class, 'removeTeamMember'])->name('team.removeMember');
 
-
-        Route::get('/questions', [QuestionnaireController::class, 'index'])->name('questions.index');
-        Route::get('/questions/create', [QuestionnaireController::class, 'createQuestion'])->name('questions.create');
-        Route::post('/questions', [QuestionnaireController::class, 'storeQuestion'])->name('questions.store');
-        Route::get('/questions/{question}/edit', [QuestionnaireController::class, 'editQuestion'])->name('questions.edit');
-        Route::put('/questions/{question}', [QuestionnaireController::class, 'updateQuestion'])->name('questions.update');
-        Route::delete('/questions/{question}', [QuestionnaireController::class, 'destroyQuestion'])->name('questions.destroy');
-        Route::get('/questionnaire/{peserta_id}/create', [QuestionnaireController::class, 'create'])->name('questionnaire.create');
-        Route::post('/questionnaire/{peserta_id}', [QuestionnaireController::class, 'store'])->name('questionnaire.store');
-        Route::get('/questionnaire/thankyou', [QuestionnaireController::class, 'thankyou'])->name('questionnaire.thankyou');
-Route::get('/questionnaire/{peserta_id}/responses', [QuestionnaireController::class, 'collectResponses'])->name('questionnaire.responses');
-Route::get('/questionnaire/participants/{peserta_id?}', [QuestionnaireController::class, 'showQuestionnaire'])->name('questionnaire.participants');
+        Route::get('/questions', [\App\Http\Controllers\QuestionnaireController::class, 'index'])->name('questions.index');
+        Route::get('/questions/create', [\App\Http\Controllers\QuestionnaireController::class, 'createQuestion'])->name('questions.create');
+        Route::post('/questions', [\App\Http\Controllers\QuestionnaireController::class, 'storeQuestion'])->name('questions.store');
+        Route::get('/questions/{question}/edit', [\App\Http\Controllers\QuestionnaireController::class, 'editQuestion'])->name('questions.edit');
+        Route::put('/questions/{question}', [\App\Http\Controllers\QuestionnaireController::class, 'updateQuestion'])->name('questions.update');
+        Route::delete('/questions/{question}', [\App\Http\Controllers\QuestionnaireController::class, 'destroyQuestion'])->name('questions.destroy');
+        Route::get('/questionnaire/{peserta_id}/create', [\App\Http\Controllers\QuestionnaireController::class, 'create'])->name('questionnaire.create');
+        Route::post('/questionnaire/{peserta_id}', [\App\Http\Controllers\QuestionnaireController::class, 'store'])->name('questionnaire.store');
+        Route::get('/questionnaire/thankyou', [\App\Http\Controllers\QuestionnaireController::class, 'thankyou'])->name('questionnaire.thankyou');
 
 
     });
