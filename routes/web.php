@@ -80,6 +80,7 @@ Route::middleware('auth')->group(function () {
         Route::post('/questionnaire/{peserta_id}', [\App\Http\Controllers\QuestionnaireController::class, 'store'])->name('questionnaire.store');
         Route::get('/questionnaire/thankyou', [\App\Http\Controllers\QuestionnaireController::class, 'thankyou'])->name('questionnaire.thankyou');
 
+
     });
 
     Route::middleware(['role:mitra'])->group(function () {
