@@ -1,7 +1,7 @@
 import { FaGlobe, FaMapMarkerAlt, FaPhone, FaRegClock } from "react-icons/fa"
 import { MdArrowForward, MdOutlineEmail, MdShare } from "react-icons/md"
 import { Accordion, AccordionItem, Button, Card, CardBody, Image, User, Link as NextUILink, Spacer, Listbox, ListboxItem, Avatar, Skeleton, Divider, Snippet } from "@nextui-org/react"
-import { router, usePage } from "@inertiajs/react"
+import { Link, router, usePage } from "@inertiajs/react"
 import Lowongan from "@/types/lowongan"
 import { useEffect, useState } from "react"
 import axios from "axios"
@@ -254,6 +254,9 @@ const ProgramShowSection = (props: Props) => {
                 </ul>
                 <Spacer y={4} />
                 <Button
+                  as={Link}
+                  href={route('mitra.profile', { id: data.mitra?.id })}
+                  color="primary"
                 >
                   Lihat Profil Lengkap <MdArrowForward size={24} />
                 </Button>

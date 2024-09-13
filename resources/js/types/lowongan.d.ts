@@ -26,4 +26,5 @@ export interface Mitra {
     description?: string
     image_url?: string
     others?: Lowongan[]
+    lowongan?: Lowongan[]
 }
