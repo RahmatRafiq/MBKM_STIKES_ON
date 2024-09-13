@@ -51,7 +51,7 @@ class ApiLowonganController extends Controller
                 'experience_required' => $lowongan->experience_required,
                 'start_date' => $lowongan->start_date,
                 'end_date' => $lowongan->end_date,
-                'month_duration' => (Carbon::parse($lowongan->start_date)->diffInMonths($lowongan->end_date, 1)) . ' bulan',
+                'month_duration' => ceil(Carbon::parse($lowongan->start_date)->diffInMonths($lowongan->end_date, absolute: 1)) . ' bulan',
                 'mitra' => [
                     'id' => $lowongan->mitra->id,
                     'name' => $lowongan->mitra->name,
