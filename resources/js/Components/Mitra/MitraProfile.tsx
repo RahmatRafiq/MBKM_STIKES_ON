@@ -1,18 +1,20 @@
-import { Card, Button, Skeleton, Image } from "@nextui-org/react"
+import { FaGlobe, FaMapMarkerAlt, FaPhone, FaRegClock } from "react-icons/fa"
+import { MdArrowBack, MdOutlineEmail, MdShare } from "react-icons/md"
+import { Button, Card, CardBody, Image, Skeleton, Spacer, Listbox, ListboxItem, Accordion, AccordionItem, Divider, Avatar } from "@nextui-org/react"
 import { Link } from "@inertiajs/react"
-import { MdArrowBack } from "react-icons/md"
 import { useEffect } from "react"
 import Footer from "@/Components/Footer"
 import { Mitra } from "@/types/lowongan"
+import Lowongan from "@/types/lowongan"
 
-type MitraProfileProps = {
+type Props = {
   mitra: Mitra;
 };
 
-const MitraProfile = ({ mitra }: MitraProfileProps) => {
+const MitraProfile = ({ mitra }: Props) => {
   const preventBack = () => {
     if (location.pathname.startsWith("/mitra")) {
-      route('/mitra') // Mengarahkan ke halaman daftar mitra
+      route("/mitra")
     }
   }
 
@@ -39,44 +41,96 @@ const MitraProfile = ({ mitra }: MitraProfileProps) => {
       </nav>
 
       {/* Tampilan Utama Profil Mitra */}
-      <main className="flex flex-col gap-5 p-5">
-        {/* Informasi Profil Mitra */}
-        <Card className="p-5">
+      <div className="container mx-auto p-5">
+        <div className="flex justify-center">
           {mitra.image_url ? (
             <Image
+              isBlurred
+              width={240}
               src={mitra.image_url}
               alt={mitra.name}
-              className="rounded-full mx-auto"
-              width={200}
-              height={200}
+              className="m-5"
+              fallbackSrc="https://via.placeholder.com/200x200"
             />
           ) : (
             <Skeleton className="h-[200px] w-[200px] rounded-full mx-auto" />
           )}
-          
-          <h1 className="text-2xl font-bold text-center mt-5">{mitra.name}</h1>
-          <p className="text-center text-gray-500">{mitra.type}</p>
-          <p><strong>Email:</strong> {mitra.email}</p>
-          <p><strong>Telepon:</strong> {mitra.phone}</p>
-          <p><strong>Website:</strong> <a href={mitra.website} target="_blank" rel="noopener noreferrer">{mitra.website}</a></p>
-          <p>{mitra.description}</p>
+        </div>
+
+        <Card className="mb-5">
+          <CardBody>
+            <h1 className="text-2xl font-bossa font-black text-center">{mitra.name}</h1>
+            <p className="text-center text-foreground-500">{mitra.type}</p>
+            <Spacer y={2} />
+            <ul className="flex flex-col gap-3 text-center">
+              <li className="flex justify-center items-center gap-3">
+                <MdOutlineEmail size={16} /> {mitra.email}
+              </li>
+              <li className="flex justify-center items-center gap-3">
+                <FaPhone size={16} /> {mitra.phone}
+              </li>
+              <li className="flex justify-center items-center gap-3">
+                <FaGlobe size={16} />
+                <a
+                  href={mitra.website}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-blue-500 underline"
+                >
+                  {mitra.website?.replace(/(^\w+:|^)\/\//, "")}
+                </a>
+              </li>
+            </ul>
+          </CardBody>
         </Card>
 
         {/* Informasi Tambahan */}
-        <Card className="p-5">
-          <h3 className="text-lg font-semibold">Alamat</h3>
-          <p>{mitra.address}</p>
-
-          <h3 className="text-lg font-semibold mt-5">Program Lain</h3>
-          {mitra.others && mitra.others.length > 0 ? (
-            mitra.others.map((lowongan, index) => (
-              <p key={index}>- {lowongan.name}: {lowongan.description}</p>
-            ))
-          ) : (
-            <p>Belum ada program lain.</p>
-          )}
+        <Card className="mb-5">
+          <CardBody>
+            <h3 className="text-lg font-semibold text-primary">Alamat</h3>
+            <p>{mitra.address}</p>
+          </CardBody>
         </Card>
-      </main>
+
+        {/* Daftar Lowongan */}
+        <Card>
+          <CardBody>
+            <Accordion selectionMode="multiple" defaultExpandedKeys={['programs']}>
+              <AccordionItem
+                key="lowongan"
+                title={<h3 className="text-lg font-semibold text-primary">Lowongan yang Tersedia</h3>}
+              >
+                <Listbox
+                  items={mitra.lowongan}
+                  emptyContent="Tidak ada lowongan yang tersedia saat ini."
+                  aria-label="Lowongan Tersedia"
+                >
+                  {(lowongan: Lowongan) => (
+                    <ListboxItem key={lowongan.id ?? 'default-key'}>
+                      <div className="flex gap-3 items-center">
+                        <Avatar
+                          src={mitra.image_url}
+                          alt={mitra.name}
+                          showFallback
+                        />
+                        <div className="flex flex-col">
+                          <span className="font-bold text-primary">{lowongan.name}</span>
+                          <span className="text-foreground-500">{lowongan.location}</span>
+                          <span className="text-foreground-500">Durasi: {lowongan.month_duration} bulan</span>
+                          <span className="text-foreground-500">
+                            {lowongan.is_open === "1" ? "Lowongan Masih Dibuka" : "Lowongan Ditutup"}
+                          </span>
+                        </div>  
+                      </div>
+                    </ListboxItem>
+                  )}
+                </Listbox>
+              </AccordionItem>
+            </Accordion>
+           
+          </CardBody>
+        </Card>
+      </div>
 
       {/* Footer */}
       <Footer />
