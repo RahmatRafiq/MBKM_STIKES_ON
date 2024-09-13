@@ -14,7 +14,7 @@ class ProgramController extends Controller
         return inertia('Program');
     }
 
-    public function show(Lowongan $lowongan)
+    public function showDetail(Lowongan $lowongan)
     {
         // Mengambil data peserta jika pengguna sudah login, jika tidak tetap null
         $peserta = auth()->check() ? auth()->user()->peserta : null;
@@ -43,8 +43,7 @@ class ProgramController extends Controller
                 'experience_required' => $lowongan->experience_required,
                 'start_date' => Carbon::parse($lowongan->start_date)->format('d F Y'),
                 'end_date' => Carbon::parse($lowongan->end_date)->format('d F Y'),
-                'month_duration' => Carbon::parse($lowongan->start_date)->diffInMonths($lowongan->end_date, 1) . ' bulan',
-                // Set is_registered ke false jika peserta null
+                'month_duration' => ceil(Carbon::parse($lowongan->start_date)->diffInMonths($lowongan->end_date, 1)) . ' bulan',
                 'is_registered' => $peserta ? $lowongan->registrations->contains('peserta_id', $peserta->id) : false,
                 'mitra' => array_merge(
                     $lowongan->mitra->toArray(),
@@ -69,5 +68,4 @@ class ProgramController extends Controller
             ]
         ]);
     }
-    
 }
