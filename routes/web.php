@@ -6,11 +6,11 @@ Route::middleware(['auth.optional', 'inertia'])->group(function () {
     Route::get('/help', [App\Http\Controllers\Landing\HelpController::class, 'index'])->name('help.index');
     Route::get('/home', [\App\Http\Controllers\Landing\HomeController::class, 'home'])->name('home');
     Route::get('/program', [App\Http\Controllers\Landing\ProgramController::class, 'index'])->name('program.index');
-    Route::get('/program/{lowongan}', [App\Http\Controllers\Landing\ProgramController::class, 'show'])->name('program.show');
+    Route::get('/program/{lowongan}', [App\Http\Controllers\Landing\ProgramController::class, 'showDetail'])->name('program.show');
     Route::get('/program/{id}/json', [App\Http\Controllers\Api\ApiLowonganController::class, 'getLowonganDetail'])->name('program.show.json');
     Route::post('/program/registrasi', [App\Http\Controllers\Api\ApiLowonganController::class, 'registerForLowongan'])->name('program.registrasi');
     Route::get('/mitra/types', [App\Http\Controllers\Api\ApiLowonganController::class, 'getMitraTypes'])->name('mitra.types');
-
+    Route::get('/mitra/{mitraProfile}', [App\Http\Controllers\Landing\MitraProfileController::class, 'mitraProfile'])->name('mitra.profile');
 });
 
 Route::middleware('auth')->group(function () {
@@ -79,7 +79,6 @@ Route::middleware('auth')->group(function () {
         Route::get('/questionnaire/{peserta_id}/create', [\App\Http\Controllers\QuestionnaireController::class, 'create'])->name('questionnaire.create');
         Route::post('/questionnaire/{peserta_id}', [\App\Http\Controllers\QuestionnaireController::class, 'store'])->name('questionnaire.store');
         Route::get('/questionnaire/thankyou', [\App\Http\Controllers\QuestionnaireController::class, 'thankyou'])->name('questionnaire.thankyou');
-
 
     });
 
