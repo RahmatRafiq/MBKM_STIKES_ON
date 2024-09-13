@@ -40,55 +40,53 @@ const Requirements = () => {
             orientation="horizontal"
             hideScrollBar
           >
-            <Table
-              isStriped
-              aria-label="Example static collection table"
-              layout="fixed"
-              classNames={{
-                base: 'min-w-[900px]',
-                th: 'p-8 text-wrap text-medium',
-                td: 'p-8',
-              }}
-            >
-              <TableHeader>
-                {
-                  headers.map((header, index) => (
-                    <TableColumn key={index}
-
-                    >
-                      {header}
-                    </TableColumn>
-                  ))
-                }
-              </TableHeader>
-              <TableBody>
-                {
-                  cells.map((row, index) => (
-                    <TableRow key={index}>
-                      {
-                        [indexes[index], ...row].map((cell, index) => (
-                          <TableCell key={index}
-                            className="first:font-bold text-medium"
-                          >
-                            {
-                              Array.isArray(cell) ? (
-                                <ul className="list-disc">
-                                  {
-                                    cell.map((item, index) => (
-                                      <li key={index}>{item}</li>
-                                    ))
-                                  }
-                                </ul>
-                              ) : cell
-                            }
-                          </TableCell>
-                        ))
-                      }
-                    </TableRow>
-                  ))
-                }
-              </TableBody>
-            </Table>
+            <div className="overflow-x-auto">
+              <Table
+                isStriped
+                aria-label="Example static collection table"
+                layout="fixed"
+                classNames={{
+                  base: 'min-w-[900px]',
+                  th: 'p-8 text-wrap text-medium whitespace-normal',
+                  td: 'p-8',
+                }}
+              >
+                <TableHeader>
+                  {
+                    headers.map((header, index) => (
+                      <TableColumn key={index}>
+                        {header}
+                      </TableColumn>
+                    ))
+                  }
+                </TableHeader>
+                <TableBody>
+                  {
+                    cells.map((row, index) => (
+                      <TableRow key={index}>
+                        {
+                          [indexes[index], ...row].map((cell, index) => (
+                            <TableCell key={index} className="first:font-bold text-medium">
+                              {
+                                Array.isArray(cell) ? (
+                                  <ul className="list-disc">
+                                    {
+                                      cell.map((item, index) => (
+                                        <li key={index}>{item}</li>
+                                      ))
+                                    }
+                                  </ul>
+                                ) : cell
+                              }
+                            </TableCell>
+                          ))
+                        }
+                      </TableRow>
+                    ))
+                  }
+                </TableBody>
+              </Table>
+            </div>
           </ScrollShadow>
           <div>
             <h3>Catatan Lain</h3>
