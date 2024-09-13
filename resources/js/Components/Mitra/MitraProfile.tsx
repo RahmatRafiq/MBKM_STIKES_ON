@@ -1,8 +1,8 @@
-import { FaGlobe, FaMapMarkerAlt, FaPhone, FaRegClock } from "react-icons/fa"
-import { MdArrowBack, MdOutlineEmail, MdShare } from "react-icons/md"
-import { Button, Card, CardBody, Image, Skeleton, Spacer, Listbox, ListboxItem, Accordion, AccordionItem, Divider, Avatar } from "@nextui-org/react"
+import { FaGlobe, FaPhone } from "react-icons/fa"
+import { MdArrowBack, MdOutlineEmail } from "react-icons/md"
+import { Button, Card, CardBody, Skeleton, Spacer, Accordion, AccordionItem, Listbox, ListboxItem, Avatar } from "@nextui-org/react"
 import { Link } from "@inertiajs/react"
-import { useEffect } from "react"
+import { useEffect, useState } from "react"
 import Footer from "@/Components/Footer"
 import { Mitra } from "@/types/lowongan"
 import Lowongan from "@/types/lowongan"
@@ -25,14 +25,30 @@ const MitraProfile = ({ mitra }: Props) => {
     }
   }, [])
 
+  const [currentIndex, setCurrentIndex] = useState(0)
+
+  const handlePrevious = () => {
+    setCurrentIndex((prevIndex) => {
+      const imageLength = mitra.image_url?.length || 0
+      return prevIndex === 0 ? imageLength - 1 : prevIndex - 1
+    })
+  }
+
+  const handleNext = () => {
+    setCurrentIndex((prevIndex) => {
+      const imageLength = mitra.image_url?.length || 0
+      return prevIndex === imageLength - 1 ? 0 : prevIndex + 1
+    })
+  }
+
   return (
     <>
       {/* Navigasi dengan Tombol Back */}
-      <nav className="shadow-md shadow-foreground-500 p-3 sticky top-0 bg-background z-10">
+      <nav className="shadow-md p-3 sticky top-0 bg-background z-10">
         <Button
           id="back"
           as={Link}
-          href="/mitra"
+          href="/program"
           variant="light"
           className="aspect-square p-0 min-w-0"
         >
@@ -42,22 +58,43 @@ const MitraProfile = ({ mitra }: Props) => {
 
       {/* Tampilan Utama Profil Mitra */}
       <div className="container mx-auto p-5">
-        <div className="flex justify-center">
-          {mitra.image_url ? (
-            <Image
-              isBlurred
-              width={240}
-              src={mitra.image_url}
-              alt={mitra.name}
-              className="m-5"
-              fallbackSrc="https://via.placeholder.com/200x200"
-            />
+        {/* Carousel Gambar */}
+        <div className="flex justify-center relative">
+          {Array.isArray(mitra.image_url) && mitra.image_url.length > 0 ? (
+            <div className="relative w-full max-w-3xl overflow-hidden rounded-lg shadow-md">
+              <div className="flex transition-transform ease-in-out duration-500" style={{ transform: `translateX(-${currentIndex * 100}%)` }}>
+                {mitra.image_url.map((imageUrl: string, index: number) => (
+                  <div key={index} className="min-w-full">
+                    <img
+                      src={imageUrl}
+                      alt={`Mitra image ${index}`}
+                      className="w-full h-64 object-cover rounded-lg transition-transform duration-500 hover:scale-105"
+                    />
+                  </div>
+                ))}
+              </div>
+
+              {/* Tombol Previous dan Next */}
+              <button
+                className="absolute top-1/2 left-4 transform -translate-y-1/2 bg-gray-800 bg-opacity-70 text-white p-2 rounded-full hover:bg-gray-900 transition"
+                onClick={handlePrevious}
+              >
+                &#10094;
+              </button>
+              <button
+                className="absolute top-1/2 right-4 transform -translate-y-1/2 bg-gray-800 bg-opacity-70 text-white p-2 rounded-full hover:bg-gray-900 transition"
+                onClick={handleNext}
+              >
+                &#10095;
+              </button>
+            </div>
           ) : (
             <Skeleton className="h-[200px] w-[200px] rounded-full mx-auto" />
           )}
         </div>
 
-        <Card className="mb-5">
+        {/* Detail Informasi Mitra */}
+        <Card className="mb-5 mt-5">
           <CardBody>
             <h1 className="text-2xl font-bossa font-black text-center">{mitra.name}</h1>
             <p className="text-center text-foreground-500">{mitra.type}</p>
@@ -87,7 +124,7 @@ const MitraProfile = ({ mitra }: Props) => {
         {/* Informasi Tambahan */}
         <Card className="mb-5">
           <CardBody>
-            <h3 className="text-lg font-semibold text-primary">Alamat</h3>
+            <h3 className="text-2x font-bossa font-black">Alamat</h3>
             <p>{mitra.address}</p>
           </CardBody>
         </Card>
@@ -95,10 +132,10 @@ const MitraProfile = ({ mitra }: Props) => {
         {/* Daftar Lowongan */}
         <Card>
           <CardBody>
-            <Accordion selectionMode="multiple" defaultExpandedKeys={['programs']}>
+            <Accordion selectionMode="multiple" defaultExpandedKeys={['lowongan']}>
               <AccordionItem
                 key="lowongan"
-                title={<h3 className="text-lg font-semibold text-primary">Lowongan yang Tersedia</h3>}
+                title={<h3 className="text-2x font-bossa font-black">Lowongan yang Tersedia</h3>}
               >
                 <Listbox
                   items={mitra.lowongan}
@@ -114,20 +151,19 @@ const MitraProfile = ({ mitra }: Props) => {
                           showFallback
                         />
                         <div className="flex flex-col">
-                          <span className="font-bold text-primary">{lowongan.name}</span>
+                          <span className="font-bold">{lowongan.name}</span>
                           <span className="text-foreground-500">{lowongan.location}</span>
                           <span className="text-foreground-500">Durasi: {lowongan.month_duration} bulan</span>
                           <span className="text-foreground-500">
                             {lowongan.is_open === "1" ? "Lowongan Masih Dibuka" : "Lowongan Ditutup"}
                           </span>
-                        </div>  
+                        </div>
                       </div>
                     </ListboxItem>
                   )}
                 </Listbox>
               </AccordionItem>
             </Accordion>
-           
           </CardBody>
         </Card>
       </div>
