@@ -11,7 +11,7 @@ type Props = {
   mitra: Mitra;
 };
 
-const MitraProfile = ({ mitra }: Props) => {
+const MitraProfilePage = ({ mitra }: Props) => {
   const preventBack = () => {
     if (location.pathname.startsWith("/mitra")) {
       route("/mitra")
@@ -174,4 +174,4 @@ const MitraProfile = ({ mitra }: Props) => {
   )
 }
 
-export default MitraProfile
+export default MitraProfilePage
