@@ -79,7 +79,8 @@ Route::middleware('auth')->group(function () {
         Route::get('/questionnaire/{peserta_id}/create', [\App\Http\Controllers\QuestionnaireController::class, 'create'])->name('questionnaire.create');
         Route::post('/questionnaire/{peserta_id}', [\App\Http\Controllers\QuestionnaireController::class, 'store'])->name('questionnaire.store');
         Route::get('/questionnaire/thankyou', [\App\Http\Controllers\QuestionnaireController::class, 'thankyou'])->name('questionnaire.thankyou');
-
+        Route::get('/questionnaire/participants', [\App\Http\Controllers\QuestionnaireController::class, 'listParticipants'])->name('questionnaire.participants');
+        Route::get('/questionnaire/participants/{peserta_id}', [\App\Http\Controllers\QuestionnaireController::class, 'collectResponses'])->name('questionnaire.participant.details');
     });
 
     Route::middleware(['role:mitra'])->group(function () {
