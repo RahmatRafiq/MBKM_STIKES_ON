@@ -14,8 +14,7 @@
                     <select class="form-select" id="participant-select" onchange="loadParticipantDetails()">
                         <option value="" disabled selected>Pilih nama peserta</option>
                         @foreach($participants as $participant)
-                        <option value="{{ route('questionnaire.participants', $participant->id) }}">{{
-                            $participant->nama }}</option>
+                        <option value="{{ route('questionnaire.participant.details', $participant->id) }}">{{ $participant->nama }}</option>
                         @endforeach
                     </select>
                 </div>
@@ -120,46 +119,49 @@
                     'X-Requested-With': 'XMLHttpRequest'
                 }
             })
-                .then(response => response.json())
-                .then(data => {
-                    if (data) {
-                        document.getElementById('participant-name').textContent = data.nama_peserta;
-                        document.getElementById('participant-nim').textContent = data.nim;
-                        document.getElementById('participant-jurusan').textContent = data.jurusan;
-                        document.getElementById('participant-jenis-kelamin').textContent = data.jenis_kelamin;
-                        document.getElementById('participant-email').textContent = data.email;
-                        document.getElementById('participant-mitra').textContent = data.mitra;
-                        document.getElementById('participant-lowongan').textContent = data.lowongan;
+            .then(response => response.json())
+            .then(data => {
+                if (data) {
+                    // Update informasi peserta
+                    document.getElementById('participant-name').textContent = data.nama_peserta;
+                    document.getElementById('participant-nim').textContent = data.nim;
+                    document.getElementById('participant-jurusan').textContent = data.jurusan;
+                    document.getElementById('participant-jenis-kelamin').textContent = data.jenis_kelamin;
+                    document.getElementById('participant-email').textContent = data.email;
+                    document.getElementById('participant-mitra').textContent = data.mitra;
+                    document.getElementById('participant-lowongan').textContent = data.lowongan;
 
-                        var responsesContainer = document.getElementById('questionnaire-responses');
-                        responsesContainer.innerHTML = '';
+                    // Kosongkan container jawaban kuisioner sebelum mengisinya
+                    var responsesContainer = document.getElementById('questionnaire-responses');
+                    responsesContainer.innerHTML = '';
 
-                        // Loop melalui setiap respon dan buat elemen rapi
-                        data.responses.forEach(function(response) {
-                            response.question.forEach((question, index) => {
-                                var responseItem = document.createElement('div');
-                                responseItem.className = 'response-item';
+                    // Loop melalui setiap respon dan buat elemen baru
+                    data.responses.forEach(function(response) {
+                        response.question.forEach((question, index) => {
+                            var responseItem = document.createElement('div');
+                            responseItem.className = 'response-item';
 
-                                var questionElem = document.createElement('strong');
-                                questionElem.textContent = 'Pertanyaan: ' + question;
-                                responseItem.appendChild(questionElem);
+                            var questionElem = document.createElement('strong');
+                            questionElem.textContent = 'Pertanyaan: ' + question;
+                            responseItem.appendChild(questionElem);
 
-                                var answerElem = document.createElement('p');
-                                answerElem.textContent = 'Jawaban: ' + response.answer[index];
-                                responseItem.appendChild(answerElem);
+                            var answerElem = document.createElement('p');
+                            answerElem.textContent = 'Jawaban: ' + response.answer[index];
+                            responseItem.appendChild(answerElem);
 
-                                var createdAtElem = document.createElement('p');
-                                createdAtElem.textContent = 'Dibuat pada: ' + response.created_at;
-                                responseItem.appendChild(createdAtElem);
+                            var createdAtElem = document.createElement('p');
+                            createdAtElem.textContent = 'Dibuat pada: ' + response.created_at;
+                            responseItem.appendChild(createdAtElem);
 
-                                responsesContainer.appendChild(responseItem);
-                            });
+                            responsesContainer.appendChild(responseItem);
                         });
+                    });
 
-                        document.getElementById('details-container').style.display = 'block';
-                    }
-                })
-                .catch(error => console.error('Error:', error));
+                    // Tampilkan container detail
+                    document.getElementById('details-container').style.display = 'block';
+                }
+            })
+            .catch(error => console.error('Error:', error));
         }
     }
 </script>
