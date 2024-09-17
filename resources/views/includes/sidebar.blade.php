@@ -48,13 +48,11 @@
                     <li class="{{ request()->routeIs('batch-mbkms.index') ? 'active-sub' : '' }}">
                         <a href="{{ route('batch-mbkms.index') }}">Batch MBKM</a>
                     </li>
-                    <li class="{{ request()->routeIs('questions.index') ? 'active-sub' : '' }}">
-                        <a href="{{ route('questions.index') }}">Quisioner</a>
-                    </li>
-
                 </ul>
             </li>
             @endcan
+
+            @can('manajemen_quisioner')
             <li class="treeview {{ request()->is('questionnaire*') ? 'active current-page open' : '' }}">
                 <a href="#" class="treeview-toggle">
                     <i class="bi bi-journal-check"></i> <!-- Ikon baru untuk Kuisioner -->
@@ -70,6 +68,8 @@
                     </li>
                 </ul>
             </li>
+            @endcan
+
             <li class="{{ request()->routeIs('profile.edit') ? 'active current-page' : '' }}">
                 <a href="{{ route('profile.edit') }}">
                     <i class="bi bi-person"></i> <!-- Ikon baru untuk Profil -->
@@ -78,14 +78,12 @@
             </li>
 
             @can('manajemen_mitra')
-
             <li class="{{ request()->routeIs('mitra.index') ? 'active current-page' : '' }}">
                 <a href="{{ route('mitra.index') }}">
                     <i class="bi bi-briefcase"></i> <!-- Ikon baru untuk Mitra -->
                     <span class="menu-text">Mitra (Staff)</span>
                 </a>
             </li>
-
             @endcan
 
             @can('manajemen_lowongan')
