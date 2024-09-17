@@ -94,20 +94,41 @@ class RegistrasiController extends Controller
         $dospems = DosenPembimbingLapangan::all();
         $mitras = MitraProfile::all();
         $lowongans = Lowongan::all();
+        $types = MitraProfile::distinct()->pluck('type');
     
-        return view('applications.mbkm.staff.registrasi-program.staff.index', compact('registrations', 'dospems', 'pesertas', 'mitras', 'lowongans'));
+        return view('applications.mbkm.staff.registrasi-program.staff.index', compact('registrations', 'dospems', 'pesertas', 'mitras', 'lowongans', 'types'));
     }
     
     public function json(Request $request)
     {
         $search = $request->search['value'];
-        $query = Registrasi::with('dospem', 'peserta', 'lowongan');
+        $mitraId = $request->mitra_id;
+        $lowonganId = $request->lowongan_id;
+        $type = $request->type;
+    
+        $query = Registrasi::with('dospem', 'peserta', 'lowongan.mitra');
     
         if ($search) {
             $query->whereHas('peserta', function($q) use ($search) {
                 $q->where('nama', 'like', "%{$search}%");
             })->orWhereHas('lowongan', function($q) use ($search) {
                 $q->where('name', 'like', "%{$search}%");
+            });
+        }
+    
+        if ($mitraId) {
+            $query->whereHas('lowongan.mitra', function($q) use ($mitraId) {
+                $q->where('id', $mitraId);
+            });
+        }
+    
+        if ($lowonganId) {
+            $query->where('lowongan_id', $lowonganId);
+        }
+    
+        if ($type) {
+            $query->whereHas('lowongan.mitra', function($q) use ($type) {
+                $q->where('type', $type);
             });
         }
     
@@ -127,6 +148,8 @@ class RegistrasiController extends Controller
     
         return response()->json($data);
     }
+    
+    
     
     
     
