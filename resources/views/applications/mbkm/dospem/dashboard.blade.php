@@ -2,10 +2,11 @@
 
 @section('content')
 <!-- App body starts -->
-<div class="app-body">
+<div class="card-body">
+
     <!-- Row start -->
     <div class="row gx-3">
-        <div class="col-xl-3 col-sm-6 col-12">
+        <div class="col-xl-4 col-sm-6 col-12 mb-3">
             <div class="card mb-3 card-custom background-gradient-1">
                 <div class="card-body">
                     <div class="circle-shape shape-1"></div>
@@ -21,7 +22,7 @@
                 </div>
             </div>
         </div>
-        <div class="col-xl-3 col-sm-6 col-12">
+        <div class="col-xl-4 col-sm-6 col-12 mb-3">
             <div class="card mb-3 card-custom background-gradient-2">
                 <div class="card-body">
                     <div class="circle-shape shape-1"></div>
@@ -37,7 +38,7 @@
                 </div>
             </div>
         </div>
-        <div class="col-xl-3 col-sm-6 col-12">
+        <div class="col-xl-4 col-sm-6 col-12 mb-3">
             <div class="card mb-3 card-custom background-gradient-3">
                 <div class="card-body">
                     <div class="circle-shape shape-1"></div>
