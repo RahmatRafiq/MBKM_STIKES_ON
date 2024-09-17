@@ -74,6 +74,19 @@
 <script src="{{ asset('assets/vendor/toastify/toastify.js') }}"></script>
 <script>
     $(document).ready(function() {
+        // Cek tab yang terakhir kali dibuka dari local storage
+        var activeTab = localStorage.getItem('activeTab');
+        if (activeTab) {
+            $('#myTab button[data-bs-target="' + activeTab + '"]').tab('show');
+        }
+
+        // Simpan tab aktif ke local storage saat tab diklik
+        $('#myTab button').on('shown.bs.tab', function (e) {
+            var activeTab = $(e.target).data('bs-target');
+            localStorage.setItem('activeTab', activeTab);
+        });
+
+        // Mengelola validasi laporan
         $('.validate-btn').on('click', function() {
             var button = $(this);
             var laporanId = button.data('id');
@@ -90,12 +103,10 @@
             }
 
             if (action === 'revisi') {
-                // Tampilkan modal untuk feedback sesuai dengan jenis laporan
                 $('#feedbackModal' + capitalizeFirstLetter(type) + '-' + laporanId).modal('show');
-                return; // Mencegah aksi default
+                return;
             }
 
-            // Aksi validasi
             $.ajax({
                 type: 'POST',
                 url: url,
