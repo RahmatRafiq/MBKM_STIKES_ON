@@ -27,7 +27,7 @@
                     <!-- Bagian Deskripsi dan Konten -->
                     <div class="col-md-8">
                         <div class="card-body">
-                            <h5 class="card-title mb-2">ID Registrasi: {{ $registration->id }}</h5>
+                            <h5 class="card-title mb-2">ID Registrasi: {{ $registration->referensi }}</h5>
                             <h6 class="card-subtitle mb-2 text-muted">
                                 <strong>{{ $registration->lowongan->mitra->name }}</strong>
                             </h6>
