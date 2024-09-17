@@ -62,3 +62,49 @@
     background-color: #00bcd4; /* Cyan */
     color: white;
 }
+
+/* Progress bar container */
+.custom-progress {
+    background-color: #f1f1f1; /* Warna background */
+    border-radius: 5px; /* Sudut bulat */
+    height: 10px; /* Tinggi progress bar */
+    width: 100%; /* Lebar 100% */
+    position: relative; /* Untuk menjaga posisi elemen di dalamnya */
+    margin-bottom: 10px; /* Memberi jarak dengan elemen di bawahnya */
+}
+
+/* Progress bar yang aktif */
+.custom-progress-bar {
+    height: 100%; /* Tinggi 100% dari container */
+    border-radius: 5px; /* Sudut bulat */
+    transition: width 0.5s ease-in-out; /* Animasi transisi saat lebar berubah */
+}
+
+/* Warna progress bar berdasarkan status */
+.custom-progress-bar-registered {
+    background-color: #4caf50; /* Hijau */
+}
+
+.custom-progress-bar-processed {
+    background-color: #2196f3; /* Biru */
+}
+
+.custom-progress-bar-accepted {
+    background-color: #ff9800; /* Oranye */
+}
+
+.custom-progress-bar-rejected {
+    background-color: #f44336; /* Merah */
+}
+
+.custom-progress-bar-rejected_by_user {
+    background-color: #9c27b0; /* Ungu */
+}
+
+.custom-progress-bar-accepted_offer {
+    background-color: #ffeb3b; /* Kuning */
+}
+
+.custom-progress-bar-placement {
+    background-color: #00bcd4; /* Cyan */
+}
