@@ -60,15 +60,15 @@
 @endsection
 
 @push('css')
-    <link rel="stylesheet" href="{{ asset('assets/DataTables/datatables.min.css') }}">
-    <link rel="stylesheet" href="{{ asset('assets/css/badges.css') }}">
+<link rel="stylesheet" href="{{ asset('assets/DataTables/datatables.min.css') }}">
+<link rel="stylesheet" href="{{ asset('assets/css/badges.css') }}">
 @endpush
 
 @push('javascript')
-    <script src="{{ asset('assets/DataTables/datatables.min.js') }}"></script>
-    <script src="{{ asset('assets/js/sweetalert2.all.min.js') }}"></script>
-    <script>
-        $(document).ready(function() {
+<script src="{{ asset('assets/DataTables/datatables.min.js') }}"></script>
+<script src="{{ asset('assets/js/sweetalert2.all.min.js') }}"></script>
+<script>
+    $(document).ready(function() {
             var table = $('#registrations').DataTable({
                 responsive: true,
                 serverSide: true,
@@ -93,7 +93,7 @@
                     { 
                         data: 'status',
                         render: function(data) {
-                            return `<span class="badge badge-${data.replace('_', '-')}">${data}</span>`;
+                            return `<span class="badge badge-${data}">${data}</span>`;
                         }
                     },
                     { 
@@ -109,37 +109,37 @@
 
                             // Tombol Lihat Dokumen
                             if (row.status == 'registered') {
-                                html += `<a href="{{ route('registrasi.documents', ':id') }}" class="btn btn-info">Lihat Dokumen</a>`.replace(':id', row.id);
+                                html += `<a href="{{ route('registrasi.documents', ':id') }}" class="btn btn-info mb-2">Lihat Dokumen</a>`.replace(':id', row.id);
                             }
 
                             // Pemilihan Dosen Pembimbing jika status 'accepted_offer'
                             if (row.status == 'accepted_offer') {
-                                html += `<form action="{{ route('staff.updateDospem', ':id') }}" method="POST" class="d-inline">`.replace(':id', row.id);
+                                html += `<form action="{{ route('staff.updateDospem', ':id') }}" method="POST" class="d-inline mb-2">`.replace(':id', row.id);
                                 html += '@csrf @method("PUT")';
                                 html += `<div class="form-group">`;
-                                html += `<select name="dospem_id" class="form-control" required>`;
+                                html += `<select name="dospem_id" class="form-control mb-2" required>`;
                                 html += `<option value="">Pilih Dosen Pembimbing</option>`;
                                 @foreach($dospems as $dospem)
                                 html += `<option value="{{ $dospem->id }}" ${(row.dospem_id == {{ $dospem->id }}) ? 'selected' : ''}>{{ $dospem->name }}</option>`;
                                 @endforeach
                                 html += `</select></div>`;
-                                html += `<button type="submit" class="btn btn-success mt-2">Update Dosen</button>`;
+                                html += `<button type="submit" class="btn btn-success mb-2">Update Dosen</button>`;
                                 html += `</form>`;
                             }
 
                             // Tombol Penempatan jika status 'accepted_offer' dan dospem_id ada
                             if (row.status == 'accepted_offer' && row.dospem_id) {
-                                html += `<form action="{{ route('staff.updateRegistrasi', ':id') }}" method="POST" class="d-inline">`.replace(':id', row.id);
+                                html += `<form action="{{ route('staff.updateRegistrasi', ':id') }}" method="POST" class="d-inline mb-2">`.replace(':id', row.id);
                                 html += '@csrf @method("PUT")';
                                 html += `<input type="hidden" name="status" value="placement">`;
-                                html += `<button type="submit" class="btn btn-success mt-2">Penempatan</button>`;
+                                html += `<button type="submit" class="btn btn-success mb-2">Penempatan</button>`;
                                 html += `</form>`;
                             }
 
                             // Dropdown untuk Update Status
-                            html += `<form action="{{ route('staff.updateRegistrasi', ':id') }}" method="POST" class="d-inline">`.replace(':id', row.id);
+                            html += `<form action="{{ route('staff.updateRegistrasi', ':id') }}" method="POST" class="d-inline mb-2">`.replace(':id', row.id);
                             html += '@csrf @method("PUT")';
-                            html += `<select name="status" class="form-control" onchange="updateStatus(this, ${row.id})">`;
+                            html += `<select name="status" class="form-control mb-2" onchange="updateStatus(this, ${row.id})">`;
                             html += `<option value="registered" ${(row.status == 'registered') ? 'selected' : ''}>Terdaftar</option>`;
                             html += `<option value="processed" ${(row.status == 'processed') ? 'selected' : ''}>Diproses</option>`;
                             html += `<option value="accepted" ${(row.status == 'accepted') ? 'selected' : ''}>Diterima</option>`;
@@ -151,6 +151,7 @@
 
                             return html;
                         }
+
                     }
                 ]
             });
@@ -177,5 +178,5 @@
                 }
             });
         }
-    </script>
+</script>
 @endpush
