@@ -3,8 +3,8 @@
 @section('content')
 
 <div class="card-body">
-
     <div class="row gx-3">
+        <!-- Baris pertama (4 card) -->
         <div class="col-xl-3 col-sm-6 col-12">
             <div class="card mb-3 card-custom background-gradient-1">
                 <div class="card-body">
@@ -21,6 +21,7 @@
                 </div>
             </div>
         </div>
+
         <div class="col-xl-3 col-sm-6 col-12">
             <div class="card mb-3 card-custom background-gradient-2">
                 <div class="card-body">
@@ -37,6 +38,7 @@
                 </div>
             </div>
         </div>
+
         <div class="col-xl-3 col-sm-6 col-12">
             <div class="card mb-3 card-custom background-gradient-3">
                 <div class="card-body">
@@ -53,6 +55,7 @@
                 </div>
             </div>
         </div>
+
         <div class="col-xl-3 col-sm-6 col-12">
             <div class="card mb-3 card-custom background-gradient-4">
                 <div class="card-body">
@@ -69,7 +72,9 @@
                 </div>
             </div>
         </div>
-        <div class="col-xl-3 col-sm-6 col-12">
+
+        <!-- Baris kedua (3 card) -->
+        <div class="col-xl-4 col-sm-6 col-12">
             <div class="card mb-3 card-custom background-gradient-5">
                 <div class="card-body">
                     <div class="circle-shape shape-1"></div>
@@ -85,7 +90,8 @@
                 </div>
             </div>
         </div>
-        <div class="col-xl-3 col-sm-6 col-12">
+
+        <div class="col-xl-4 col-sm-6 col-12">
             <div class="card mb-3 card-custom background-gradient-6">
                 <div class="card-body">
                     <div class="circle-shape shape-1"></div>
@@ -101,7 +107,8 @@
                 </div>
             </div>
         </div>
-        <div class="col-xl-3 col-sm-6 col-12">
+
+        <div class="col-xl-4 col-sm-6 col-12">
             <div class="card mb-3 card-custom background-gradient-7">
                 <div class="card-body">
                     <div class="circle-shape shape-1"></div>
@@ -117,7 +124,9 @@
                 </div>
             </div>
         </div>
-        <div class="col-xl-3 col-sm-6 col-12">
+
+        <!-- Baris ketiga (3 card) -->
+        <div class="col-xl-4 col-sm-6 col-12">
             <div class="card mb-3 card-custom background-gradient-8">
                 <div class="card-body">
                     <div class="circle-shape shape-1"></div>
@@ -128,12 +137,13 @@
                     </div>
                     <div class="d-flex align-items-center justify-content-between">
                         <h5 class="m-0 text-white fw-normal">Validasi</h5>
-                        <h3 class="m-0 text-white">{{ $validasiCount }}</h3>
+                        <h3 class="m-0 text-white">{{ $validasiCount }}</h5>
                     </div>
                 </div>
             </div>
         </div>
-        <div class="col-xl-3 col-sm-6 col-12">
+
+        <div class="col-xl-4 col-sm-6 col-12">
             <div class="card mb-3 card-custom background-gradient-9">
                 <div class="card-body">
                     <div class="circle-shape shape-1"></div>
@@ -149,7 +159,8 @@
                 </div>
             </div>
         </div>
-        <div class="col-xl-3 col-sm-6 col-12">
+
+        <div class="col-xl-4 col-sm-6 col-12">
             <div class="card mb-3 card-custom background-gradient-10">
                 <div class="card-body">
                     <div class="circle-shape shape-1"></div>
@@ -165,6 +176,8 @@
                 </div>
             </div>
         </div>
+    </div>
+    <div class="row gx-3">
         <div class="col-xl-6">
             <div class="card mb-3">
                 <div class="card-header">
@@ -221,6 +234,7 @@
         </div>
     </div>
 </div>
+
 @endsection
 
 @push('css')
