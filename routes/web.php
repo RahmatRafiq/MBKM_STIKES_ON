@@ -46,6 +46,7 @@ Route::middleware('auth')->group(function () {
         Route::post('/peserta/registrasi/{id}/accept', [\App\Http\Controllers\RegistrasiController::class, 'acceptOffer'])->name('peserta.acceptOffer');
         Route::post('/peserta/registrasi/{id}/reject', [\App\Http\Controllers\RegistrasiController::class, 'rejectOffer'])->name('peserta.rejectOffer');
         Route::get('/registrasi/{id}/registrations-and-accept-offer', [\App\Http\Controllers\RegistrasiController::class, 'showRegistrationsAndAcceptOffer'])->name('registrasi.registrations-and-accept-offer');
+        Route::post('registrasi/json', [\App\Http\Controllers\RegistrasiController::class, 'json'])->name('registrasi.json');
 
         Route::get('/laporan-harian', [\App\Http\Controllers\AktivitasMbkmController::class, 'createLaporanHarian'])->name('laporan.harian');
         Route::get('/laporan-harian/create', [\App\Http\Controllers\AktivitasMbkmController::class, 'createLaporanHarian'])->name('laporan.harian.create');
