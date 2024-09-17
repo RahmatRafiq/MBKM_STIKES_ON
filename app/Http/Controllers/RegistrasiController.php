@@ -89,15 +89,31 @@ class RegistrasiController extends Controller
 
     public function index()
     {
-        $registrations = Registrasi::with('dospem')->get();
+        $user = Auth::user();
+        
+        // Cek apakah user memiliki role 'mitra'
+        if ($user->hasRole('mitra')) {
+            // Ambil profil mitra yang terkait dengan user tersebut
+            $mitraProfile = MitraProfile::where('user_id', $user->id)->first();
+            
+            // Hanya tampilkan registrasi yang terkait dengan lowongan dari mitra tersebut
+            $registrations = Registrasi::whereHas('lowongan', function($query) use ($mitraProfile) {
+                $query->where('mitra_id', $mitraProfile->id);
+            })->with('dospem')->get();
+        } else {
+            // Jika bukan mitra, tampilkan semua data
+            $registrations = Registrasi::with('dospem')->get();
+        }
+    
         $pesertas = Peserta::all();
         $dospems = DosenPembimbingLapangan::all();
         $mitras = MitraProfile::all();
         $lowongans = Lowongan::all();
         $types = MitraProfile::distinct()->pluck('type');
-    
+        
         return view('applications.mbkm.staff.registrasi-program.staff.index', compact('registrations', 'dospems', 'pesertas', 'mitras', 'lowongans', 'types'));
     }
+    
     
     public function json(Request $request)
     {
@@ -105,9 +121,17 @@ class RegistrasiController extends Controller
         $mitraId = $request->mitra_id;
         $lowonganId = $request->lowongan_id;
         $type = $request->type;
-    
+        
         $query = Registrasi::with('dospem', 'peserta', 'lowongan.mitra');
-    
+        
+        $user = Auth::user();
+        if ($user->hasRole('mitra')) {
+            $mitraProfile = MitraProfile::where('user_id', $user->id)->first();
+            $query->whereHas('lowongan', function($q) use ($mitraProfile) {
+                $q->where('mitra_id', $mitraProfile->id);
+            });
+        }
+        
         if ($search) {
             $query->whereHas('peserta', function($q) use ($search) {
                 $q->where('nama', 'like', "%{$search}%");
@@ -115,23 +139,23 @@ class RegistrasiController extends Controller
                 $q->where('name', 'like', "%{$search}%");
             });
         }
-    
+        
         if ($mitraId) {
             $query->whereHas('lowongan.mitra', function($q) use ($mitraId) {
                 $q->where('id', $mitraId);
             });
         }
-    
+        
         if ($lowonganId) {
             $query->where('lowongan_id', $lowonganId);
         }
-    
+        
         if ($type) {
             $query->whereHas('lowongan.mitra', function($q) use ($type) {
                 $q->where('type', $type);
             });
         }
-    
+        
         $columns = [
             'id',
             'nama_peserta',
@@ -139,15 +163,16 @@ class RegistrasiController extends Controller
             'status',
             'dospem_id',
         ];
-    
+        
         if ($request->filled('order')) {
             $query->orderBy($columns[$request->order[0]['column']], $request->order[0]['dir']);
         }
-    
+        
         $data = DataTable::paginate($query, $request);
-    
+        
         return response()->json($data);
     }
+    
     
     
     
