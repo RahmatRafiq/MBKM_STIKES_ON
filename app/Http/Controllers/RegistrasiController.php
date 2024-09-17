@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Helpers\DataTable;
 use App\Http\Controllers\Controller;
 use App\Models\AktivitasMbkm;
 use App\Models\BatchMbkm;
@@ -91,10 +92,44 @@ class RegistrasiController extends Controller
         $registrations = Registrasi::with('dospem')->get();
         $pesertas = Peserta::all();
         $dospems = DosenPembimbingLapangan::all();
-
-        return view('applications.mbkm.staff.registrasi-program.staff.index', compact('registrations', 'dospems', 'pesertas'));
+        $mitras = MitraProfile::all();
+        $lowongans = Lowongan::all();
+    
+        return view('applications.mbkm.staff.registrasi-program.staff.index', compact('registrations', 'dospems', 'pesertas', 'mitras', 'lowongans'));
     }
-
+    
+    public function json(Request $request)
+    {
+        $search = $request->search['value'];
+        $query = Registrasi::with('dospem', 'peserta', 'lowongan');
+    
+        if ($search) {
+            $query->whereHas('peserta', function($q) use ($search) {
+                $q->where('nama', 'like', "%{$search}%");
+            })->orWhereHas('lowongan', function($q) use ($search) {
+                $q->where('name', 'like', "%{$search}%");
+            });
+        }
+    
+        $columns = [
+            'id',
+            'nama_peserta',
+            'nama_lowongan',
+            'status',
+            'dospem_id',
+        ];
+    
+        if ($request->filled('order')) {
+            $query->orderBy($columns[$request->order[0]['column']], $request->order[0]['dir']);
+        }
+    
+        $data = DataTable::paginate($query, $request);
+    
+        return response()->json($data);
+    }
+    
+    
+    
     public function store(Request $request)
     {
         $request->validate([
