@@ -126,6 +126,7 @@ Route::middleware('auth')->group(function () {
         Route::get('/staff/registrasi', [\App\Http\Controllers\RegistrasiController::class, 'index'])->name('staff.registrasiIndex');
         Route::put('/staff/registrasi/{id}', [\App\Http\Controllers\RegistrasiController::class, 'update'])->name('staff.updateRegistrasi');
         Route::put('/staff/registrasi/{id}/dospem', [\App\Http\Controllers\RegistrasiController::class, 'updateDospem'])->name('staff.updateDospem');
+        Route::post('registrasi/json', [\App\Http\Controllers\RegistrasiController::class, 'json'])->name('registrasi.json');
 
         Route::get('/staff/registrasi/{id}/documents', [\App\Http\Controllers\RegistrasiController::class, 'showDocuments'])->name('registrasi.documents');
 
