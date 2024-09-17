@@ -5,7 +5,7 @@
     <div class="card">
         <div class="card-header d-flex justify-content-between align-items-center">
             <h2 class="card-title">Daftar Registrasi</h2>
-            <a href="{{ route('peserta.registrasiForm') }}" class="btn btn-primary">Form Registrasi</a>
+            {{-- <a href="{{ route('peserta.registrasiForm') }}" class="btn btn-primary">Form Registrasi</a> --}}
         </div>
         <div class="card-body">
             @foreach($registrations as $registration)
@@ -21,7 +21,7 @@
                             @else
                             <span class="text-muted">No Image Available</span>
                             @endif
-                        </div>
+                        </div>  
                     </div>
 
                     <!-- Bagian Deskripsi dan Konten -->
