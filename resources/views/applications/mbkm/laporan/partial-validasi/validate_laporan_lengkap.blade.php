@@ -7,6 +7,7 @@
                         <tr>
                             <th>Dosen Pembimbing</th>
                             <th>Isi Laporan</th>
+                            <th>Dokumen</th>
                             <th>Status</th>
                             <th>Feedback</th>
                             <th>Aksi</th>
@@ -17,6 +18,22 @@
                         <tr id="laporan-lengkap-{{ $laporan->id }}">
                             <td>{{ $laporan->dospem->name }}</td>
                             <td>{{ $laporan->isi_laporan }}</td>
+                            <td>
+                                @if ($laporan->status == 'pending')
+                                    <button class="btn btn-outline-success validate-btn mb-1" data-id="{{ $laporan->id }}"
+                                        data-type="lengkap" data-action="validasi">Validasi</button>
+                                    <button class="btn btn-outline-danger validate-btn mb-1" data-id="{{ $laporan->id }}"
+                                        data-type="lengkap" data-action="revisi" data-toggle="modal"
+                                        data-target="#feedbackModalLengkap-{{ $laporan->id }}">Revisi</button>
+                                @endif
+                            
+                                @if($laporan->getFirstMediaUrl('laporan-lengkap'))
+                                    <a href="{{ $laporan->getFirstMediaUrl('laporan-lengkap') }}" target="_blank" class="btn btn-primary mb-1">Lihat Dokumen</a>
+                                @else
+                                    <span class="text-muted">Tidak ada dokumen</span>
+                                @endif
+                            </td>
+                            
                             <td class="status">
                                 <span
                                     class="badge badge-{{ $laporan->status == 'pending' ? 'accepted_offer' : ($laporan->status == 'validasi' ? 'registered' : 'rejected') }}">
