@@ -2,11 +2,11 @@
 
 @section('content')
 <!-- App body starts -->
-<div class="app-body">
+<div class="card-body">
     <!-- Row start -->
     <div class="row gx-3">
         <!-- Kartu Laporan Harian -->
-        <div class="col-xl-3 col-sm-6 col-12">
+        <div class="col-xl-6 col-sm-6 col-12">
             <div class="card mb-3 card-custom background-gradient-1">
                 <div class="card-body">
                     <div class="circle-shape shape-1"></div>
@@ -22,8 +22,9 @@
                 </div>
             </div>
         </div>
+
         <!-- Kartu Laporan Mingguan -->
-        <div class="col-xl-3 col-sm-6 col-12">
+        <div class="col-xl-6 col-sm-6 col-12">
             <div class="card mb-3 card-custom background-gradient-2">
                 <div class="card-body">
                     <div class="circle-shape shape-1"></div>
@@ -39,49 +40,68 @@
                 </div>
             </div>
         </div>
-        <div class="col-xl-4 col-sm-6 col-12">
-            <div class="card mb-3 card-custom background-gradient-3">
+    </div>
+
+    <div class="row gx-3">
+        <div class="col-12">
+            <div class="card mb-3 card-custom background-gradient-3 shadow-lg">
                 <div class="card-body">
                     <div class="circle-shape shape-1"></div>
                     <div class="circle-shape shape-2"></div>
                     <div class="circle-shape shape-3"></div>
-                    <div class="mb-3 d-flex align-items-center">
-                        <i class="bi bi-briefcase fs-1 text-white lh-1"></i>
-                        <h5 class="ms-3 m-0 text-white fw-normal">Total Lowongan</h5>
-                    </div>
-                    <div class="d-flex align-items-center justify-content-between mb-3">
+    
+                    <!-- Title Section with Icon -->
+                    <div class="mb-3 d-flex align-items-center justify-content-between">
+                        <div class="d-flex align-items-center">
+                            <i class="bi bi-briefcase fs-2 text-white lh-1"></i>
+                            <h5 class="ms-3 m-0 text-white ">Total Lowongan</h5>
+                        </div>
                         <h3 class="m-0 text-white">{{ $totalLowongan }}</h3>
                     </div>
-                    <div class="status-details">
-                        <div class="status-item d-flex justify-content-between align-items-center mb-2">
-                            <span class="text-success">
+                    <div class="status-details row">
+                        <!-- Registered -->
+                        <div class="col-md-3 col-6 status-item d-flex justify-content-between align-items-center mb-2">
+                            <span class="text-white text-shadow">
                                 <i class="bi bi-check-circle-fill me-1"></i>Registered
                             </span>
-                            <span class="badge bg-success">{{ $lowonganStatus['registered'] ?? 0 }}</span>
+                            <span class="badge bg-success shadow-sm">{{ $lowonganStatus['registered'] ?? 0 }}</span>
                         </div>
-                        <div class="status-item d-flex justify-content-between align-items-center mb-2">
-                            <span class="text-warning">
+    
+                        <!-- Processed -->
+                        <div class="col-md-3 col-6 status-item d-flex justify-content-between align-items-center mb-2">
+                            <span class="text-white text-shadow">
                                 <i class="bi bi-hourglass-split me-1"></i>Processed
                             </span>
-                            <span class="badge bg-warning text-dark">{{ $lowonganStatus['processed'] ?? 0 }}</span>
+                            <span class="badge bg-warning text-dark shadow-sm">{{ $lowonganStatus['processed'] ?? 0 }}</span>
                         </div>
-                        <div class="status-item d-flex justify-content-between align-items-center mb-2">
-                            <span class="text-info">
+    
+                        <!-- Accepted -->
+                        <div class="col-md-3 col-6 status-item d-flex justify-content-between align-items-center mb-2">
+                            <span class="text-white text-shadow">
                                 <i class="bi bi-check-circle me-1"></i>Accepted
                             </span>
-                            <span class="badge bg-info text-dark">{{ $lowonganStatus['accepted'] ?? 0 }}</span>
+                            <span class="badge bg-info text-dark shadow-sm">{{ $lowonganStatus['accepted'] ?? 0 }}</span>
                         </div>
-                        <div class="status-item d-flex justify-content-between align-items-center">
-                            <span class="text-danger">
+    
+                        <!-- Rejected -->
+                        <div class="col-md-3 col-6 status-item d-flex justify-content-between align-items-center">
+                            <span class="text-white text-shadow">
                                 <i class="bi bi-x-circle-fill me-1"></i>Rejected
                             </span>
-                            <span class="badge bg-danger">{{ $lowonganStatus['rejected'] ?? 0 }}</span>
+                            <span class="badge bg-danger shadow-sm">{{ $lowonganStatus['rejected'] ?? 0 }}</span>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
-        
+        <style>
+        .text-shadow {
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.6);
+        }
+        </style>
+    </div>
+    
+    <div class="row gx-3">
         <!-- Additional Charts and Statistics -->
         <div class="col-xl-6">
             <div class="card mb-3">
@@ -138,7 +158,8 @@
             </div>
         </div>
     </div>
-    <!-- Row end -->
+</div>
+<!-- Row end -->
 </div>
 <!-- App body ends -->
 @endsection
