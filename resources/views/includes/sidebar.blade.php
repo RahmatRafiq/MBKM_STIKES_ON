@@ -116,13 +116,14 @@
             @endcan
 
             @can('registrasi_program_mbkm')
-            <li class="{{ request()->routeIs('peserta.registrasiForm') ? 'active current-page' : '' }}">
-                <a href="{{ route('peserta.registrasiForm') }}">
+            <li class="{{ request()->routeIs('registrasi.registrations-and-accept-offer') ? 'active current-page' : '' }}">
+                <a href="{{ route('registrasi.registrations-and-accept-offer', ['id' => auth()->user()->peserta->id]) }}">
                     <i class="bi bi-file-earmark-plus"></i>
                     <span class="menu-text">Registrasi Peserta (Peserta)</span>
                 </a>
             </li>
             @endcan
+            
 
             @can('registrasi_program')
             <li class="{{ request()->routeIs('staff.registrasiIndex') ? 'active current-page' : '' }}">
