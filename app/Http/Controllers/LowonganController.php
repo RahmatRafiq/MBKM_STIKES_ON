@@ -13,17 +13,33 @@ class LowonganController extends Controller
 {
     public function index()
     {
-        $lowongan = Lowongan::all();
-        $mitraProfile = MitraProfile::all();
+        if (auth()->user()->hasRole('mitra')) {
+            // Jika user memiliki role mitra, tampilkan lowongan yang terkait dengan mitra mereka
+            $mitraProfile = MitraProfile::where('user_id', auth()->user()->id)->first();
+            $lowongan = Lowongan::where('mitra_id', $mitraProfile->id)->get();
+        } else {
+            // Jika user bukan mitra, tampilkan semua lowongan
+            $lowongan = Lowongan::all();
+            $mitraProfile = MitraProfile::all(); // Hanya digunakan di view untuk memilih mitra
+        }
+    
         return view('applications.mbkm.lowongan-mitra.index', compact('lowongan', 'mitraProfile'));
     }
+    
 
     public function json(Request $request)
     {
         $query = Lowongan::with('mitra');
+    
+        // Jika user memiliki role mitra, hanya tampilkan lowongan miliknya
+        if (auth()->user()->hasRole('mitra')) {
+            $mitraProfile = MitraProfile::where('user_id', auth()->user()->id)->first();
+            $query->where('mitra_id', $mitraProfile->id);
+        }
+    
         $search = $request->search['value'];
-
-        // columns
+    
+        // Daftar kolom yang bisa disortir
         $columns = [
             'name',
             'mitra_id',
@@ -37,38 +53,50 @@ class LowonganController extends Controller
             'start_date',
             'end_date',
         ];
-
-        // search
+    
+        // Pencarian
         if ($request->filled('search')) {
-            $query->where('name', 'like', "%{$search}%")
-                ->orWhere('mitra_id', 'like', "%{$search}%")
-                ->orWhere('description', 'like', "%{$search}%")
-                ->orWhere('quota', 'like', "%{$search}%")
-                ->orWhere('is_open', 'like', "%{$search}%")
-                ->orWhere('location', 'like', "%{$search}%")
-                ->orWhere('gpa', 'like', "%{$search}%")
-                ->orWhere('semester', 'like', "%{$search}%")
-                ->orWhere('experience_required', 'like', "%{$search}%")
-                ->orWhere('start_date', 'like', "%{$search}%")
-                ->orWhere('end_date', 'like', "%{$search}%");
+            $query->where(function($q) use ($search) {
+                $q->where('name', 'like', "%{$search}%")
+                    ->orWhere('mitra_id', 'like', "%{$search}%")
+                    ->orWhere('description', 'like', "%{$search}%")
+                    ->orWhere('quota', 'like', "%{$search}%")
+                    ->orWhere('is_open', 'like', "%{$search}%")
+                    ->orWhere('location', 'like', "%{$search}%")
+                    ->orWhere('gpa', 'like', "%{$search}%")
+                    ->orWhere('semester', 'like', "%{$search}%")
+                    ->orWhere('experience_required', 'like', "%{$search}%")
+                    ->orWhere('start_date', 'like', "%{$search}%")
+                    ->orWhere('end_date', 'like', "%{$search}%");
+            });
         }
-
-        // order
+    
+        // Urutan kolom
         if ($request->filled('order')) {
             $query->orderBy($columns[$request->order[0]['column']], $request->order[0]['dir']);
         }
-
+    
+        // Ambil data dengan pagination menggunakan helper DataTable
         $data = DataTable::paginate($query, $request);
-
+    
         return response()->json($data);
     }
+    
 
     public function create()
     {
-        $mitraProfile = MitraProfile::all();
+        if (auth()->user()->hasRole('mitra')) {
+            // Jika user adalah mitra, hanya tampilkan profile mitra miliknya
+            $mitraProfile = MitraProfile::where('user_id', auth()->user()->id)->get();
+        } else {
+            // Jika bukan mitra, tampilkan semua mitra
+            $mitraProfile = MitraProfile::all();
+        }
+    
         $matakuliahs = Matakuliah::all(); // Mengambil data mata kuliah
         return view('applications.mbkm.lowongan-mitra.create', compact('mitraProfile', 'matakuliahs'));
     }
+    
 
     public function store(Request $request)
     {
@@ -124,20 +152,30 @@ class LowonganController extends Controller
     public function edit($id)
     {
         $lowongan = Lowongan::findOrFail($id);
+    
+        if (auth()->user()->hasRole('mitra')) {
+            // Pastikan lowongan ini milik mitra yang sedang login
+            $mitraProfile = MitraProfile::where('user_id', auth()->user()->id)->first();
+            if ($lowongan->mitra_id !== $mitraProfile->id) {
+                return redirect()->route('lowongan.index')->withErrors(['error' => 'Anda tidak memiliki akses ke lowongan ini.']);
+            }
+        }
+    
         $mitraProfile = MitraProfile::all();
-        $matakuliahs = Matakuliah::all(); // Mengambil data mata kuliah dari koneksi kedua
-
+        $matakuliahs = Matakuliah::all();
+    
         // Ambil matakuliah_id yang sudah terkait dengan lowongan ini
         $lowonganHasMatakuliah = LowonganHasMatakuliah::where('lowongan_id', $lowongan->id)
             ->with(['matakuliah' => function ($query) {
-                $query->select('MKID', 'Nama'); // Sesuaikan dengan nama kolom di tabel mk
+                $query->select('MKID', 'Nama');
             }])
             ->get()
             ->pluck('matakuliah_id')
             ->toArray();
-
+    
         return view('applications.mbkm.lowongan-mitra.edit', compact('lowongan', 'mitraProfile', 'matakuliahs', 'lowonganHasMatakuliah'));
     }
+    
 
     public function update(Request $request, $id)
     {
