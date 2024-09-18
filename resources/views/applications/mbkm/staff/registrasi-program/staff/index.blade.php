@@ -6,9 +6,31 @@
         <div class="card-header d-flex justify-content-between align-items-center">
             <h5 class="card-title">Manajemen Registrasi</h5>
         </div>
-
         {{-- Filter Section --}}
         <div class="row mb-3">
+            @role('mitra')
+            {{-- Jika user adalah mitra, sembunyikan filter mitra dan set hidden field --}}
+            <input type="hidden" id="filter_mitra" value="{{ Auth::user()->mitraProfile->id }}">
+            <div class="col-md-6">
+                <label for="filter_lowongan">Filter Lowongan</label>
+                <select id="filter_lowongan" class="form-control">
+                    <option value="">Semua Lowongan</option>
+                    @foreach ($lowongans as $lowongan)
+                    <option value="{{ $lowongan->id }}">{{ $lowongan->name }}</option>
+                    @endforeach
+                </select>
+            </div>
+            <div class="col-md-6">
+                <label for="filter_type">Filter Type</label>
+                <select id="filter_type" class="form-control">
+                    <option value="">Semua Type</option>
+                    @foreach ($types as $type)
+                    <option value="{{ $type }}">{{ $type }}</option>
+                    @endforeach
+                </select>
+            </div>
+            @else
+            {{-- Jika bukan mitra, tampilkan filter mitra --}}
             <div class="col-md-4">
                 <label for="filter_mitra">Filter Mitra</label>
                 <select id="filter_mitra" class="form-control">
@@ -36,8 +58,8 @@
                     @endforeach
                 </select>
             </div>
+            @endrole
         </div>
-
         <div class="table-responsive">
             <table class="table styled-table" id="registrations">
                 <thead>
