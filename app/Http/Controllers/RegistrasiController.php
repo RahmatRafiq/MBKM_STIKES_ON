@@ -35,11 +35,11 @@ class RegistrasiController extends Controller
         }
 
         $lowongans = $query->with(['mitra' => function ($query) {
-            $query->select('id', 'name', 'type'); // Hanya ambil kolom yang diperlukan
-        }])->paginate(10); // Gunakan paginate
+            $query->select('id', 'name', 'type');
+        }])->paginate(10);
 
         $types = MitraProfile::distinct()->pluck('type');
-        $batchId = BatchMbkm::getActiveBatch()->id; // Ambil batch aktif saat ini
+        $batchId = BatchMbkm::getActiveBatch()->id;
 
         if ($request->ajax()) {
             $selectedLowongan = Lowongan::with('mitra:id,name,website')->find($lowonganId);
@@ -71,7 +71,6 @@ class RegistrasiController extends Controller
 
         $lowongans = $query->with('mitra')->paginate(10);
 
-        // Pastikan URL gambar dimasukkan ke dalam response JSON
         $lowongans->getCollection()->transform(function ($lowongan) {
             return [
                 'id' => $lowongan->id,
@@ -91,27 +90,19 @@ class RegistrasiController extends Controller
     {
         $user = Auth::user();
 
-        // Cek apakah user memiliki role 'mitra'
         if ($user->hasRole('mitra')) {
-            // Ambil profil mitra yang terkait dengan user tersebut
             $mitraProfile = MitraProfile::where('user_id', $user->id)->first();
-
-            // Hanya tampilkan registrasi yang terkait dengan lowongan dari mitra tersebut
-            $registrations = Registrasi::whereHas('lowongan', function ($query) use ($mitraProfile) {
-                $query->where('mitra_id', $mitraProfile->id);
-            })->with('dospem')->get();
+            $lowongans = Lowongan::where('mitra_id', $mitraProfile->id)->get();
         } else {
-            // Jika bukan mitra, tampilkan semua data
-            $registrations = Registrasi::with('dospem')->get();
+            $lowongans = Lowongan::all();
         }
 
         $pesertas = Peserta::all();
         $dospems = DosenPembimbingLapangan::all();
         $mitras = MitraProfile::all();
-        $lowongans = Lowongan::all();
         $types = MitraProfile::distinct()->pluck('type');
 
-        return view('applications.mbkm.staff.registrasi-program.staff.index', compact('registrations', 'dospems', 'pesertas', 'mitras', 'lowongans', 'types'));
+        return view('applications.mbkm.staff.registrasi-program.staff.index', compact('dospems', 'pesertas', 'mitras', 'lowongans', 'types'));
     }
 
     public function json(Request $request)
@@ -155,13 +146,7 @@ class RegistrasiController extends Controller
             });
         }
 
-        $columns = [
-            'id',
-            'nama_peserta',
-            'nama_lowongan',
-            'status',
-            'dospem_id',
-        ];
+        $columns = ['id', 'nama_peserta', 'nama_lowongan', 'status', 'dospem_id'];
 
         if ($request->filled('order')) {
             $query->orderBy($columns[$request->order[0]['column']], $request->order[0]['dir']);
@@ -184,7 +169,6 @@ class RegistrasiController extends Controller
         $lowonganId = $request->input('lowongan_id');
         $batchId = $request->input('batch_id');
 
-        // Cek pendaftaran yang sudah ada
         $existingRegistration = Registrasi::where('peserta_id', $pesertaId)
             ->where('lowongan_id', $lowonganId)
             ->where('batch_id', $batchId)
@@ -194,11 +178,9 @@ class RegistrasiController extends Controller
             return back()->withErrors(['error' => 'Peserta sudah mendaftar pada lowongan ini di batch ini. Tidak dapat mendaftar lagi.']);
         }
 
-        // Ambil data peserta dan lowongan
         $peserta = Peserta::find($pesertaId);
         $lowongan = Lowongan::find($lowonganId);
 
-        // Cek pendaftaran yang diterima
         $existingAcceptedRegistration = Registrasi::where('peserta_id', $pesertaId)
             ->whereIn('status', ['accepted', 'accepted_offer'])
             ->where('batch_id', $batchId)
@@ -208,7 +190,6 @@ class RegistrasiController extends Controller
             return back()->withErrors(['Error' => 'Peserta sudah memiliki tawaran yang diterima di batch ini. Tidak dapat mendaftar di lowongan lain.']);
         }
 
-        // Tambahkan logika untuk mencegah pendaftaran jika peserta sudah memiliki lowongan dengan status placement di batch yang sama
         $placementRegistration = Registrasi::where('peserta_id', $pesertaId)
             ->where('batch_id', $batchId)
             ->where('status', 'placement')
@@ -218,7 +199,6 @@ class RegistrasiController extends Controller
             return back()->withErrors(['error' => 'Peserta sudah memiliki lowongan dengan status "placement" di batch ini. Tidak dapat mendaftar untuk lowongan lain.']);
         }
 
-        // Simpan pendaftaran baru
         Registrasi::create([
             'peserta_id' => $pesertaId,
             'lowongan_id' => $lowonganId,
@@ -230,12 +210,12 @@ class RegistrasiController extends Controller
 
         return back()->with('success', 'Pendaftaran berhasil.');
     }
+
     public function showDocuments($id)
     {
         $registrasi = Registrasi::findOrFail($id);
         $peserta = $registrasi->peserta;
 
-        // Daftar nama collection dan label yang ingin ditampilkan
         $collections = [
             'surat_rekomendasi' => 'Surat Rekomendasi',
             'transkrip_nilai' => 'Transkrip Nilai',
@@ -245,15 +225,14 @@ class RegistrasiController extends Controller
             'surat_keterangan_sehat' => 'Surat Keterangan Sehat',
         ];
 
-        // Menggabungkan dokumen dari beberapa collection
         $documents = collect();
         foreach ($collections as $collection => $label) {
             $mediaItems = $peserta->getMedia($collection);
             foreach ($mediaItems as $mediaItem) {
                 $documents->push((object) [
-                    'label' => $label, // Nama dokumen deskriptif
-                    'file_name' => $mediaItem->file_name, // Nama file yang diunggah
-                    'url' => $mediaItem->getUrl(), // URL file
+                    'label' => $label,
+                    'file_name' => $mediaItem->file_name,
+                    'url' => $mediaItem->getUrl(),
                 ]);
             }
         }
@@ -263,12 +242,20 @@ class RegistrasiController extends Controller
 
     public function update(Request $request, $id)
     {
+        $user = Auth::user();
         $request->validate([
             'status' => 'required|in:registered,processed,accepted,rejected,rejected_by_user,accepted_offer,placement',
             'dospem_id' => 'nullable|exists:dosen_pembimbing_lapangan,id',
         ]);
 
         $registration = Registrasi::find($id);
+
+        if ($user->hasRole('mitra')) {
+            if (!in_array($request->input('status'), ['accepted', 'rejected'])) {
+                return back()->withErrors('Anda hanya dapat menerima atau menolak pendaftar.');
+            }
+        }
+
         $registration->status = $request->input('status');
 
         if ($request->input('status') == 'accepted_offer' && $request->has('dospem_id')) {
@@ -279,16 +266,14 @@ class RegistrasiController extends Controller
             if ($registration->dospem_id === null) {
                 return back()->withErrors('Dosen pembimbing harus diisi sebelum mengubah status ke "placement".');
             } else {
-                // Buat entri baru di tabel AktivitasMbkm
                 AktivitasMbkm::create([
                     'peserta_id' => $registration->peserta_id,
                     'lowongan_id' => $registration->lowongan_id,
                     'mitra_id' => $registration->lowongan->mitra_id,
                     'dospem_id' => $registration->dospem_id,
-                    'laporan_harian_id' => null, // Isi dengan ID laporan harian jika ada
-                    'laporan_mingguan_id' => null, // Isi dengan ID laporan mingguan jika ada
-                    'laporan_lengkap_id' => null, // Isi dengan ID laporan lengkap jika ada
-                    // Anda bisa menambahkan kolom lain yang diperlukan di sini
+                    'laporan_harian_id' => null,
+                    'laporan_mingguan_id' => null,
+                    'laporan_lengkap_id' => null,
                 ]);
             }
         }
@@ -318,9 +303,7 @@ class RegistrasiController extends Controller
 
     public function acceptOffer(Request $request, $id)
     {
-        $request->validate([
-            // Tidak ada validasi dospem_id di sini
-        ]);
+        $request->validate([]);
 
         $registration = Registrasi::find($id);
 
@@ -331,7 +314,6 @@ class RegistrasiController extends Controller
         $registration->status = 'accepted_offer';
         $registration->save();
 
-        // Perbarui hanya registrasi yang belum ditolak oleh perusahaan atau pengguna
         Registrasi::where('peserta_id', $registration->peserta_id)
             ->where('id', '!=', $registration->id)
             ->whereNotIn('status', ['rejected', 'rejected_by_user'])
@@ -342,9 +324,7 @@ class RegistrasiController extends Controller
 
     public function rejectOffer(Request $request, $id)
     {
-        $request->validate([
-            // Tidak ada validasi dospem_id di sini
-        ]);
+        $request->validate([]);
 
         $registration = Registrasi::find($id);
 
@@ -362,22 +342,18 @@ class RegistrasiController extends Controller
     {
         $registration = Registrasi::with('lowongan.mitra', 'dospem')->find($id);
 
-        $user = Auth::user(); // Pastikan user login merupakan peserta
+        $user = Auth::user();
 
-        // load peserta
         $user->load('peserta');
 
-        // Ambil semua registrasi peserta dan juga media dari mitra
         $registrations = Registrasi::with(['lowongan.mitra'])
             ->where('peserta_id', $user->peserta->id)
             ->get()
             ->map(function ($registration) {
-                // Ambil URL gambar pertama dari mitra profile yang terkait dengan lowongan
                 $registration->lowongan->mitra->image_url = $registration->lowongan->mitra->getFirstMediaUrl('images');
                 return $registration;
             });
 
         return view('applications.mbkm.staff.registrasi-program.peserta.list', compact('registration', 'registrations'));
     }
-
 }

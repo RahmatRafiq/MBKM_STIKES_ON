@@ -19,14 +19,21 @@
                     <div class="col-md-6">
                         <div class="mb-3">
                             <label for="mitra_id" class="form-label">Mitra</label>
+                            @if(auth()->user()->hasRole('mitra'))
+                            <input type="hidden" name="mitra_id" value="{{ $mitraProfile->first()->id }}">
+                            <input type="text" class="form-control" value="{{ $mitraProfile->first()->name }}" readonly>
+                            @else
                             <select class="form-control" id="mitra_id" name="mitra_id">
                                 @foreach ($mitraProfile as $mitra)
-                                <option value="{{ $mitra->id }}" {{ old('mitra_id')==$mitra->id ? 'selected' : '' }}>{{
-                                    $mitra->name }}</option>
+                                <option value="{{ $mitra->id }}" {{ old('mitra_id')==$mitra->id ? 'selected' : '' }}>
+                                    {{ $mitra->name }}
+                                </option>
                                 @endforeach
                             </select>
+                            @endif
                         </div>
                     </div>
+
                     <div class="col-md-6">
                         <div class="mb-3">
                             <label for="is_open" class="form-label">Status</label>
@@ -98,13 +105,14 @@
                             <label for="matakuliah_id" class="form-label">Pilih Mata Kuliah</label>
                             <select class="form-control" id="matakuliah_id" name="matakuliah_id[]" multiple="multiple">
                                 @foreach ($matakuliahs as $matakuliah)
-                                <option value="{{ $matakuliah->MKID }}" {{ in_array($matakuliah->MKID, old('matakuliah_id', [])) ? 'selected' : '' }}>
+                                <option value="{{ $matakuliah->MKID }}" {{ in_array($matakuliah->MKID,
+                                    old('matakuliah_id', [])) ? 'selected' : '' }}>
                                     {{ $matakuliah->Nama }}
                                 </option>
                                 @endforeach
                             </select>
                             @if ($errors->has('matakuliah_id'))
-                                <span class="text-danger">{{ $errors->first('matakuliah_id') }}</span>
+                            <span class="text-danger">{{ $errors->first('matakuliah_id') }}</span>
                             @endif
                         </div>
                     </div>
