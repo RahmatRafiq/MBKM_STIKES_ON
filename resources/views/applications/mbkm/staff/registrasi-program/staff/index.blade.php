@@ -166,9 +166,7 @@
                             html += `<option value="registered" ${(row.status == 'registered') ? 'selected' : ''}>Terdaftar</option>`;
                             html += `<option value="processed" ${(row.status == 'processed') ? 'selected' : ''}>Diproses</option>`;
                             html += `<option value="accepted" ${(row.status == 'accepted') ? 'selected' : ''}>Diterima</option>`;
-                            html += `<option value="accepted_offer" ${(row.status == 'accepted_offer') ? 'selected' : ''}>Terima Tawaran</option>`;
                             html += `<option value="rejected" ${(row.status == 'rejected') ? 'selected' : ''}>Ditolak</option>`;
-                            html += `<option value="rejected_by_user" ${(row.status == 'rejected_by_user') ? 'selected' : ''}>Ditolak oleh Peserta</option>`;
                             html += `</select>`;
                             html += `</form>`;
 
