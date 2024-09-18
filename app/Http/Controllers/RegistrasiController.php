@@ -242,12 +242,20 @@ class RegistrasiController extends Controller
 
     public function update(Request $request, $id)
     {
+        $user = Auth::user();
         $request->validate([
             'status' => 'required|in:registered,processed,accepted,rejected,rejected_by_user,accepted_offer,placement',
             'dospem_id' => 'nullable|exists:dosen_pembimbing_lapangan,id',
         ]);
 
         $registration = Registrasi::find($id);
+
+        if ($user->hasRole('mitra')) {
+            if (!in_array($request->input('status'), ['accepted', 'rejected'])) {
+                return back()->withErrors('Anda hanya dapat menerima atau menolak pendaftar.');
+            }
+        }
+
         $registration->status = $request->input('status');
 
         if ($request->input('status') == 'accepted_offer' && $request->has('dospem_id')) {

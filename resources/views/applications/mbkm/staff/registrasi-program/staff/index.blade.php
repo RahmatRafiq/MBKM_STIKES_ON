@@ -134,22 +134,23 @@
                                 html += `<a href="{{ route('registrasi.documents', ':id') }}" class="btn btn-info mb-2">Lihat Dokumen</a>`.replace(':id', row.id);
                             }
 
-                            // Pemilihan Dosen Pembimbing jika status 'accepted_offer'
-                            if (row.status == 'accepted_offer') {
-                                html += `<form action="{{ route('staff.updateDospem', ':id') }}" method="POST" class="d-inline mb-2">`.replace(':id', row.id);
-                                html += '@csrf @method("PUT")';
-                                html += `<div class="form-group">`;
-                                html += `<select name="dospem_id" class="form-control mb-2" required>`;
-                                html += `<option value="">Pilih Dosen Pembimbing</option>`;
-                                @foreach($dospems as $dospem)
-                                html += `<option value="{{ $dospem->id }}" ${(row.dospem_id == {{ $dospem->id }}) ? 'selected' : ''}>{{ $dospem->name }}</option>`;
-                                @endforeach
-                                html += `</select></div>`;
-                                html += `<button type="submit" class="btn btn-success mb-2">Update Dosen</button>`;
-                                html += `</form>`;
-                            }
+                                @if(!Auth::user()->hasRole('mitra'))
+                                    if (row.status == 'accepted_offer') {
+                                        html += `<form action="{{ route('staff.updateDospem', ':id') }}" method="POST" class="d-inline mb-2">`.replace(':id', row.id);
+                                        html += '@csrf @method("PUT")';
+                                        html += `<div class="form-group">`;
+                                        html += `<select name="dospem_id" class="form-control mb-2" required>`;
+                                        html += `<option value="">Pilih Dosen Pembimbing</option>`;
+                                        @foreach($dospems as $dospem)
+                                            html += `<option value="{{ $dospem->id }}" ${(row.dospem_id == {{ $dospem->id }}) ? 'selected' : ''}>{{ $dospem->name }}</option>`;
+                                        @endforeach
+                                        html += `</select></div>`;
+                                        html += `<button type="submit" class="btn btn-success mb-2">Update Dosen</button>`;
+                                        html += `</form>`;
+                                    }
+                                @endif
 
-                            // Tombol Penempatan jika status 'accepted_offer' dan dospem_id ada
+
                             if (row.status == 'accepted_offer' && row.dospem_id) {
                                 html += `<form action="{{ route('staff.updateRegistrasi', ':id') }}" method="POST" class="d-inline mb-2">`.replace(':id', row.id);
                                 html += '@csrf @method("PUT")';
