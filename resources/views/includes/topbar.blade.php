@@ -260,10 +260,10 @@
 
     <!-- App brand starts -->
     <div class="app-brand py-2 ms-3">
-        <a href="index.html" class="d-sm-block d-none">
+        <a href="/home" class="d-sm-block d-none">
             <img src="{{ asset('assets/images/mbkm.png') }}" class="logo" alt="Bootstrap Gallery" />
         </a>
-        <a href="index.html" class="d-sm-none d-block">
+        <a href="/home" class="d-sm-none d-block">
             <img src="{{ asset('assets/images/mbkm.png') }}" class="logo" alt="Bootstrap Gallery" />
         </a>
     </div>
