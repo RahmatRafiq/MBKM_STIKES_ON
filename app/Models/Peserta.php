@@ -40,12 +40,9 @@ class Peserta extends Model implements HasMedia
     // has One
     public function registrationPlacement()
     {
-        $semesterStart = env('SEMESTER_START');
-        $semesterEnd = env('SEMESTER_END');
+       
         return $this->hasOne(Registrasi::class, 'peserta_id')
-            ->where('status', 'placement')
-            ->whereDate('registrasi.created_at', '>=', $semesterStart)
-            ->whereDate('registrasi.created_at', '<=', $semesterEnd);
+            ->where('status', 'placement');
     }
 
     public function isKetua()
