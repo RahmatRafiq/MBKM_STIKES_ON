@@ -69,5 +69,31 @@ class Peserta extends Model implements HasMedia
     {
         return $this->hasMany(Response::class, 'peserta_id');
     }
-
+    public function hasCompleteDocuments()
+    {
+        $requiredDocuments = [
+            'surat_rekomendasi' => 'Surat Rekomendasi',
+            'transkrip_nilai' => 'Transkrip Nilai',
+            'cv' => 'Curriculum Vitae (CV)',
+            'pakta_integritas' => 'Pakta Integritas',
+            'izin_orangtua' => 'Surat Izin Orangtua',
+            'surat_keterangan_sehat' => 'Surat Keterangan Sehat'
+        ];
+        
+        $missingDocuments = [];
+        
+        foreach ($requiredDocuments as $document => $label) {
+            if (!$this->getFirstMediaUrl($document)) {
+                $missingDocuments[] = $label;
+            }
+        }
+    
+        if (empty($missingDocuments)) {
+            return true;
+        }
+    
+        return $missingDocuments;
+    }
+    
+    
 }

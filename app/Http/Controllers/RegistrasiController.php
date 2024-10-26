@@ -159,16 +159,25 @@ class RegistrasiController extends Controller
 
     public function store(Request $request)
     {
+        // Validasi input dari form registrasi
         $request->validate([
             'peserta_id' => 'required|exists:peserta,id',
             'lowongan_id' => 'required|exists:lowongans,id',
             'batch_id' => 'required|exists:batch_mbkms,id',
         ]);
 
+        // Ambil data peserta dari input
         $pesertaId = $request->input('peserta_id');
+        $peserta = Peserta::find($pesertaId);
+
+        // Cek apakah dokumen peserta sudah lengkap
+        if (!$peserta->hasCompleteDocuments()) {
+            return back()->withErrors(['error' => 'Dokumen pelengkap belum lengkap. Tidak bisa melakukan pendaftaran.']);
+        }
+
+        // Cek apakah sudah terdaftar sebelumnya di lowongan ini
         $lowonganId = $request->input('lowongan_id');
         $batchId = $request->input('batch_id');
-
         $existingRegistration = Registrasi::where('peserta_id', $pesertaId)
             ->where('lowongan_id', $lowonganId)
             ->where('batch_id', $batchId)
@@ -198,13 +207,12 @@ class RegistrasiController extends Controller
         if ($placementRegistration) {
             return back()->withErrors(['error' => 'Peserta sudah memiliki lowongan dengan status "placement" di batch ini. Tidak dapat mendaftar untuk lowongan lain.']);
         }
-
         Registrasi::create([
             'peserta_id' => $pesertaId,
             'lowongan_id' => $lowonganId,
             'status' => 'registered',
             'nama_peserta' => $peserta->nama,
-            'nama_lowongan' => $lowongan->name,
+           'nama_lowongan' => $lowongan->name,
             'batch_id' => $batchId,
         ]);
 
