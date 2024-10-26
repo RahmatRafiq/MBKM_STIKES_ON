@@ -48,13 +48,13 @@ const Navbar = () => {
       }}
     >
       <NavbarBrand>
-        <Link href="#">
+        <InertiaLink href={route('home')}>
           <img
             src="/assets/images/mbkm.png"
             alt={import.meta.env.VITE_APP_NAME}
             className="h-10"
           />
-        </Link>
+        </InertiaLink>
       </NavbarBrand>
 
       <NavbarContent className="hidden sm:flex gap-4" justify="center">
