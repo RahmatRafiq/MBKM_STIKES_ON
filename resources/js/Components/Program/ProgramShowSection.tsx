@@ -170,7 +170,7 @@ const ProgramShowSection = (props: Props) => {
                               })
                                 .then(res => {
                                   if (res.isConfirmed) {
-                                    router.visit('/login')
+                                    window.location.href = route('login')
                                   }
                                 })
                             }
