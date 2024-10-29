@@ -73,7 +73,7 @@
             <li class="{{ request()->routeIs('profile.edit') ? 'active current-page' : '' }}">
                 <a href="{{ route('profile.edit') }}">
                     <i class="bi bi-person"></i> <!-- Ikon baru untuk Profil -->
-                    <span class="menu-text">Profil (All User)</span>
+                    <span class="menu-text">Profil</span>
                 </a>
             </li>
 
@@ -81,7 +81,7 @@
             <li class="{{ request()->routeIs('mitra.index') ? 'active current-page' : '' }}">
                 <a href="{{ route('mitra.index') }}">
                     <i class="bi bi-briefcase"></i> <!-- Ikon baru untuk Mitra -->
-                    <span class="menu-text">Mitra (Staff)</span>
+                    <span class="menu-text">Mitra</span>
                 </a>
             </li>
             @endcan
@@ -90,7 +90,7 @@
             <li class="{{ request()->routeIs('lowongan.index') ? 'active current-page' : '' }}">
                 <a href="{{ route('lowongan.index') }}">
                     <i class="bi bi-clipboard-data"></i> <!-- Ikon baru untuk Lowongan -->
-                    <span class="menu-text">Lowongan (Mitra)</span>
+                    <span class="menu-text">Lowongan</span>
                 </a>
             </li>
             @endcan
@@ -99,7 +99,7 @@
             <li class="{{ request()->routeIs('dospem.index') ? 'active current-page' : '' }}">
                 <a href="{{ route('dospem.index') }}">
                     <i class="bi bi-person-check"></i> <!-- Ikon baru untuk Dosen Pembimbing -->
-                    <span class="menu-text">Dosen Pembimbing (Staff)</span>
+                    <span class="menu-text">Dosen Pembimbing</span>
                 </a>
             </li>
             @endcan
@@ -108,7 +108,7 @@
             <li class="{{ request()->routeIs('peserta.index') ? 'active current-page' : '' }}">
                 <a href="{{ route('peserta.index') }}">
                     <i class="bi bi-people"></i> <!-- Ikon baru untuk Peserta -->
-                    <span class="menu-text">Peserta (Staff)</span>
+                    <span class="menu-text">Peserta</span>
                 </a>
             </li>
             @endcan
@@ -117,7 +117,7 @@
             <li class="{{ request()->routeIs('registrasi.registrations-and-accept-offer') ? 'active current-page' : '' }}">
                 <a href="{{ route('registrasi.registrations-and-accept-offer', ['id' => auth()->user()->peserta->id]) }}">
                     <i class="bi bi-file-earmark-plus"></i>
-                    <span class="menu-text">Registrasi Peserta (Peserta)</span>
+                    <span class="menu-text">Registrasi Peserta</span>
                 </a>
             </li>
             @endcan
@@ -127,7 +127,7 @@
             <li class="{{ request()->routeIs('staff.registrasiIndex') ? 'active current-page' : '' }}">
                 <a href="{{ route('staff.registrasiIndex') }}">
                     <i class="bi bi-card-checklist"></i> <!-- Ikon baru untuk Daftar Registrasi Peserta -->
-                    <span class="menu-text">Daftar Registrasi Peserta (Staff)</span>
+                    <span class="menu-text">Daftar Registrasi Peserta</span>
                 </a>
             </li>
             @endcan
