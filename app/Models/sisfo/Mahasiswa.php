@@ -51,7 +51,7 @@ class Mahasiswa extends Model
         ->leftJoin('siakad_db.khs as k', function ($join) {
             $join->on('k.MhswID', '=', 'mhsw.Login')
                  ->where('k.StatusMhswID', 'A')
-                 ->where('k.Sesi', '>', 3)
+                 ->where('k.Sesi', '>', 5)
                  ->where(function ($query) {
                      $query->where('k.IP', '>', 2.50)
                            ->orWhere('k.IPS', '>', 2.50);
