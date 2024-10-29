@@ -60,15 +60,14 @@ class PesertaController extends Controller
         return response()->json($data);
     }
 
-    public function create()
+    public function create(Request $request)
     {
-        // Ambil mahasiswa yang memiliki email yang tidak null atau kosong
-        $mahasiswa = Mahasiswa::whereNotNull('Email')
-            ->where('Email', '!=', '')
-            ->get();
-
+        $search = $request->input('search');
+        $mahasiswa = Mahasiswa::getEligibleMahasiswa($search);
+    
         return view('applications.mbkm.peserta.create', compact('mahasiswa'));
     }
+    
 
     public function store(Request $request)
     {
@@ -215,36 +214,36 @@ class PesertaController extends Controller
         if (!$ketua->canAddTeamMember()) {
             return back()->withErrors('Hanya ketua dengan lowongan tipe "Wirausaha Merdeka" yang dapat mengakses halaman ini.');
         }
-    
+
         $anggotaTim = TeamMember::where('ketua_id', $ketua->id)->with('peserta')->get();
         return view('applications.mbkm.staff.registrasi-program.peserta.add-team-member', compact('ketua', 'anggotaTim'));
     }
-    
+
     public function addTeamMember(Request $request, Peserta $ketua)
     {
         if (!$ketua->canAddTeamMember()) {
             return back()->withErrors('Hanya ketua dengan lowongan tipe "Wirausaha Merdeka" yang dapat menambahkan anggota tim.');
         }
-    
+
         $request->validate([
             'nama' => 'required|string|max:255',
             'email' => 'required|email|unique:users,email',
             'nim' => 'required|string|max:20|unique:peserta,nim',
             'password' => 'required|string|min:8|confirmed',
         ]);
-    
+
         $registrasiPlacement = $ketua->registrationPlacement;
-    
+
         DB::transaction(function () use ($request, $ketua, $registrasiPlacement) {
             $user = User::create([
                 'name' => $request->nama,
                 'email' => $request->email,
                 'password' => Hash::make($request->password),
             ]);
-    
+
             $role = Role::findByName('peserta');
             $user->assignRole($role);
-    
+
             $anggota = Peserta::create([
                 'user_id' => $user->id,
                 'nim' => $request->nim,
@@ -256,7 +255,7 @@ class PesertaController extends Controller
                 'jenis_kelamin' => $request->jenis_kelamin ?? $ketua->jenis_kelamin,
                 'dospem_id' => $ketua->dospem_id,
             ]);
-    
+
             $registrasi = Registrasi::create([
                 'peserta_id' => $anggota->id,
                 'lowongan_id' => $registrasiPlacement->lowongan->id,
@@ -266,23 +265,22 @@ class PesertaController extends Controller
                 'nama_lowongan' => $registrasiPlacement->lowongan->name,
                 'batch_id' => $registrasiPlacement->batch_id,
             ]);
-    
+
             AktivitasMbkm::create([
                 'peserta_id' => $anggota->id,
                 'lowongan_id' => $registrasi->lowongan_id,
                 'mitra_id' => $registrasi->lowongan->mitra_id,
                 'dospem_id' => $registrasiPlacement->dospem_id,
             ]);
-    
+
             TeamMember::create([
                 'ketua_id' => $ketua->id,
                 'peserta_id' => $anggota->id,
             ]);
         });
-    
+
         return back()->with('success', 'Anggota tim berhasil ditambahkan.');
     }
-    
 
     public function removeTeamMember($id)
     {
