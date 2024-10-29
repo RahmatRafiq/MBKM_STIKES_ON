@@ -7,7 +7,7 @@
         <!-- Form Pencarian -->
         <form method="GET" action="{{ route('peserta.create') }}" class="mb-3">
             <div class="input-group">
-                <input type="text" name="search" class="form-control" placeholder="Cari Mahasiswa (Nama atau Email)"
+                <input type="text" name="search" class="form-control" placeholder="Cari Mahasiswa (Nama, Nim atau Email)"
                     value="{{ request('search') }}">
                 <button class="btn btn-outline-secondary" type="submit">Cari</button>
             </div>
