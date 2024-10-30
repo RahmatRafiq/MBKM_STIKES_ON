@@ -28,6 +28,21 @@
             </a>
             @endif
 
+            <!-- Tampilkan feedback jika status bukan 'pending' -->
+            @if ($laporanLengkap->status != 'pending')
+            @if ($laporanLengkap->feedback)
+            <div class="mt-4">
+                <h6><strong>Feedback:</strong></h6>
+                <p>{{ $laporanLengkap->feedback }}</p>
+            </div>
+            @else
+            <div class="mt-4">
+                <h6><strong>Feedback:</strong></h6>
+                <p>Belum ada feedback.</p>
+            </div>
+            @endif
+            @endif
+
             <!-- Tombol submit ulang jika status laporan adalah 'revisi' -->
             @if ($laporanLengkap->status == 'revisi')
             <div class="text-center mt-3">
