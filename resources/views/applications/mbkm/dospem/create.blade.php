@@ -18,7 +18,7 @@
                                         @foreach ($dosen as $item)
                                             <option value="{{ $item->Login }}"
                                                 {{ old('dosen_id') == $item->Login ? 'selected' : '' }}>
-                                                {{ $item->Nama }} - NIP: {{ $item->nip }} - {{ $item->Email }}
+                                                {{ $item->Nama }} - NIP: {{ $item->NIDN }} - {{ $item->Email }}
                                             </option>
                                         @endforeach
                                     </select>
