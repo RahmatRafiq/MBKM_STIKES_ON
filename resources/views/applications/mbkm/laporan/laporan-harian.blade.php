@@ -43,6 +43,17 @@
                         <div class="card-body">
                             @if ($laporan)
                             <p>{{ $laporan->isi_laporan }}</p>
+
+                            <!-- Tambahkan logika feedback di sini -->
+                            @if ($laporan->status != 'pending')
+                            <div class="mt-3">
+                                <h6 class="d-flex justify-content-end"><strong>Feedback:</strong></h6>
+                                <p class="d-flex justify-content-end">{{ $laporan->feedback ?? 'Belum ada feedback.' }}
+                                </p>
+                                <br>
+                            </div>
+                            @endif
+
                             @if ($laporan->status == 'revisi')
                             <div class="d-flex justify-content-center">
                                 <button class="btn btn-info" data-bs-toggle="modal"
