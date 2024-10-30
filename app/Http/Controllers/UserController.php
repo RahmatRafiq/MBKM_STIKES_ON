@@ -5,6 +5,8 @@ use App\Helpers\DataTable;
 use App\Models\Role;
 use App\Models\User;
 use Illuminate\Http\Request;
+use Spatie\Permission\Models\Role as SpatieRole;
+
 
 class UserController extends Controller
 {
@@ -69,7 +71,7 @@ class UserController extends Controller
         ]);
 
         // Assign role to user
-        $role = Role::find($validatedData['role_id']);
+        $role = SpatieRole::findById($validatedData['role_id']);
         $user->assignRole($role);
 
         return redirect()->route('user.index')->with('success', 'User created successfully.');
@@ -83,8 +85,9 @@ class UserController extends Controller
    
     public function edit($id)
     {
-        $user = User::findOrFail($id);
+        $user = User::with('roles')->findOrFail($id);
         $roles = Role::all();
+        // dd($user); 
         return view('applications.mbkm.admin.role-permission.user.edit', compact('user', 'roles'));
     }
 
@@ -103,7 +106,8 @@ class UserController extends Controller
         if ($request->filled('password')) {
             $user->password = bcrypt($validatedData['password']);
         }
-        $user->role_id = $validatedData['role_id'];
+        $role = SpatieRole::findById($validatedData['role_id']);
+        $user->syncRoles([$role]);
         $user->save();
 
         return redirect()->route('user.index')->with('success', 'User updated successfully.');

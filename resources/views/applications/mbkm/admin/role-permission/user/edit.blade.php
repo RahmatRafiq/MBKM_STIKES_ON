@@ -37,8 +37,10 @@
                         <select class="form-select" id="role" name="role_id" required>
                             <option value="">Select Role</option>
                             @foreach ($roles as $role)
-                                <option value="{{ $role->id }}" {{ $role->id == $user->role_id ? 'selected' : '' }}>
-                                    {{ $role->name }}</option>
+                                <option value="{{ $role->id }}" 
+                                    {{ $user->roles->isNotEmpty() && $user->roles->first()->id == $role->id ? 'selected' : '' }}>
+                                    {{ $role->name }}
+                                </option>
                             @endforeach
                         </select>
                     </div>
