@@ -219,7 +219,7 @@ class AktivitasMbkmController extends Controller
             return back()->with('success', 'Laporan harian berhasil disimpan.');
         } catch (\Throwable $th) {
             DB::rollBack();
-            return back()->withErrors(['error' => 'Terjadi kesalahan saat menyimpan laporan harian.']);
+            return back()->withErrors(['error' => 'Terjadi kesalahan saat menyimpan laporan. Pastikan Anda selalu mengunggah foto, baik saat mengisi laporan pertama kali maupun saat submit ulang.']);
         }
     }
     public function uploadLaporanHarian(Request $request)

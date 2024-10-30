@@ -119,6 +119,12 @@
                                     <div class="mb-3">
                                         <label for="laporan_foto_{{ $date->format('d') }}" class="form-label">Upload
                                             Foto</label>
+                                        <div class="alert alert-warning mt-2" role="alert">
+                                            <strong>Perhatian:</strong> Anda wajib mengunggah foto baru setiap kali
+                                            melakukan submit ulang laporan. Foto yang sebelumnya akan dihapus dan
+                                            digantikan oleh foto baru. Pastikan Anda mengunggah semua foto yang
+                                            diperlukan sebelum melakukan pengiriman.
+                                        </div>
                                         <div class="dropzone my-dropzone"
                                             data-url-destroy="{{ route('laporan.harian.deleteDokumen') }}">
                                             <!-- Menampilkan file yang sudah diunggah sebelumnya -->
@@ -133,8 +139,6 @@
                                                 <div class="dz-remove" data-dz-remove>Remove file</div>
                                             </div>
                                             @endforeach
-
-
                                         </div>
                                     </div>
                                     <button type="submit" class="btn btn-primary">Simpan</button>
