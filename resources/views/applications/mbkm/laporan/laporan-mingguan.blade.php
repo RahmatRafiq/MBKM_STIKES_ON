@@ -11,9 +11,6 @@
                 </div>
                 <div class="card-body text-center">
                     <p>Total Laporan yang sudah kamu buat: {{ $totalLaporanMingguan }}</p>
-                    <p>Laporan kamu yang tervalidasi: {{ $validasiLaporanMingguan }}</p>
-                    <p>Laporan kamu yang harus direvisi: {{ $revisiLaporanMingguan }}</p>
-                    <p>Laporan kamu yang masih dalam review: {{ $pendingLaporanMingguan }}</p>
                 </div>
             </div>
         </div>
@@ -39,7 +36,7 @@
                         <div class="card-body">
                             @if ($week['isCurrentOrPastWeek'])
                             @if ($week['laporanMingguan'])
-                            <p>{{ $week['laporanMingguan']->isi_laporan }}</p>
+                            <p class="mb-3">{{ $week['laporanMingguan']->isi_laporan }}</p>
                             @if ($week['laporanMingguan']->status == 'revisi')
                             <div class="text-center mt-3">
                                 <button class="btn btn-info" data-bs-toggle="modal"
