@@ -12,15 +12,15 @@ class Dosen extends Model
     protected $table = 'dosen';
 
     protected $fillable = [
-        'Login',         // Login
-        'KodeID',        // KodeID
-        'NIDN',          // NIDN
+        'Login', // Login
+        'KodeID', // KodeID
+        'NIDN', // NIDN
         'HomebaseInduk', // HomebaseInduk
-        'NIPPNS',        // NIPPNS
-        'Nama',          // Nama
-        'TempatLahir',   // TempatLahir
-        'TanggalLahir',  // TanggalLahir
-        'LevelID',       // LevelID
-        'KTP',           // KTP
+        'NIPPNS', // NIPPNS
+        'Nama', // Nama
+        'TempatLahir', // TempatLahir
+        'TanggalLahir', // TanggalLahir
+        'LevelID', // LevelID
+        'KTP', // KTP
     ];
 }

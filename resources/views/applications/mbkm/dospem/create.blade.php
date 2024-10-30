@@ -4,6 +4,13 @@
     <div class="card">
         <div class="card-header">Create New Dosen Pembimbing Lapangan</div>
         <div class="card-body">
+            <form method="GET" action="{{ route('dospem.create') }}" class="mb-3">
+                <div class="input-group">
+                    <input type="text" name="search" class="form-control" placeholder="Cari Dosen (Nama atau NIDN)"
+                        value="{{ request('search') }}">
+                    <button class="btn btn-outline-secondary" type="submit">Cari</button>
+                </div>
+            </form>
             <form method="POST" action="{{ route('dospem.store') }}">
                 @csrf
                 <div class="row gx-3">
