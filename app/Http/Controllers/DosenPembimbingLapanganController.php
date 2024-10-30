@@ -52,15 +52,15 @@ class DosenPembimbingLapanganController extends Controller
 
     public function create()
     {
-        $dosen = Dosen::all();
-
         $search = request()->input('search');
-        $dosen = Dosen::query();
+        $query = Dosen::query();
 
         if ($search) {
-            $dosen->where('NIDN', 'like', "%{$search}%")
-                  ->orWhere('Nama', 'like', "%{$search}%");
+            $query->where('NIDN', 'like', "%{$search}%")
+                ->orWhere('Nama', 'like', "%{$search}%");
         }
+
+        $dosen = $query->get();
 
         return view('applications.mbkm.dospem.create', compact('dosen'));
     }
@@ -71,29 +71,29 @@ class DosenPembimbingLapanganController extends Controller
             'dosen_id' => 'required|exists:mysql_second.dosen,Login',
             'password' => 'required|confirmed|min:8',
         ]);
-    
+
         DB::beginTransaction();
-    
+
         try {
             $dosen = Dosen::where('Login', $request->dosen_id)->firstOrFail();
-    
+
             if (DosenPembimbingLapangan::where('email', $dosen->Email)->exists()) {
                 return back()->withErrors(['email' => 'Email already exists in Dosen Pembimbing Lapangan'])->withInput();
             }
-    
+
             if (DosenPembimbingLapangan::where('name', $dosen->Nama)->exists()) {
                 return back()->withErrors(['name' => 'Name already exists in Dosen Pembimbing Lapangan'])->withInput();
             }
-    
+
             $user = User::create([
                 'name' => $dosen->Nama,
                 'email' => $dosen->Email,
                 'password' => Hash::make($request->password),
             ]);
-    
+
             $role = Role::findByName('dosen');
             $user->assignRole($role);
-    
+
             DosenPembimbingLapangan::create([
                 'user_id' => $user->id,
                 'name' => $dosen->Nama,
@@ -103,13 +103,13 @@ class DosenPembimbingLapanganController extends Controller
                 'phone' => $dosen->phone,
                 'image' => 'default.jpg',
             ]);
-    
+
             DB::commit();
             return redirect()->route('dospem.index')->with('success', 'Dosen Pembimbing Lapangan created successfully.');
-    
+
         } catch (\Exception $e) {
             DB::rollBack();
-    
+
             return back()->withErrors(['error' => 'An error occurred while creating Dosen Pembimbing Lapangan: ' . $e->getMessage()])->withInput();
         }
     }
