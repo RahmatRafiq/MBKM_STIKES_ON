@@ -28,7 +28,7 @@
                                     @foreach ($mahasiswa as $item)
                                     <option value="{{ $item->MhswID }}" {{ old('mahasiswa_id')==$item->MhswID ?
                                         'selected' : '' }}>
-                                        {{ $item->Nama }} - {{ $item->Email }} - Semester: {{ $item->Sesi ?? '-' }}
+                                        {{ $item->Nama }} - Nim: {{ $item->MhswID }} - Semester: {{ $item->Sesi ?? '-' }}
                                     </option>
                                     @endforeach
                                 </select>
