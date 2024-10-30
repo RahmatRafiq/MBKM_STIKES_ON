@@ -3,7 +3,6 @@
 namespace App\Http\Controllers;
 
 use App\Helpers\MediaLibrary;
-use App\Models\AktivitasMbkm;
 use App\Models\BatchMbkm;
 use App\Models\LaporanHarian;
 use App\Models\LaporanLengkap;
@@ -45,8 +44,8 @@ class AktivitasMbkmController extends Controller
         $laporanLengkap = $pesertaId ? LaporanLengkap::getByUser($user, $pesertaId, $batchId) : collect();
 
         $gambar = LaporanHarian::with('media')->where('peserta_id', $pesertaId)
-        ->get()
-        ->keyBy('tanggal');
+            ->get()
+            ->keyBy('tanggal');
         // dd($gambar);
         return view('applications.mbkm.laporan.index', compact('daftarPeserta', 'laporanHarian', 'laporanMingguan', 'laporanLengkap', 'pesertaId'));
     }
@@ -176,22 +175,16 @@ class AktivitasMbkmController extends Controller
     {
         $user = Auth::user();
         $peserta = Peserta::with('registrationPlacement')->where('user_id', $user->id)->first();
-    
+
         if (!$peserta || !$peserta->registrationPlacement || $peserta->registrationPlacement->batch_id != $this->activeBatch->id) {
             return response()->view('applications.mbkm.error-page.not-registered', ['message' => 'Anda tidak terdaftar dalam kegiatan MBKM apapun untuk batch ini.'], 403);
         }
-    
-        // Cari laporan lengkap berdasarkan peserta_id
-        $laporanLengkap = LaporanLengkap::where('peserta_id', $user->peserta->id)->first();
-        $laporanLengkapValid = $laporanLengkap->status === 'validasi';
 
-        // Dump hasil pencarian untuk debugging
-        // dd($laporanLengkap, $laporanLengkapValid);
-    
-        // Jika `laporanLengkap` ditemukan, lanjutkan dengan view
+        $laporanLengkap = LaporanLengkap::where('peserta_id', $user->peserta->id)->first();
+        $laporanLengkapValid = $laporanLengkap && $laporanLengkap->status === 'validasi';
+
         return view('applications.mbkm.laporan.laporan-lengkap', compact('laporanLengkap'));
     }
-    
 
     public function storeLaporanHarian(Request $request)
     {
@@ -240,7 +233,6 @@ class AktivitasMbkmController extends Controller
         ]);
 
         $user = Auth::user();
-
 
         return response()->json(['message' => 'Dokumen berhasil diupload'], 200);
     }
@@ -294,7 +286,7 @@ class AktivitasMbkmController extends Controller
             'isi_laporan' => 'required|string',
             'dokumen' => 'required|file|mimes:pdf,doc,docx', // Validasi dokumen sebagai wajib
         ]);
-    
+
         $user = Auth::user();
         $laporanLengkap = LaporanLengkap::updateOrCreate(
             [
@@ -307,7 +299,7 @@ class AktivitasMbkmController extends Controller
                 'status' => 'pending',
             ]
         );
-    
+
         // Perbarui dokumen di media collection 'laporan-lengkap'
         if ($request->hasFile('dokumen')) {
             // Hapus dokumen lama jika ada
@@ -318,10 +310,9 @@ class AktivitasMbkmController extends Controller
             $laporanLengkap->addMedia($request->file('dokumen'))
                 ->toMediaCollection('laporan-lengkap', 'laporan-lengkap');
         }
-    
+
         return back()->with('success', 'Laporan lengkap berhasil disimpan.');
     }
-    
 
     public function validateLaporanHarian(Request $request, $id)
     {
