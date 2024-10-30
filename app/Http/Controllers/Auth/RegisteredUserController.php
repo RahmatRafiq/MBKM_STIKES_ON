@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
+use App\Models\sisfo\Mahasiswa;
 use App\Models\User;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Http\RedirectResponse;
@@ -29,25 +30,39 @@ class RegisteredUserController extends Controller
      */
     public function store(Request $request): RedirectResponse
     {
+        // Validasi input
         $request->validate([
-            'name' => ['required', 'string', 'max:255'],
-            'email' => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:'.User::class],
+            'nim' => ['required'], // NIM harus tepat 6 digit
+            'email' => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:' . User::class],
             'password' => ['required', 'confirmed', Rules\Password::defaults()],
-            'termsConditions' => ['required', 'accepted']
+            'termsConditions' => ['required', 'accepted'],
         ]);
 
+        // Cek apakah NIM memenuhi kriteria MBKM
+        $mahasiswa = Mahasiswa::getEligibleMahasiswa()->firstWhere('MhswID', $request->nim);
+
+        if (!$mahasiswa) {
+            // Jika NIM tidak memenuhi kriteria, kembalikan dengan pesan error
+            return back()->withErrors(['nim' => 'Maaf, Anda tidak memenuhi kriteria MBKM.']);
+        }
+
+        // Jika validasi berhasil, buat user baru
         $user = User::create([
-            'name' => $request->name,
+            'name' => $mahasiswa->Nama, // Menggunakan nama dari data mahasiswa
             'email' => $request->email,
             'password' => Hash::make($request->password),
         ]);
 
-        $user->assignRole('');
+        // Assign role jika ada (optional)
+        $user->assignRole('user');
 
+        // Trigger event Registered
         event(new Registered($user));
 
+        // Login otomatis setelah registrasi
         Auth::login($user);
 
-        return redirect(route('dashboard', absolute: false));
+        // Redirect ke dashboard
+        return redirect(route('dashboard'));
     }
 }

@@ -12,22 +12,44 @@
                 <img src="{{ asset('assets/images/mbkm.png') }}" class="logo img-fluid" alt="Logo" />
               </a>
               <h5 class="fw-light mb-5 text-center">Create your account.</h5>
+
+              {{-- Input NIM --}}
               <div class="mb-3">
-                <label class="form-label" for="name">Your Name</label>
-                <input type="text" name="name" id="name" class="form-control" placeholder="Enter your name" value="{{ old('name') }}" />
+                <label class="form-label" for="nim">Your NIM</label>
+                <input type="text" name="nim" id="nim" class="form-control" 
+                       placeholder="Enter your NIM" value="{{ old('nim') }}" />
+                @error('nim')
+                  <div class="text-danger">{{ $message }}</div>
+                @enderror
               </div>
+
+              {{-- Input Email --}}
               <div class="mb-3">
                 <label class="form-label">Your Email</label>
-                <input type="text" name="email" id="email" class="form-control" placeholder="Enter your email" value="{{ old('email') }}" />
+                <input type="email" name="email" id="email" class="form-control" 
+                       placeholder="Enter your email" value="{{ old('email') }}" />
+                @error('email')
+                  <div class="text-danger">{{ $message }}</div>
+                @enderror
               </div>
+
+              {{-- Input Password --}}
               <div class="mb-3">
                 <label class="form-label">Your Password</label>
-                <input type="password" name="password" id="password" class="form-control" placeholder="Enter password" />
+                <input type="password" name="password" id="password" class="form-control" 
+                       placeholder="Enter password" />
+                @error('password')
+                  <div class="text-danger">{{ $message }}</div>
+                @enderror
               </div>
+
+              {{-- Input Konfirmasi Password --}}
               <div class="mb-3">
                 <label class="form-label">Confirm Password</label>
-                <input type="password" name="password_confirmation" id="password_confirmation" class="form-control" placeholder="Re-enter password" />
+                <input type="password" name="password_confirmation" id="password_confirmation" 
+                       class="form-control" placeholder="Re-enter password" />
               </div>
+
               <div class="d-flex align-items-center justify-content-between">
                 <div class="form-check m-0">
                   <input class="form-check-input" type="checkbox" id="termsConditions" name="termsConditions" />
@@ -36,11 +58,11 @@
                   </label>
                 </div>
               </div>
+
               <div class="d-grid py-3 mt-4">
-                <button type="submit" class="btn btn-lg btn-primary">
-                  Signup
-                </button>
+                <button type="submit" class="btn btn-lg btn-primary">Signup</button>
               </div>
+
               <div class="text-center pt-4">
                 <span>Already have an account?</span>
                 <a href="login.html" class="text-blue text-decoration-underline ms-2">Login</a>
