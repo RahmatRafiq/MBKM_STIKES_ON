@@ -43,6 +43,17 @@
                         <div class="card-body">
                             @if ($laporan)
                             <p>{{ $laporan->isi_laporan }}</p>
+
+                            <!-- Tambahkan logika feedback di sini -->
+                            @if ($laporan->status != 'pending')
+                            <div class="mt-3">
+                                <h6 class="d-flex justify-content-end"><strong>Feedback:</strong></h6>
+                                <p class="d-flex justify-content-end">{{ $laporan->feedback ?? 'Belum ada feedback.' }}
+                                </p>
+                                <br>
+                            </div>
+                            @endif
+
                             @if ($laporan->status == 'revisi')
                             <div class="d-flex justify-content-center">
                                 <button class="btn btn-info" data-bs-toggle="modal"
@@ -108,6 +119,12 @@
                                     <div class="mb-3">
                                         <label for="laporan_foto_{{ $date->format('d') }}" class="form-label">Upload
                                             Foto</label>
+                                        <div class="alert alert-warning mt-2" role="alert">
+                                            <strong>Perhatian:</strong> Anda wajib mengunggah foto baru setiap kali
+                                            melakukan submit ulang laporan. Foto yang sebelumnya akan dihapus dan
+                                            digantikan oleh foto baru. Pastikan Anda mengunggah semua foto yang
+                                            diperlukan sebelum melakukan pengiriman.
+                                        </div>
                                         <div class="dropzone my-dropzone"
                                             data-url-destroy="{{ route('laporan.harian.deleteDokumen') }}">
                                             <!-- Menampilkan file yang sudah diunggah sebelumnya -->
@@ -122,8 +139,6 @@
                                                 <div class="dz-remove" data-dz-remove>Remove file</div>
                                             </div>
                                             @endforeach
-
-
                                         </div>
                                     </div>
                                     <button type="submit" class="btn btn-primary">Simpan</button>

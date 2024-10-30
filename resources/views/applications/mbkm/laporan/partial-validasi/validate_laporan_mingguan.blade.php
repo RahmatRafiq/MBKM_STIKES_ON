@@ -7,31 +7,30 @@
                         <tr>
                             <th>Minggu Ke</th>
                             <th>Isi Laporan</th>
+                            <th>Dokumen</th>
                             <th>Status</th>
-                            <th>Feedback</th>
-                            <th>Aksi</th>
                         </tr>
                     </thead>
                     <tbody id="laporan-mingguan-tbody">
                         @foreach ($laporanMingguan as $laporan)
                         <tr id="laporan-mingguan-{{ $laporan->id }}">
                             <td>{{ $laporan->minggu_ke }}</td>
-                            <td>{{ $laporan->isi_laporan }}</td>
+                            <td>{{ $laporan->isi_laporan ?? 'Tidak ada isi laporan' }}</td>
+                            <td>
+                                @if($laporan->getMedia('laporan-mingguan')->isNotEmpty())
+                                @foreach($laporan->getMedia('laporan-mingguan') as $media)
+                                <a href="{{ $media->getFullUrl() }}" target="_blank" class="btn btn-primary mb-1">Lihat
+                                    Dokumen {{ $loop->iteration }}</a><br>
+                                @endforeach
+                                @else
+                                <span class="text-muted">Tidak ada dokumen</span>
+                                @endif
+                            </td>
                             <td class="status">
                                 <span
                                     class="badge badge-{{ $laporan->status == 'pending' ? 'accepted_offer' : ($laporan->status == 'validasi' ? 'registered' : 'rejected') }}">
                                     {{ ucfirst($laporan->status) }}
                                 </span>
-                            </td>
-                            <td>{{ $laporan->feedback ?? '-' }}</td>
-                            <td>
-                                @if ($laporan->status == 'pending')
-                                <button class="btn btn-outline-success validate-btn mb-1" data-id="{{ $laporan->id }}"
-                                    data-type="mingguan" data-action="validasi">Validasi</button>
-                                <button class="btn btn-outline-danger validate-btn mb-1" data-id="{{ $laporan->id }}"
-                                    data-type="mingguan" data-action="revisi" data-toggle="modal"
-                                    data-target="#feedbackModalMingguan-{{ $laporan->id }}">Revisi</button>
-                                @endif
                             </td>
                         </tr>
                         @endforeach
