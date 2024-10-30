@@ -256,6 +256,7 @@ class AktivitasMbkmController extends Controller
             'minggu_ke' => 'required|integer',
             'isi_laporan' => 'required|string',
             'kehadiran' => 'required|string',
+            'dokumen.*' => 'nullable|file|mimes:pdf,doc,docx|max:2048', // Dokumen juga nullable dan mendukung multiple
         ]);
 
         $user = Auth::user();
@@ -272,10 +273,16 @@ class AktivitasMbkmController extends Controller
             ],
             [
                 'isi_laporan' => $request->isi_laporan,
-                'status' => 'pending',
+                'status' => 'validasi',
                 'kehadiran' => $request->kehadiran,
             ]
         );
+
+        if ($request->hasFile('dokumen')) {
+            foreach ($request->file('dokumen') as $file) {
+                $laporanMingguan->addMedia($file)->toMediaCollection('laporan-mingguan', 'laporan-mingguan');
+            }
+        }
 
         return back()->with('success', 'Laporan mingguan berhasil disimpan.');
     }

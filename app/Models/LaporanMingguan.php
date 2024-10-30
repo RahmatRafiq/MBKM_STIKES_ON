@@ -5,11 +5,13 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
+use Spatie\MediaLibrary\HasMedia;
+use Spatie\MediaLibrary\InteractsWithMedia;
 
-class LaporanMingguan extends Model
+class LaporanMingguan extends Model implements HasMedia
 {
     use HasFactory;
-
+    use HasFactory, InteractsWithMedia;
     protected $table = 'laporan_mingguan';
     protected $fillable = [
         'peserta_id',
